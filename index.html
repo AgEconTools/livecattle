@@ -1235,7 +1235,8 @@ details.method .card { margin-top: 10px; }
         FED = d;
         $("#region").replaceChildren(...regsInOrder().map(r => el("option", { value: r.id, text: r.name })));
         if (!regById(S.region)) {           // a ?region= this page doesn't cover opens the first region, with a line saying so
-          if (LINK_REGION) { const n = $("#linknote"); n.textContent = `This page doesn't have fed cattle prices for "${LINK_REGION}"; showing ${FED.regions[0].name}.`; n.hidden = false; }
+          // never repeats the link's text: a crafted link could put any sentence under the MSU banner (security review, 11/25/2026)
+          if (LINK_REGION) { const n = $("#linknote"); n.textContent = `This page doesn't have fed cattle prices for the region in the link; showing ${FED.regions[0].name}.`; n.hidden = false; }
           S.region = FED.regions[0].id;
         }
         writeAddr();
