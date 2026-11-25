@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live Cattle and Boxed Beef</title>
+<meta name="description" content="Weekly fed cattle prices by region and the daily boxed beef cutout, from USDA mandatory price reports.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mississippi State University Extension">
+<meta property="og:title" content="Live Cattle and Boxed Beef">
+<meta property="og:description" content="Weekly fed cattle prices by region and the daily boxed beef cutout, from USDA mandatory price reports.">
+<meta property="og:url" content="https://agecontools.github.io/livecattle/">
+<meta property="og:image" content="https://agecontools.github.io/livecattle/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Live Cattle and Boxed Beef: weekly fed cattle prices by region and the boxed beef cutout from USDA reports. Mississippi State University Extension.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://agecontools.github.io/livecattle/">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Visit counts: GoatCounter, no cookies and no personal data. It skips localhost. -->
+<script data-goatcounter="https://agecontools.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<style>
+/* fonts bundled in fonts/ (Fontsource, OFL); nothing is loaded from outside the site */
+@font-face { font-family: "Bitter"; font-weight: 600; font-display: swap; src: url(fonts/bitter-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Bitter"; font-weight: 700; font-display: swap; src: url(fonts/bitter-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Public Sans"; font-weight: 400; font-display: swap; src: url(fonts/public-sans-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Public Sans"; font-weight: 500; font-display: swap; src: url(fonts/public-sans-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Public Sans"; font-weight: 600; font-display: swap; src: url(fonts/public-sans-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Public Sans"; font-weight: 700; font-display: swap; src: url(fonts/public-sans-latin-700-normal.woff2) format("woff2"); }
+/* Layout: a maroon market-report masthead, one region picker, then one question
+   per tab; numbers set like a printed sale report (tabular, right-aligned). */
+:root {
+  --bg: #f7f5f5;          /* page: neutral leaning toward maroon */
+  --surface: #ffffff;
+  --ink: #1c1c1c;
+  --ink-2: #4a4446;       /* secondary text */
+  --muted: #6f686a;
+  --rule: #e4dfe0;
+  --accent: #5d1725;      /* MSU maroon */
+  --accent-ink: #ffffff;
+  --accent-soft: #f3e9eb;
+  --line-1: #9b3047;      /* this year / now */
+  --line-2: #1c1c1c;      /* 3-year average, dashed */
+  --line-3: #777777;      /* last year */
+  --band: #c1c6c8;
+  --up: #2e6b3f;          /* price up: green */
+  --down: #b3261e;        /* price down: red */
+  --focus: #c99700;       /* MSU gold, focus ring only */
+  --warn-bg: #fff3d6;     /* few sales: amber */
+  --warn-ink: #7a4600;
+  --warn-line: #c98a12;
+  --display: "Bitter", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", Arial, Helvetica, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151112; --surface: #1f191b; --ink: #f1ecee; --ink-2: #cfc6c9; --muted: #a59a9e;
+    --rule: #3a3134; --accent: #6e1d2e; --accent-ink: #ffffff; --accent-soft: #33212a;
+    --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --band: #4d4447;
+    --up: #86c995; --down: #f2958c; --focus: #e2b93b;
+    --warn-bg: #3b2c0e; --warn-ink: #f6c56a; --warn-line: #d9a032; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151112; --surface: #1f191b; --ink: #f1ecee; --ink-2: #cfc6c9; --muted: #a59a9e;
+  --rule: #3a3134; --accent: #6e1d2e; --accent-ink: #ffffff; --accent-soft: #33212a;
+  --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --band: #4d4447;
+  --up: #86c995; --down: #f2958c; --focus: #e2b93b;
+    --warn-bg: #3b2c0e; --warn-ink: #f6c56a; --warn-line: #d9a032; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }   /* as Cattle Auction Prices' site wrapper */
+img { max-width: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--body);
+       -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+               z-index: 10; background: var(--bg); }
+.wrap { max-width: 1040px; margin: 0 auto;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* masthead */
+.mast { background: var(--accent); color: var(--accent-ink); }
+.mast .wrap { padding-block: 22px 20px; display: grid; gap: 14px;
+              grid-template-columns: 1fr auto; align-items: end; }
+h1 { font: 700 clamp(28px, 5vw, 40px)/1.08 var(--display); margin: 0; text-wrap: balance; }
+.asof { margin: 6px 0 0; font-size: 14px; opacity: .88; }
+.asof.edu { margin-top: 2px; font-size: 13px; }
+.asof a { color: inherit; }
+.disc { border: 1px solid var(--rule); border-left: 4px solid var(--ink-2); background: var(--surface); border-radius: 8px;
+        padding: 14px 16px; max-width: 78ch; display: grid; gap: 6px; }
+.disc h2 { font-size: 17px; }
+.disc p { margin: 0; }
+.disc details.method { border-top: 0; padding-top: 0; }
+.disc details.method p + p { margin-top: 8px; }
+.pickers { display: flex; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.picker { display: grid; gap: 4px; min-width: 0; }
+.picker label, .picker .lab { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+                opacity: .85; }
+.picker select { appearance: none; -webkit-appearance: none; background: var(--surface); color: var(--ink);
+  border: 0; border-radius: 8px; padding: 11px 40px 11px 14px; font-weight: 600; font-size: 16px;
+  min-width: 230px; max-width: 100%; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
+  background-size: 6px 6px; background-repeat: no-repeat; }
+.picker select.st { min-width: 150px; }
+.picker[hidden] { display: none; }
+/* Boxed beef's fixed "National": the picker's size, but outlined, with no arrow, so it doesn't look like a control */
+.picker .fixed { border: 1px solid rgba(255, 255, 255, .5); border-radius: 8px; padding: 10px 14px; font-weight: 600;
+  font-size: 16px; min-width: 230px; max-width: 100%; box-sizing: border-box; }
+/* plain or Value Added lots, the whole page (11/3/2026) */
+.picker .seg.lots { border: 0; padding: 3px; flex-wrap: nowrap; }
+.picker .seg.lots button { padding: 8px 14px; font-size: 15px; white-space: nowrap; }
+/* the Fed cattle side (11/24/2026): one switch for the page; each side shows only its own pickers, notes and
+   footer lines (the tabs are hidden one by one, so the keyboard skips the other side's) */
+.picker.side-pick { flex-basis: 100%; }
+.picker .seg.side { border: 0; padding: 3px; flex-wrap: nowrap; justify-self: start; }
+.picker .seg.side button { padding: 8px 14px; font-size: 15px; white-space: nowrap; }
+.h3s { margin: 0; font: 700 17px/1.3 var(--body); }
+.stack { display: grid; gap: 10px; }
+.stack[hidden] { display: none; }
+td small, .cellsub { display: block; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+
+/* sale tally: one line of head counts (the year-to-date count is in the About box) */
+.tally { background: var(--surface); border-bottom: 1px solid var(--rule); }
+.tally .wrap { padding-block: 11px 12px; display: grid; gap: 3px; }
+.tally .lead { font-weight: 600; color: var(--ink-2); font-size: 14px; }
+.tally .row { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.5; }
+.tally .row b { font-size: 17px; color: var(--ink); }
+.tally .row b.big { color: var(--accent); font-size: 19px; }
+:root[data-theme="dark"] .tally .row b.big { color: var(--line-1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tally .row b.big { color: var(--line-1); } }
+
+/* tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+        border-bottom: 1px solid var(--rule); }
+.tabs .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-block: 8px; }
+.tabs .wrap::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; border: 0; background: transparent; padding: 9px 14px; border-radius: 999px;
+       font-weight: 600; font-size: 15px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.tab:hover { background: var(--accent-soft); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tab-break { display: none; }
+
+/* panels */
+main { padding-block: 26px 40px; }
+.panel { display: grid; gap: 18px; }
+/* in-page jumps land with their heading below the sticky tab bar, which wraps to two rows on a phone: --tabs-h is the
+   bar's measured height, set on load and whenever it changes (iPhone review, 11/23/2026; was a fixed 80 px on the strip) */
+#more-tools, #disclaimer, #week-facts, #foot-how, #curve-card { scroll-margin-top: calc(var(--tabs-h, 80px) + env(safe-area-inset-top, 0px) + 12px); }
+.panel > * { min-width: 0; }
+h2 { font: 700 clamp(22px, 3.4vw, 28px)/1.2 var(--display); margin: 0; text-wrap: balance; }
+.sub { margin: 4px 0 0; color: var(--ink-2); font-size: 15px; max-width: 68ch; }
+.note { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 72ch; }
+.chip-scope { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
+  padding: 3px 9px; border-radius: 999px; vertical-align: middle; margin-left: 6px; }
+:root[data-theme="dark"] .chip-scope { color: var(--line-1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip-scope { color: var(--line-1); } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 18px; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; }
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+       padding: 3px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+              font-weight: 600; font-size: 14px; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.field { display: grid; gap: 4px; }
+.field > span { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.field input[type=number] { width: 120px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px;
+                            background: var(--surface); font-variant-numeric: tabular-nums; }
+
+/* report table */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+caption { text-align: left; font: 700 16px/1.3 var(--body); padding: 0 0 8px; }
+th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+thead th { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+td.price { font-weight: 700; font-size: 17px; }
+td.price.tiny { font-weight: 400; color: var(--muted); }   /* 1 or 2 head: shown as reported, not set like a market price */
+/* a price that opens its range (11/6/2026): looks like the number, with a dotted underline */
+.pbtn { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer;
+        border-bottom: 1.5px dotted var(--muted); font-variant-numeric: tabular-nums; }
+.pbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 2px; }
+.rtip { position: absolute; z-index: 30; background: var(--surface); color: var(--ink); border: 1px solid var(--rule);
+        border-radius: 8px; padding: 10px 40px 10px 12px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.14); }
+.rtip .rt-h { display: block; font-weight: 700; margin-bottom: 6px; }
+.rtip dl { margin: 0; display: grid; grid-template-columns: auto auto; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.rtip dt { color: var(--muted); }
+.rtip dd { margin: 0; font-weight: 700; text-align: right; }
+.rtip .x { position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; border: 0; background: none;
+           color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; border-radius: 6px; }
+.rtip .x:hover { color: var(--ink); background: var(--accent-soft); }
+tr.rsel td { background: var(--accent-soft); }   /* the row whose range is open */
+.pbtn[aria-expanded="true"] { border-bottom: 1.5px solid var(--accent); }
+.chg { font-weight: 600; }
+.chg.up { color: var(--up); } .chg.down { color: var(--down); }
+.few { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; font-size: 11.5px; font-weight: 700;
+       color: var(--warn-ink); background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 4px;
+       padding: 0 5px; white-space: nowrap; vertical-align: middle; }
+.few::before { content: "⚠"; }
+tr.thin td, td.thinchg { background: var(--warn-bg); }
+.fewmark { display: block; font-size: 11px; font-weight: 700; color: var(--warn-ink); }
+.fewmark::before { content: "⚠ "; }
+.warn { display: flex; gap: 8px; align-items: flex-start; grid-column: 1 / -1; margin: 0; background: var(--warn-bg);
+        color: var(--warn-ink); border-left: 4px solid var(--warn-line); border-radius: 6px; padding: 10px 12px;
+        font-size: 14px; font-weight: 600; }
+.warn::before { content: "⚠"; }
+.stale-row { padding-block: 14px 0; }
+.state-note { padding-block: 14px 0; }
+.state-note p { margin: 0; max-width: 70ch; font-size: 14px; line-height: 1.5; color: var(--ink-2);
+                border-left: 3px solid var(--accent); padding: 2px 0 2px 10px; }
+.state-note a { color: inherit; }
+.facts .specials a { color: inherit; }
+.va-band { padding-block: 14px 0; }
+.va-band p { margin: 0; max-width: 70ch; font-size: 14px; line-height: 1.5; color: var(--ink);
+             background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 8px 12px; }
+.va-band b { font-weight: 700; }
+.vacard .card { display: grid; gap: 12px; max-width: 640px; }
+.vacard p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-2); max-width: 62ch; }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--surface); border-radius: 999px;
+       padding: 9px 16px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.vasame { margin: 0; font-size: 14px; color: var(--ink-2); }
+.card.thin { border-color: var(--warn-line); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.chart .fewpt { fill: var(--warn-bg); stroke: var(--warn-line); stroke-width: 2.5; }
+.chart .fewlab { fill: var(--warn-ink); font-weight: 700; }
+.fewkey { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 2.5px solid var(--warn-line); background: var(--warn-bg); }
+.none { color: var(--muted); font-weight: 400; font-size: 14px; }
+.headsm { display: none; }
+.facts { display: grid; gap: 10px; }
+.facts h3 { margin: 0; font: 700 15px/1.3 var(--body); color: var(--ink-2); }
+/* the year-to-date volume chart under the figures (11/23/2026) */
+.facts .vol { display: grid; gap: 6px; border-top: 1px solid var(--rule); padding-top: 12px; min-width: 0; }
+.facts .vol h4 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.facts .vol .note { font-size: 13px; }
+.facts dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 10px 24px; margin: 0; }
+.facts dt { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.facts dd small { display: block; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.facts .gmix { margin: 0; font-size: 13px; color: var(--muted); }
+/* grade shares as a small table: grades across, this week bold, the year grey (11/1/2026) */
+.facts dl > div.wide { grid-column: 1 / -1; }   /* the grade grid: "This week so far" overlapped its numbers in a 210-px cell */
+.facts .gr { display: grid; grid-template-columns: auto repeat(4, minmax(0, 1fr)); gap: 1px 12px; max-width: 360px;
+             margin-top: 2px; font-variant-numeric: tabular-nums; }
+.facts .gr span { text-align: right; white-space: nowrap; }
+.facts .gr .lab { text-align: left; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.facts .gr .hd { font-size: 12px; font-weight: 600; color: var(--muted); }
+.facts .gr .yr { font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.facts .gmix a { color: inherit; }
+/* the fed About card's purchase-type table (11/24/2026): five columns of figures */
+.facts .gr.gr-wide { grid-template-columns: auto repeat(5, minmax(0, 1fr)); max-width: 600px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; }
+.two > * { min-width: 0; }
+
+/* calf value */
+.answer { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px; }
+.answer .k { font-size: 13px; color: var(--muted); font-weight: 600; }
+.answer .k.sub2 { margin-top: 12px; }
+.answer .v { font: 700 34px/1.1 var(--body); font-variant-numeric: tabular-nums; }
+.answer .v.hero { color: var(--accent); }
+:root[data-theme="dark"] .answer .v.hero { color: var(--line-1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .answer .v.hero { color: var(--line-1); } }
+.answer .d { font-size: 14px; color: var(--ink-2); }
+/* a figure two ways, equal weight: with the usual seasonal change and at today's prices (review, build 65) */
+.answer .pair { display: grid; gap: 2px; margin: 4px 0 6px; }
+.answer .pair .lab { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+.answer .pair .v { font-size: 26px; color: var(--accent); }
+:root[data-theme="dark"] .answer .pair .v { color: var(--line-1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .answer .pair .v { color: var(--line-1); } }
+.answer .pair .v.up { color: var(--up); } .answer .pair .v.down { color: var(--down); }
+.answer .keep-assume { grid-column: 1 / -1; margin: -6px 0 0; }
+details.calc#keep-calc { max-width: none; }
+#keep-calc-notes p { margin: 8px 0 0; max-width: 72ch; }
+.answer details.calc { grid-column: 1 / -1; max-width: none; }
+.answer details.calc p { margin: 8px 0 0; max-width: 72ch; }
+.answer .v.up, .cow dd.up { color: var(--up); } .answer .v.down, .cow dd.down { color: var(--down); }
+.weightrow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.weightrow input[type=range] { flex: 1 1 220px; accent-color: var(--accent); min-width: 0; }
+
+/* charts */
+.chart { position: relative; width: 100%; }
+/* the charts work from the keyboard (WCAG 2.1.1); a mouse click or tap focuses them too, and the ring is for the keyboard */
+.chart:focus:not(:focus-visible), .chart svg:focus:not(:focus-visible) { outline: none; }
+.chart svg:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.chart .kbox { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 4 3; pointer-events: none; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { fill: var(--ink-2); font: 500 12px var(--body); font-variant-numeric: tabular-nums; }
+.chart .endlab { fill: var(--ink); font-weight: 700; font-size: 12.5px; }
+.chart .axis { stroke: var(--muted); stroke-width: 1; fill: none; }
+.chart .ref { stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }
+.chart .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart .s1 { stroke: var(--line-1); } .chart .f1 { fill: var(--line-1); }
+.chart .s2 { stroke: var(--line-2); } .chart .f2 { fill: var(--line-2); }
+.chart .s3 { stroke: var(--line-3); } .chart .f3 { fill: var(--line-3); }
+.chart .fband { fill: var(--band); }
+.chart .fsurf { fill: var(--surface); }
+.chart .fpos { fill: var(--up); } .chart .fneg { fill: var(--down); }
+.chart .whisk { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.chart .vlab { fill: var(--ink); font-weight: 700; }
+.chart .hit { fill: transparent; cursor: pointer; }
+.chart text.sm { font-size: 11px; }
+.sqkey { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+.wkey { display: inline-block; width: 2px; height: 14px; background: var(--ink-2); }
+.tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink);
+       border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 13px;
+       box-shadow: 0 4px 16px rgba(0,0,0,.12); white-space: nowrap; z-index: 2; }
+.tip b { display: block; margin-bottom: 2px; }
+.tip .row { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.key { display: inline-block; width: 18px; height: 0; border-top: 3px solid; vertical-align: middle; }
+.key.dash { border-top-style: dashed; }
+.key.dot { border-top-style: dotted; border-top-width: 2px; }   /* the thin today's-prices line (review of build 71) */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--ink-2); margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 7px; }
+.k1 { border-color: var(--line-1); } .k2 { border-color: var(--line-2); } .k3 { border-color: var(--line-3); }
+.key.kband { height: 12px; border: 0; border-radius: 2px; background: var(--band); opacity: .6; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 1px solid var(--rule); background: var(--surface); border-radius: 999px; padding: 6px 12px;
+                font-weight: 600; font-size: 14px; color: var(--ink-2); cursor: pointer; font-variant-numeric: tabular-nums; }
+.chips button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+
+/* sell or keep */
+.build { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; margin: 0; font-variant-numeric: tabular-nums; }
+.build dt { color: var(--ink-2); font-size: 14.5px; }
+.build dt small { display: block; color: var(--muted); font-size: 12.5px; }
+.build dd { margin: 0; text-align: right; font-weight: 600; }
+.build .tot { border-top: 1px solid var(--rule); padding-top: 8px; font-weight: 700; color: var(--ink); }
+.linkish { border: 0; background: none; padding: 0; color: var(--ink-2); text-decoration: underline; cursor: pointer; font-size: 13px; }
+tr.pick td { background: var(--accent-soft); }
+tr.pick td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 8px; }
+#keep-table tbody tr { cursor: pointer; }
+/* the price-change slider over the keep table and chart (11/12/2026): starts at 0% on every visit */
+.scen { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.scen label { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.scen input[type=range] { flex: 1 1 200px; min-width: 0; accent-color: var(--accent); }
+.scen output { min-width: 3.5em; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dlmode { align-self: end; }
+.dlmode[hidden] { display: none; }
+.field .src { font-size: 12.5px; color: var(--muted); max-width: 30ch; }
+/* the planner's first row lines up on its input boxes; the price source note hangs below its box (review, build 68):
+   its height (--srch, kept by a ResizeObserver) is taken off the field's bottom and added under the row */
+.controls.hangrow { padding-bottom: var(--srch, 0px); }
+.controls.hangrow > .field.hang { margin-bottom: calc(-1 * var(--srch, 0px)); }
+
+/* cows */
+/* This week's cull cow cards (the Cull cows tab until 11/9/2026) and Price trend's cull chart: set here, not
+   inline, so the hidden attribute still hides them */
+#week-cows { display: grid; gap: 14px; } #cull-card, #keep-vog-card { display: grid; gap: 10px; }
+#week-cows[hidden], #cull-card[hidden], #keep-vog-card[hidden] { display: none; }
+/* Colorado and North Dakota's seasonal markets (11/10/2026): the parts that need a feeder seasonal pattern give way to
+   a message; several carry an inline grid, which beats the hidden attribute */
+.keep-part[hidden], .buy-part[hidden], .season-part[hidden], .fseason-part[hidden], .off-msg[hidden] { display: none !important; }
+.off-msg p { margin: 0; max-width: 70ch; }
+/* Compare states' pickers (11/10/2026): the page's field look, with the masthead select's arrow */
+.field select { appearance: none; -webkit-appearance: none; padding: 8px 34px 8px 10px; border: 1px solid var(--rule);
+  border-radius: 8px; background: var(--surface); color: var(--ink); min-width: 170px; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+@media (max-width: 520px) { .cmp-states .field { flex: 1 1 100%; } .field select { width: 100%; min-width: 0; } }   /* the vog card's inline grid kept it showing when hidden (11/9/2026) */
+.cows { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+.cow h3 { margin: 0 0 2px; font: 700 18px/1.25 var(--display); }
+.cow .grade { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.cow dl { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; font-variant-numeric: tabular-nums; }
+.cow dt { color: var(--ink-2); font-size: 14px; }
+.cow dd { margin: 0; text-align: right; font-weight: 600; }
+.cow dd.hero { font-size: 26px; font-weight: 700; }
+.pill { display: inline-block; font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+.pill.yes { background: var(--accent-soft); color: var(--ink); }
+.pill.no { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 26px 40px; display: grid; gap: 10px; color: var(--ink-2); font-size: 14px; }
+footer h2 { font-size: 18px; }
+footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 78ch; }
+footer p { margin: 0; max-width: 78ch; }
+footer .wrap > details.method { border-top: 0; padding-top: 0; }   /* the credit line sits right above it */
+/* official MSU Extension footer (as the drought dashboard): the Extension logo at MSU's minimum for the
+   horizontal mark, 300 px wide (about 56 px tall), never shrunk on a phone; ink color reads in light and dark */
+footer .legal { display: grid; gap: 8px; margin-top: 14px; }
+/* on a 320 px screen the 300 px logo (MSU's minimum, never shrunk) is wider than the column inside the gutters: the column
+   keeps the screen's width and the logo runs into the right gutter, so nothing else widens and the page doesn't scroll sideways */
+footer .wrap { grid-template-columns: minmax(0, 1fr); }
+.legal .home { display: block; justify-self: start; width: 300px; color: var(--ink); line-height: 0; }
+.legal .logo { width: 300px; min-width: 300px; height: auto; flex: none; display: block; margin: 0 0 14px; }
+/* Footer logo: Ag Communications (11/2026) wants the official maroon file on the light page and the
+   official white file on the dark page, never a recolored copy. One shows per theme; the other is
+   display:none so screen readers hear one logo. Fixed at 300 px, MSU's minimum; never shrinks. */
+.legal .logo-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .legal .logo-light { display: none; }
+  :root:not([data-theme="light"]) .legal .logo-dark { display: block; }
+}
+:root[data-theme="dark"] .legal .logo-light { display: none; }
+:root[data-theme="dark"] .legal .logo-dark { display: block; }
+/* Links between the MSU Extension tools (11/2026; ADDRESS_STANDARD.md): "More cattle tools" and
+   "Share this view" in the masthead, and the other tools at the top of the footer. Each project keeps
+   its own copy; change all five together. */
+.asof.tools-line { margin-top: 6px; font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.share-btn { all: unset; cursor: pointer; text-decoration: underline; color: inherit; font: inherit; }
+.share-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: 2px; }
+/* the copy-by-hand box, shown only when the clipboard is blocked (the catfish dashboard's fix, versions 43-44) */
+.share-box { margin-top: 8px; font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.share-box[hidden] { display: none; }
+.share-box input { flex: 1 1 18em; min-width: 0; max-width: 40em; font: inherit; font-size: 14px; padding: 6px 8px; border-radius: 4px;
+  border: 1px solid currentColor; background: rgba(255, 255, 255, .12); color: inherit; }
+.share-box input:focus { outline: 2px solid currentColor; outline-offset: 1px; }
+@media print { .share-box { display: none; } }
+.tools-strip { margin: 0 0 24px; min-width: 0; }   /* min-width: footer .wrap is a grid, and its auto-fill list laid the page out 506 px wide on a 390-px phone (review, build 65) */
+.tools-strip h2 { margin: 0 0 10px; }
+.tools-strip ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.tools-strip a { display: flex; gap: 12px; align-items: flex-start; height: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); color: var(--ink); text-decoration: none; }
+.tools-strip a:hover { border-color: var(--accent); }
+.tools-strip a:hover b { text-decoration: underline; }
+.tools-strip svg { width: 36px; height: 36px; flex: none; border-radius: 7px; }
+.tools-strip b { display: block; font-size: 15px; line-height: 1.3; }
+.tools-strip a > span > span { display: block; font-size: 13px; line-height: 1.4; color: var(--muted); margin-top: 3px; }
+@media print { .tools-line, .tools-strip { display: none; } }
+.legal .note a { color: inherit; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+details.method { border-top: 1px solid var(--rule); padding-top: 10px; max-width: 72ch; }
+details.method > summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink-2); list-style: none; }
+details.method > summary::-webkit-details-marker { display: none; }
+details.method > summary::before { content: "▸ "; }
+details.method[open] > summary::before { content: "▾ "; }
+details.method > :not(summary) { margin-top: 10px; }
+details.method .card { margin-top: 10px; }
+.sold { margin: 6px 0 0; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.sold span { font-weight: 400; color: var(--muted); }
+.fewhead { color: var(--warn-ink); font-weight: 700; }
+.chg.muted { color: var(--muted); font-weight: 500; }
+.legend-few { margin: 0 0 6px; font-size: 13px; color: var(--warn-ink); font-weight: 600; }
+.short { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .mast .wrap { grid-template-columns: 1fr; }
+
+  .pickers { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }   /* "North Carolina" and "South Carolina" fit (11/3/2026) */
+  .picker select { padding-right: 34px; background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%; }
+  .picker select, .picker select.st { width: 100%; min-width: 0; }
+  .card { padding: 14px 12px; }
+  /* number fields two per row, so a planner's inputs fit one screen */
+  .controls .field { flex: 1 1 calc(50% - 9px); min-width: 0; }
+  .controls .field input[type=number] { width: 100%; }
+  /* the four keep lengths on one line at phone width (review, build 68) */
+  #keep-days { display: flex; flex-wrap: nowrap; width: 100%; } #keep-days button { flex: 1 1 0; padding: 7px 4px; white-space: nowrap; }
+  /* a compact masthead and every tab in view, two rows (review of build 71: the first price sat below a 375 x 812
+     screen and four tabs were off its edge, behind a fade): prices on the first row, the calculators on the second */
+  .mast .wrap { padding-block: 12px 12px; gap: 10px; }
+  h1 { font-size: 24px; }
+  .asof { margin-top: 3px; font-size: 13px; }
+  .asof.edu, .asof.tools-line { margin-top: 1px; font-size: 12.5px; }
+  .pickers { gap: 6px 8px; }
+  .picker label, .picker .lab { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .picker select { padding-block: 8px; font-size: 15px; }
+  .picker .seg.lots button { padding: 6px 10px; font-size: 14px; }
+  .tally .wrap { padding-block: 7px 8px; gap: 1px; }
+  .tally .lead { font-size: 13px; }
+  .tally .row { font-size: 13.5px; line-height: 1.4; }
+  .tally .row b { font-size: 15px; } .tally .row b.big { font-size: 16px; }
+  .tabs .wrap { flex-wrap: wrap; overflow: visible; gap: 2px 2px; padding-block: 5px; }
+  .tab { flex: 1 1 auto; padding: 6px 5px; font-size: 13.5px; }   /* each row fills the width; four fit from 360 px */
+  .tab-break { display: block; flex-basis: 100%; height: 0; }
+  /* every phone, not only under 360 px: build 72's three-row tab rule had swallowed these, so a 375-430 px phone
+     got the desktop table and scrolled sideways (11/23/2026) */
+  table { font-size: 14px; }
+  th, td { padding: 9px 3px; }
+  thead th { white-space: normal; font-size: 11px; vertical-align: bottom; }
+  #week-slaughter td:first-child { white-space: normal; }   /* "Cows, Breaker", "Bulls, YG 1-2" wrap at the space; "300-400" never breaks */
+  td.price { font-size: 15px; }
+  .picker.lots-pick, .picker.side-pick, .picker.fed-pick { grid-column: 1 / -1; }
+  .facts .gr.gr-wide { grid-template-columns: auto repeat(3, minmax(0, 1fr)); }   /* the fed About card: year-ago columns off */
+  .picker .seg.side { display: flex; justify-self: stretch; } .picker .seg.side button { flex: 1; padding: 6px 10px; font-size: 14px; }
+  .picker .seg.lots { display: flex; } .picker .seg.lots button { flex: 1; }
+  .pct, .headcol, .sm-hide { display: none; }
+  td:first-child > .few { display: flex; width: fit-content; margin: 3px 0 0; }
+  .headsm { display: block; font-size: 12px; color: var(--muted); }
+  .answer .v { font-size: 30px; }
+}
+@media (max-width: 374px) {   /* the first four tabs need 336 px at 13.5px type: a step smaller so they fit from 360 px */
+  .tab { padding: 6px 4px; font-size: 13px; }
+}
+@media (max-width: 359px) {   /* under 360 px the first four don't fit: three even rows instead of a lone Compare */
+  .tab-break { display: none; }
+  .facts .gr.gr-wide { grid-template-columns: auto repeat(2, minmax(0, 1fr)); } .facts .gr .xs-hide { display: none; }   /* the fed About card at 320 px */
+  /* the This week tables fit a 320 px screen (11/23/2026) */
+  table { font-size: 13px; }
+  th, td { padding: 8px 2px; }
+  thead th { font-size: 10.5px; }
+  td.price { font-size: 14px; }
+}
+
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div>
+      <h1>Live Cattle and Boxed Beef</h1>
+      <p class="asof" id="asof">Loading the latest USDA reports…</p>
+      <p class="asof" id="linknote" hidden></p>
+      <p class="asof edu">For educational use only. <a href="#disclaimer" id="to-disc">Read the disclaimer</a>.</p>
+      <p class="asof tools-line"><a href="#more-tools">More cattle tools</a><button type="button" class="share-btn" id="share-view">Share this view</button><span class="sr-only" role="status" id="share-msg"></span></p>
+      <div class="share-box" id="share-box" hidden><label for="share-url">Copy this link:</label><input id="share-url" type="text" readonly spellcheck="false"><button type="button" class="share-btn" id="share-close">Close</button></div>
+    </div>
+    <div class="pickers">
+      <div class="picker fed-pick">
+        <label for="region">Region</label>
+        <select id="region"></select>
+      </div>
+      <!-- Boxed beef is reported for the U.S. only, so its tab shows National in place of the region picker -->
+      <div class="picker nat-pick" hidden>
+        <span class="lab">Region</span>
+        <span class="fixed">National</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="tally" aria-label="Cattle traded">
+  <div class="wrap" id="tally"></div>
+</section>
+<div class="wrap state-note" id="fed-note" hidden><p id="fed-note-p"></p></div>
+<div class="wrap stale-row" id="stale-row" hidden><p class="warn" role="status" id="stale"></p></div>
+
+<nav class="tabs" aria-label="Questions">
+  <div class="wrap" role="tablist" id="tablist">
+    <button class="tab" role="tab" id="t-fweek" aria-controls="p-fweek" data-tab="fweek">This week</button>
+    <button class="tab" role="tab" id="t-ftrend" aria-controls="p-ftrend" data-tab="ftrend">Price trend</button>
+    <button class="tab" role="tab" id="t-fseason" aria-controls="p-fseason" data-tab="fseason">Seasonal trend</button>
+    <button class="tab" role="tab" id="t-fcmp" aria-controls="p-fcmp" data-tab="fcmp">Compare</button>
+    <button class="tab" role="tab" id="t-beef" aria-controls="p-beef" data-tab="beef">Boxed beef</button>
+  </div>
+</nav>
+
+<!-- the panels are p-<tab> and the tab ids aren't address names, so a #week address never jumps past the masthead;
+     data: data/fed.json (tools/export_fedcattle.py) -->
+<main class="wrap">
+  <noscript><p class="warn">This page needs JavaScript to show the prices.</p></noscript>
+  <section class="panel" id="p-fweek" role="tabpanel" aria-labelledby="t-fweek">
+    <div>
+      <h2 class="sr-only">Fed cattle prices by week</h2>
+      <p class="sub" id="fweek-sub"></p>
+    </div>
+    <div class="card tablewrap"><table id="fweek-table"></table></div>
+    <p class="note" id="fweek-missing" hidden></p>
+    <div class="card stack">
+      <div><h3 class="h3s">By Choice grade</h3><p class="note" id="fgrade-sub"></p></div>
+      <div class="controls"><div class="seg" id="fgrade-class"></div><div class="seg" id="fgrade-basis"></div></div>
+      <div class="tablewrap"><table id="fgrade-table"></table></div>
+    </div>
+    <div class="card stack" id="fdaily-card" hidden>
+      <div><h3 class="h3s">Trading since that week</h3><p class="note" id="fdaily-sub"></p></div>
+      <div class="tablewrap"><table id="fdaily-table"></table></div>
+    </div>
+    <div class="card facts" id="fweek-facts"></div>
+    <details class="method"><summary>How this is calculated</summary><p class="note">Prices are USDA's weighted averages of
+      negotiated cash purchases that packers report under Livestock Mandatory Reporting: cattle bought at a price agreed
+      that week, for delivery within 14 days. Formula, forward contract and negotiated grid purchases are not included.
+      Live prices are per hundredweight of live weight at the feedlot (FOB); dressed prices are per hundredweight of
+      carcass weight, delivered to the packing plant. The year-ago week is the same week 52 weeks earlier. Head counts
+      are the head USDA priced in each row.</p></details>
+  </section>
+
+  <section class="panel" id="p-ftrend" role="tabpanel" aria-labelledby="t-ftrend" hidden>
+    <div>
+      <h2>How do fed cattle prices this year compare?</h2>
+      <p class="sub" id="ftrend-sub"></p>
+    </div>
+    <div class="controls"><div class="seg" id="ftrend-class"></div><div class="seg" id="ftrend-basis"></div></div>
+    <div class="card stack">
+      <p style="margin:0;font-weight:600" id="ftrend-summary"></p>
+      <ul class="legend" id="ftrend-legend"></ul>
+      <div class="chart" id="ftrend-chart"></div>
+      <p class="note" id="ftrend-season" style="margin:0"></p>
+    </div>
+    <details class="method"><summary>How this is calculated</summary><p class="note" id="ftrend-note"></p></details>
+  </section>
+
+  <section class="panel" id="p-fseason" role="tabpanel" aria-labelledby="t-fseason" hidden>
+    <div>
+      <h2>Seasonal trend</h2>
+      <p class="sub" id="fseason-sub"></p>
+    </div>
+    <div class="card off-msg" id="fseason-off" hidden><p></p></div>
+    <div class="controls fseason-part"><div class="seg" id="fseason-class"></div><div class="seg" id="fseason-basis"></div></div>
+    <div class="card stack fseason-part">
+      <p style="margin:0;font-weight:600" id="fseason-summary"></p>
+      <div class="chart" id="fseason-chart"></div>
+    </div>
+    <details class="method"><summary>How this is calculated</summary><p class="note">Each bar shows how far that month's price
+      usually runs above or below the average of the 12 months around it, averaged over the years shown. Measuring against
+      the months around it keeps a rising market from making the late months look better than they were. A month's price
+      averages its weeks by head. Thin lines on each bar show the lowest and highest year.</p></details>
+  </section>
+
+  <section class="panel" id="p-fcmp" role="tabpanel" aria-labelledby="t-fcmp" hidden>
+    <div>
+      <h2>How do regions compare?</h2>
+      <p class="sub" id="fcmp-sub"></p>
+    </div>
+    <div class="card" style="display:grid;gap:14px">
+      <div class="controls cmp-states">
+        <label class="field" for="fcmp-s1"><span>Region</span><select id="fcmp-s1"></select></label>
+        <label class="field" for="fcmp-s2"><span>Compare with</span><select id="fcmp-s2"></select></label>
+        <label class="field" for="fcmp-s3"><span>And</span><select id="fcmp-s3"></select></label>
+      </div>
+      <div class="controls"><div class="seg" id="fcmp-class"></div><div class="seg" id="fcmp-basis"></div></div>
+    </div>
+    <div class="card stack">
+      <div><h3 class="h3s">Past year, by week</h3><p class="note" id="fcmp-wsub"></p></div>
+      <ul class="legend" id="fcmp-wlegend"></ul>
+      <p class="note" id="fcmp-missing" style="margin:0"></p>
+      <div class="chart" id="fcmp-week"></div>
+    </div>
+    <div class="card stack">
+      <div><h3 class="h3s">Past 5 years, by month</h3><p class="note" id="fcmp-msub"></p></div>
+      <ul class="legend" id="fcmp-mlegend"></ul>
+      <div class="chart" id="fcmp-month"></div>
+    </div>
+    <p class="note" id="fcmp-note"></p>
+    <details class="method"><summary>How this is calculated</summary><p class="note">Each line is USDA's weekly weighted average
+      of negotiated cash purchases in that region. Monthly prices average the month's weeks by head; the latest
+      month can be partial. A week USDA withheld for a region (too few cattle traded to keep them confidential) leaves a gap
+      in its line.</p></details>
+  </section>
+
+  <section class="panel" id="p-beef" role="tabpanel" aria-labelledby="t-beef" hidden>
+    <div>
+      <h2>Boxed beef <span class="chip-scope">National</span></h2>
+      <p class="sub" id="beef-sub"></p>
+    </div>
+    <div class="card"><div class="answer" id="beef-cards"></div></div>
+    <div class="card tablewrap"><table id="beef-primals"></table></div>
+    <div class="card stack">
+      <div><h3 class="h3s">Recent days</h3><p class="note" id="beef-dsub"></p></div>
+      <ul class="legend" id="beef-dlegend"></ul>
+      <div class="chart" id="beef-daily"></div>
+    </div>
+    <div class="card stack">
+      <div><h3 class="h3s">This year vs. recent years</h3><p class="note" id="beefy-sub"></p></div>
+      <div class="controls"><div class="seg" id="beefy-kind"></div></div>
+      <p style="margin:0;font-weight:600" id="beefy-summary"></p>
+      <ul class="legend" id="beefy-legend"></ul>
+      <div class="chart" id="beefy-chart"></div>
+    </div>
+    <details class="method"><summary>How this is calculated</summary><p class="note">The cutout is USDA's estimate of what a
+      carcass's beef brings when sold in boxes to retailers and restaurants: the value of its cuts, in dollars per
+      hundredweight of carcass. These are USDA's National Daily Boxed Beef Cutout figures (afternoon report) for Choice and
+      Select carcasses of 600-900 lb, from negotiated sales packers report under Livestock Mandatory Reporting. A load is
+      about 40,000 lb of boxed beef. The weekly cutout is the average of the week's daily values. The Choice-Select
+      spread is the Choice cutout minus the Select cutout.</p></details>
+  </section>
+</main>
+
+<footer id="about">
+  <div class="wrap">
+    <nav class="tools-strip" id="more-tools" aria-labelledby="tools-h">
+      <h2 id="tools-h">More cattle tools</h2>
+      <ul>
+      <li><a href="../cattleprices/" data-tool="cattleprices"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M6.5 22.5 L12 16.5 L16.5 19.5 L24.5 10.5"/><circle cx="24.5" cy="10.5" r="2.3" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" d="M6.5 26.5 H25.5"/></svg><span><b>Cattle Auction Prices</b><span>Feeder cattle, cull cow and replacement prices at auction this week, by state, class and weight</span></span></a></li>
+      <li><a href="../drought/" data-tool="drought"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M10 17.5 H22.3 A4.2 4.2 0 0 0 22.6 9.2 A6.4 6.4 0 0 0 10.6 10.6 A3.5 3.5 0 0 0 10 17.5 Z"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M11.5 21.5 L10.3 24.5 M16.5 21.5 L15.3 24.5 M21.5 21.5 L20.3 24.5"/></svg><span><b>Beef Cattle Drought Tracker</b><span>Drought by county, beef cows in drought and LFP payment months</span></span></a></li>
+      <li><a href="../beeftrade/" data-tool="beeftrade"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M7 11.5 H24 M20 7.5 L24 11.5 L20 15.5"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M25 20.5 H8 M12 16.5 L8 20.5 L12 24.5"/></svg><span><b>U.S. Beef Trade</b><span>Beef imports and exports by country, tariff-rate quotas and cattle trade</span></span></a></li>
+      </ul>
+    </nav>
+    <section class="disc" id="disclaimer" aria-labelledby="disc-h">
+      <h2 id="disc-h">Disclaimer</h2>
+      <p>For educational use only. This page summarizes past USDA market reports. It is not a price quote, a forecast,
+        or financial, legal or marketing advice, and you use it at your own risk.</p>
+      <details class="method" id="disc-full"><summary>Full disclaimer</summary>
+        <p>Reports can contain errors and may be late or revised, and USDA withholds some figures to keep traders'
+          information confidential.</p>
+        <p>The information is provided as is, without warranty of any kind. You are responsible for decisions you
+          make with it. This page is not affiliated with or endorsed by USDA, any packer or any feedlot.</p>
+        <p>References to commercial products, trade names, or suppliers are made with the understanding that no
+          endorsement is implied and that no discrimination against other products or suppliers is intended.</p>
+      </details>
+    </section>
+    <h2>About these numbers</h2>
+    <p id="foot-fed-src">Fed cattle and boxed beef prices come from USDA Agricultural Marketing Service
+      Livestock Mandatory Reporting, which packers file for their cattle purchases and boxed beef sales.</p>
+    <details class="method" id="foot-fed-how"><summary>How these numbers are calculated</summary>
+      <ul>
+        <li>Fed cattle prices are USDA's weighted averages of negotiated cash purchases (a price agreed that week, for
+          delivery within 14 days), for steers and heifers of every grade together unless a Choice grade band is named.
+          Formula, forward contract and negotiated grid purchases are not included. Live prices are per hundredweight of
+          live weight at the feedlot (FOB); dressed prices are per hundredweight of carcass weight, delivered to the
+          packing plant.</li>
+        <li>The regions are USDA's. 5-Area covers feedlots in Texas-Oklahoma-New Mexico, Kansas, Nebraska, Colorado and
+          Iowa-Minnesota; National covers every reporting U.S. feedlot (domestic cattle); South Central covers Colorado,
+          Kansas and Texas-Oklahoma-New Mexico together, since Nov. 1, 2026. USDA withholds a region's figures for a week
+          when too few cattle trade to keep them confidential.</li>
+        <li>A week is labeled by its Monday. Monthly prices average the month's weeks by head.</li>
+        <li>How cattle were bought (This week's About card) is USDA's national weekly report of cattle delivered to packers by
+          purchase type: negotiated cash, negotiated grid (a price negotiated for the base, then the packer's grid of
+          premiums and discounts by carcass), formula (priced from another market, such as a cash average or futures, plus
+          the grid) and forward contract (priced before the cattle are ready, often from futures). Shares count every
+          animal delivered, domestic and imported, as USDA's published negotiated share does. Prices by purchase type are
+          dressed steers, all grades.</li>
+        <li>Boxed beef is USDA's National Daily Boxed Beef Cutout (afternoon report), Choice and Select, 600-900 lb
+          carcasses, negotiated sales. It is national: the region picked at the top doesn't change it.</li>
+      </ul>
+    </details>
+    <div class="legal">
+      <a class="home" href="https://extension.msstate.edu" aria-label="Mississippi State University Extension"><svg class="logo logo-light" viewBox="0 0 617 116" width="300" height="56" role="img" aria-label="Mississippi State University Extension" focusable="false"><g><path fill="#5D1725" d="M108.7,41.7c6.3,2.4,12.2,5.4,17.7,9l-4,8.7l4.8,15.5c-3.6-2.4-7.4-4.5-10.7-6.2l0,8.5c-2.5-1.5-5.1-2.8-7.9-4 v3.6l3.8,5.7v7.9H87V67.1c-0.9-0.1-1.8-0.2-2.8-0.3l-9.9,15.6l-9.9-15.6c-0.9,0.1-1.9,0.2-2.8,0.3v23.3H36.3v-7.9l3.8-5.7v-3.6 c-2.8,1.2-5.4,2.6-7.9,4v-8.5c-3.3,1.7-7,3.8-10.7,6.2l4.8-15.5l-4-8.7c5.4-3.6,11.4-6.6,17.7-9v-1.9l-3.8-6v-7.6h23.8l9.2,14.3 c1.7-0.1,3.4-0.2,5-0.2c1.7,0,3.4,0.1,5,0.2l9.2-14.3h23.8v7.6l-3.8,6V41.7z"/><path fill="#FEFEFE" d="M40,44.5c-5.2,2-10,4.4-14.4,7.2l3.5,7.6L26,69.2c2-1.2,4.1-2.3,6.2-3.3V51.2c2.4-1.2,5.9-3,7.9-3.8V44.5z"/><path fill="#FEFEFE" d="M74.4,63.5c13.3,0,27.4,3.4,39.5,9.4V52.8c-12.1-6.3-26.2-9.7-39.5-9.7c-13.3,0-27.4,3.5-39.5,9.7V73 C47,66.9,61.1,63.5,74.4,63.5z"/><path fill="#FEFEFE" d="M108.7,44.5c5.2,2,10,4.4,14.4,7.2l-3.5,7.6l3.1,9.9c-2-1.2-4.1-2.3-6.2-3.3V51.2c-2.4-1.2-5.9-3-7.9-3.8V44.5 z"/><g><path fill="#5D1725" d="M66.9,50.4c-0.8,0.1-1.6,0.2-2.5,0.2v-1.7l-2.7,0.4v9.6c0,0,1.2-0.2,1.2-0.2v2.5c-1.9,0.2-3.8,0.6-5.6,0.9 v-2.5l1.2-0.2c0,0,0-9.6,0-9.6l-2.6,0.5V52c-0.8,0.2-1.6,0.4-2.4,0.6v-4.2c4.4-1.1,8.9-1.9,13.3-2.2V50.4z M51.6,52.5 c-1,0.3-2.1,0.6-3.1,0.9v-1.1l-4.4,1.5v3.3c0,0,4.1-1.5,5.7-2l1.8,1.2v4.7L49,64.3c-1.9,0.6-3.8,1.3-5.7,2 c-0.7-0.5-1.5-0.9-2.2-1.4v-1.8c1-0.4,2-0.8,3-1.2v1.7l0.4-0.2c1.2-0.5,4-1.4,4-1.4v-4.2c0,0-4.1,1.4-5.8,2.1l-1.6-1.1V55l2.4-3.4 c1.9-0.7,3.8-1.4,5.7-2c0.8,0.5,1.6,1,2.3,1.6V52.5z M93.1,52.3c-0.8-0.2-1.6-0.4-2.4-0.5V50L88,49.5v9.6c0,0,1.2,0.2,1.2,0.2v2.5 c-1.9-0.3-3.8-0.6-5.6-0.8v-2.5l1.2,0.1c0,0,0-9.6,0-9.6l-2.7-0.3v1.7c-0.8-0.1-1.6-0.1-2.5-0.2v-4.2c4.5,0.3,9,1,13.4,2V52.3z M99.6,52.4v3.6c0,0,2.8,0.9,4.1,1.4v2.2c-1.2-0.5-4.1-1.4-4.1-1.4V62l4.4,1.5v-1.1c1,0.4,2,0.8,3,1.2v3.6 c-3.8-1.6-7.7-2.9-11.7-4v-2.5l1.2,0.3c0,0,0-9.6,0-9.6c0,0-1.2-0.3-1.2-0.3v-2.5c4,1,7.9,2.4,11.7,4V56c-1-0.4-2-0.8-3-1.2v-0.9 C104,53.9,99.6,52.4,99.6,52.4z M73.2,49c0,0-1.6,4.6-1.6,4.6l3.2,0L73.2,49z M80.5,60.8c-1.8-0.1-3.6-0.2-5.4-0.2V58l1.2,0 c0,0-0.8-2.3-0.8-2.3l-4.8,0.1l-0.8,2.3c0,0,1.2,0,1.2,0v2.5c-1.7,0.1-3.4,0.2-5.1,0.3v-2.5l1.2-0.1c0,0,4.4-12.4,4.4-12.4 c1.1,0,2.3,0,3.5,0l4.2,12.3c0,0,0.9,0.1,1.3,0.1V60.8z"/></g></g><g><path fill="#5D1725" d="M177,61.8h-7.6v4.7h7.3V70h-7.3v5.7h7.6v3.6h-11.7V58.2H177V61.8z"/><path fill="#5D1725" d="M186.7,68.1l-6.3-10h4.9l3.7,6.5l3.9-6.5h4.9l-6.5,10l7.2,11.2h-4.8l-4.7-7.7l-4.9,7.7h-4.9L186.7,68.1z"/><path fill="#5D1725" d="M208.3,79.3h-4.1V61.8h-4.7v-3.6H213v3.6h-4.7V79.3z"/><path fill="#5D1725" d="M227.8,61.8h-7.6v4.7h7.3V70h-7.3v5.7h7.6v3.6h-11.7V58.2h11.7V61.8z"/><path fill="#5D1725" d="M232.3,79.3V57.7h2.8L248,72.4V58.2h4.1v21.5h-2.8L236.4,65v14.3H232.3z"/><path fill="#5D1725" d="M269.9,60.2l-2.1,2.8c-1-1.1-2.2-1.7-3.4-1.7c-0.8,0-1.5,0.2-2.1,0.7c-0.6,0.5-0.9,1-0.9,1.7 c0,0.6,0.2,1,0.7,1.4c0.4,0.4,1.3,0.8,2.5,1.2c2.3,0.8,3.8,1.7,4.6,2.5c1,1,1.5,2.4,1.5,4.1c0,2.1-0.7,3.7-2.1,5 c-1.4,1.3-3.1,1.9-5.3,1.9c-3,0-5.4-1.3-7.3-4l2.7-2.6c1,1.9,2.5,2.8,4.4,2.8c1,0,1.7-0.3,2.4-0.8c0.6-0.6,0.9-1.3,0.9-2.1 c0-0.8-0.3-1.4-0.8-1.8c-0.3-0.2-0.7-0.4-1.2-0.7c-0.6-0.3-1.3-0.6-2.1-0.9c-1.9-0.7-3.3-1.5-4-2.3c-0.8-0.9-1.2-2-1.2-3.4 c0-1.8,0.6-3.2,1.9-4.4c1.2-1.2,2.8-1.8,4.7-1.8C266,57.8,268.1,58.6,269.9,60.2z"/><path fill="#5D1725" d="M278.8,58.2v21.1h-4.1V58.2H278.8z"/><path fill="#5D1725" d="M283.1,68.6c0-3,1.1-5.6,3.3-7.7c2.2-2.1,4.9-3.2,8-3.2c3.2,0,5.8,1.1,8,3.2c2.2,2.1,3.3,4.7,3.3,7.8 c0,3.1-1.1,5.7-3.3,7.9c-2.2,2.1-4.9,3.2-8.1,3.2c-2.8,0-5.3-0.9-7.4-2.7C284.3,74.9,283.1,72.1,283.1,68.6z M287.3,68.6 c0,2.1,0.7,3.8,2.1,5.2c1.4,1.4,3,2.1,5,2.1c1.9,0,3.6-0.7,5-2.1c1.4-1.4,2.1-3.2,2.1-5.2c0-2-0.7-3.7-2.1-5.1 c-1.4-1.4-3-2.1-5-2.1c-1.9,0-3.6,0.7-5,2.1C288,65,287.3,66.7,287.3,68.6z"/><path fill="#5D1725" d="M309.9,79.3V57.7h2.8l12.9,14.7V58.2h4.1v21.5h-2.8L314,65v14.3H309.9z"/></g><g><path fill="#5D1725" d="M178.8,48.6v-8.8l-4.2,7.7l-4.2-7.7v8.8l1.3,0.9v2.6h-6.7v-2.6l1.3-0.9V36.1l-1.3-0.9v-2.6h5.8l3.7,6.9 l3.9-6.9h5.7v2.6l-1.3,0.9v12.5l1.3,0.9v2.6h-6.7v-2.6L178.8,48.6z"/><path fill="#5D1725" d="M194.4,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M210.1,35.5l0.3,0.3V38H206v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L202,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L210.1,35.5z"/><path fill="#5D1725" d="M226,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L226,35.5z"/><path fill="#5D1725" d="M236.5,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M252.2,35.5l0.3,0.3V38H248v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L244,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L252.2,35.5z"/><path fill="#5D1725" d="M268.1,35.5l0.3,0.3V38H264v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L260,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L268.1,35.5z"/><path fill="#5D1725" d="M278.6,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M295.4,35.6l0.3,0.3v6.3l-2.7,2.9l-0.3,0.3h-5.3v3.2l1.5,0.9v2.6h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h11.1 L295.4,35.6z M291.3,37.1l-0.5-0.5h-3.4v4.8h3.4l0.5-0.5V37.1z"/><path fill="#5D1725" d="M312,35.6l0.3,0.3v6.3l-2.7,2.9l-0.3,0.3H304v3.2l1.5,0.9v2.6h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h11.1 L312,35.6z M307.9,37.1l-0.5-0.5H304v4.8h3.4l0.5-0.5V37.1z"/><path fill="#5D1725" d="M321.9,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M348,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L348,35.5z"/><path fill="#5D1725" d="M350.4,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6h-7.1v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#5D1725" d="M381.4,49.6v2.6h-6.8v-2.6l1.3-0.8l-0.8-2.7h-4.5l-0.9,2.7l1.3,0.8v2.6h-6.5v-2.5l1.3-1l4.7-15.3l0.2-0.7h4.5 l4.7,15.9L381.4,49.6z M374,42.4l-1.1-3.9l-1.2,3.9H374z"/><path fill="#5D1725" d="M379.7,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6H384v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#5D1725" d="M397.6,32.6h14.2v6.1h-4.4v-2.1h-4.1v3.7h4.7v3.7h-4.7v4.1h4.1v-1.4h4.4v5.4h-14.2v-2.6l1.4-0.9V36.2l-1.4-0.9 V32.6z"/><path fill="#5D1725" d="M434.1,32.6h6.9v2.7l-1.6,0.9v12.7l-2.7,2.9l-0.3,0.3h-6.9l-3-3.2V36.2l-1.4-0.9v-2.6h6.6v2.5L431,36v11.6 l0.5,0.5h3l0.5-0.5V36l-0.9-0.9V32.6z"/><path fill="#5D1725" d="M450.7,49.5v2.6h-6.6v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h5.9l5.7,10.8v-7.3l-1.2-0.9v-2.6h6.4v2.6l-1.3,0.9v16 h-4.1l-6.2-11.9v8.3L450.7,49.5z"/><path fill="#5D1725" d="M471.2,52.1H464v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M483.3,32.6h7.4v2.7l-2,1L484,52.1h-3.8l-4.9-15.9l-1.8-1v-2.7h7.1v2.6l-1.2,0.8l2.6,8.5l2.6-8.5l-1.3-0.8 V32.6z"/><path fill="#5D1725" d="M492.8,32.6h14.2v6.1h-4.4v-2.1h-4.1v3.7h4.7v3.7h-4.7v4.1h4.1v-1.4h4.4v5.4h-14.2v-2.6l1.4-0.9V36.2l-1.4-0.9 V32.6z"/><path fill="#5D1725" d="M525.7,49.6v2.5h-6.5v-2.6l0.9-0.7l-2-4.5h-2.2v4.3l1,0.9v2.5h-6.7v-2.6l1.3-0.9V36.1l-1.3-0.9v-2.6h11l3,3.2 v5.4l-2,2.1l2.3,5.2L525.7,49.6z M519.8,37.1l-0.6-0.5h-3.3v3.8h3.2l0.6-0.7V37.1z"/><path fill="#5D1725" d="M540.8,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L540.8,35.5z"/><path fill="#5D1725" d="M551.3,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#5D1725" d="M553.5,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6h-7.1v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#5D1725" d="M580.4,32.6h6.4v2.5l-1.3,1.1l-4.3,8.5v3.9l1.4,0.9v2.6h-7.1v-2.6l1.3-0.9v-3.9l-4.3-8.5l-1.2-1.1v-2.5h6.3 v2.5l-0.8,0.7l2.2,4.2l2.1-4.2l-0.8-0.7V32.6z"/></g><g><polyline fill="#5D1725" points="144.4,17.7 144.4,98.6 147.1,98.6 147.1,17.7 "/></g><g><path fill="#5D1725" d="M593.8,45.3v1.1h-2.2v5.7h-1.4v-5.7h-2.2v-1.1H593.8z M601.1,52.1l-0.3-4c0-0.5,0-1.2,0-1.9h-0.1 c-0.2,0.6-0.4,1.4-0.6,2L599,52h-1.4l-1.2-3.9c-0.1-0.5-0.3-1.3-0.5-1.9h-0.1c0,0.6,0,1.3-0.1,1.9l-0.2,4h-1.3l0.5-6.8h2l1.2,3.3 c0.1,0.5,0.3,1,0.5,1.7h0c0.2-0.6,0.3-1.2,0.5-1.7l1.2-3.4h2l0.5,6.8H601.1z"/></g></svg><svg class="logo logo-dark" viewBox="0 0 617 116" width="300" height="56" role="img" aria-label="Mississippi State University Extension" focusable="false"><g><path fill="#FFFFFF" d="M32.8,53.7v20c12-6,26.1-9.4,39.3-9.4s27.3,3.4,39.3,9.4v-20c-12-6.2-26.1-9.7-39.3-9.7 C59,44,44.8,47.5,32.8,53.7z M49.4,53.4c-1,0.3-2,0.6-3.1,0.9v-1.1L42,54.8v3.3c0,0,4-1.5,5.7-2l1.8,1.2V62l-2.5,3.2 c-1.9,0.6-3.8,1.3-5.7,2c-0.7-0.5-1.5-0.9-2.2-1.4V64c1-0.4,2-0.8,3-1.2v1.7l0.4-0.2c1.2-0.5,4-1.4,4-1.4v-4.2c0,0-4.1,1.4-5.8,2 L39,59.7v-3.9l2.4-3.3c1.9-0.7,3.8-1.4,5.7-2c0.8,0.5,1.6,1,2.3,1.5V53.4z M59.6,50.2v9.6c0,0,1.2-0.2,1.2-0.2v2.5 c-1.9,0.2-3.7,0.6-5.6,0.9v-2.5l1.2-0.2c0,0,0-9.6,0-9.6l-2.6,0.5v1.7c-0.8,0.2-1.6,0.4-2.4,0.6v-4.2c4.4-1.1,8.8-1.8,13.3-2.2v4.2 c-0.8,0.1-1.6,0.2-2.5,0.2v-1.7L59.6,50.2z M93,61.6l1.2,0.3c0,0,0-9.6,0-9.6c0,0-1.2-0.3-1.2-0.3v-2.5c3.9,1,7.9,2.4,11.6,4v3.4 c-1-0.4-2-0.8-3-1.2v-0.9c0,0-4.4-1.5-4.4-1.5v3.5c0,0,2.8,0.9,4.1,1.4v2.2c-1.2-0.5-4.1-1.4-4.1-1.4v3.8l4.4,1.5v-1.1 c1,0.4,2,0.8,3,1.2V68c-3.8-1.6-7.7-2.9-11.6-3.9V61.6z M77.5,47c4.5,0.3,8.9,1,13.3,2v4.2c-0.8-0.2-1.6-0.4-2.4-0.5V51l-2.7-0.5 V60c0,0,1.2,0.2,1.2,0.2v2.5c-1.9-0.3-3.7-0.6-5.6-0.8v-2.5l1.2,0.1c0,0,0-9.6,0-9.6L80,49.7v1.7c-0.8-0.1-1.6-0.1-2.5-0.2V47z M77,59c0,0,0.9,0.1,1.3,0.1v2.5c-1.8-0.1-3.6-0.2-5.4-0.2v-2.5l1.2,0c0,0-0.8-2.3-0.8-2.3l-4.8,0.1L67.7,59c0,0,1.2,0,1.2,0v2.5 c-1.7,0.1-3.4,0.2-5.1,0.3v-2.5l1.2-0.1c0,0,4.4-12.3,4.4-12.3c1.1,0,2.3,0,3.5,0L77,59z"/><path fill="#FFFFFF" d="M122.1,60.6l4.3-9.5c-7.1-5.3-17.8-9.6-17.8-9.6l3.7-6V24.9H85.1l-9.3,14.5c-1.2,0-2.4-0.1-3.7-0.1 c-1.2,0-2.4,0-3.7,0.1l-9.3-14.5H31.9v10.5l3.7,6c0,0-10.7,4.3-17.8,9.6l4.3,9.5l-6.3,20.2c0,0,5.5-3.8,12.2-7.8v8.9 c0,0,3.6-2.3,7-4L32,82.6v10.8h29.9V71.1l10.3,16.3l10.3-16.3v22.3h29.9V82.6l-3.2-4.8c3.5,1.7,7,4,7,4v-8.9 c6.7,4,12.2,7.8,12.2,7.8L122.1,60.6z M114.2,69.6l0,8.5c-2.5-1.5-5.1-2.8-7.9-4v3.6l3.7,5.7v7.8H84.8V68c-0.9-0.1-1.8-0.2-2.8-0.3 l-9.8,15.5l-9.8-15.5c-0.9,0.1-1.8,0.2-2.8,0.3v23.2H34.2v-7.8l3.7-5.7V74c-2.7,1.2-5.4,2.5-7.9,4v-8.5c-3.3,1.7-7,3.8-10.6,6.2 l4.8-15.4l-4-8.7c5.4-3.5,11.4-6.6,17.6-9v-1.9l-3.7-6v-7.6H58l9.2,14.3c1.7-0.1,3.3-0.2,5-0.2c1.7,0,3.3,0.1,5,0.2l9.2-14.3h23.7 v7.6l-3.7,6v1.9c6.2,2.4,12.2,5.4,17.6,9l-4,8.7l4.8,15.4C121.2,73.4,117.5,71.2,114.2,69.6z"/><path fill="#FFFFFF" d="M38,45.4c-5.2,2-9.9,4.4-14.4,7.2l3.4,7.5L23.9,70c2-1.2,4.1-2.2,6.2-3.3V52.1c2.4-1.2,5.9-2.9,7.9-3.7V45.4z" /><polygon fill="#FFFFFF" points="69.3,54.4 72.6,54.4 71,49.9 "/><path fill="#FFFFFF" d="M117.3,60.1l3.4-7.5c-4.5-2.8-9.2-5.2-14.4-7.2v2.9c2,0.8,5.5,2.5,7.9,3.7v14.7c2.1,1,4.2,2.1,6.2,3.3 L117.3,60.1z"/></g><g><path fill="#FFFFFF" d="M177,61.8h-7.6v4.7h7.3V70h-7.3v5.7h7.6v3.6h-11.7V58.2H177V61.8z"/><path fill="#FFFFFF" d="M186.7,68.1l-6.3-10h4.9l3.7,6.5l3.9-6.5h4.9l-6.5,10l7.2,11.2h-4.8l-4.7-7.7l-4.9,7.7h-4.9L186.7,68.1z"/><path fill="#FFFFFF" d="M208.3,79.3h-4.1V61.8h-4.7v-3.6H213v3.6h-4.7V79.3z"/><path fill="#FFFFFF" d="M227.8,61.8h-7.6v4.7h7.3V70h-7.3v5.7h7.6v3.6h-11.7V58.2h11.7V61.8z"/><path fill="#FFFFFF" d="M232.3,79.3V57.7h2.8L248,72.4V58.2h4.1v21.5h-2.8L236.4,65v14.3H232.3z"/><path fill="#FFFFFF" d="M269.9,60.2l-2.1,2.8c-1-1.1-2.2-1.7-3.4-1.7c-0.8,0-1.5,0.2-2.1,0.7c-0.6,0.5-0.9,1-0.9,1.7 c0,0.6,0.2,1,0.7,1.4c0.4,0.4,1.3,0.8,2.5,1.2c2.3,0.8,3.8,1.7,4.6,2.5c1,1,1.5,2.4,1.5,4.1c0,2.1-0.7,3.7-2.1,5 c-1.4,1.3-3.1,1.9-5.3,1.9c-3,0-5.4-1.3-7.3-4l2.7-2.6c1,1.9,2.5,2.8,4.4,2.8c1,0,1.7-0.3,2.4-0.8c0.6-0.6,0.9-1.3,0.9-2.1 c0-0.8-0.3-1.4-0.8-1.8c-0.3-0.2-0.7-0.4-1.2-0.7c-0.6-0.3-1.3-0.6-2.1-0.9c-1.9-0.7-3.3-1.5-4-2.3c-0.8-0.9-1.2-2-1.2-3.4 c0-1.8,0.6-3.2,1.9-4.4c1.2-1.2,2.8-1.8,4.7-1.8C266,57.8,268.1,58.6,269.9,60.2z"/><path fill="#FFFFFF" d="M278.8,58.2v21.1h-4.1V58.2H278.8z"/><path fill="#FFFFFF" d="M283.1,68.6c0-3,1.1-5.6,3.3-7.7c2.2-2.1,4.9-3.2,8-3.2c3.2,0,5.8,1.1,8,3.2c2.2,2.1,3.3,4.7,3.3,7.8 c0,3.1-1.1,5.7-3.3,7.9c-2.2,2.1-4.9,3.2-8.1,3.2c-2.8,0-5.3-0.9-7.4-2.7C284.3,74.9,283.1,72.1,283.1,68.6z M287.3,68.6 c0,2.1,0.7,3.8,2.1,5.2c1.4,1.4,3,2.1,5,2.1c1.9,0,3.6-0.7,5-2.1c1.4-1.4,2.1-3.2,2.1-5.2c0-2-0.7-3.7-2.1-5.1 c-1.4-1.4-3-2.1-5-2.1c-1.9,0-3.6,0.7-5,2.1C288,65,287.3,66.7,287.3,68.6z"/><path fill="#FFFFFF" d="M309.9,79.3V57.7h2.8l12.9,14.7V58.2h4.1v21.5h-2.8L314,65v14.3H309.9z"/></g><g><path fill="#FFFFFF" d="M178.8,48.6v-8.8l-4.2,7.7l-4.2-7.7v8.8l1.3,0.9v2.6h-6.7v-2.6l1.3-0.9V36.1l-1.3-0.9v-2.6h5.8l3.7,6.9 l3.9-6.9h5.7v2.6l-1.3,0.9v12.5l1.3,0.9v2.6h-6.7v-2.6L178.8,48.6z"/><path fill="#FFFFFF" d="M194.4,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M210.1,35.5l0.3,0.3V38H206v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L202,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L210.1,35.5z"/><path fill="#FFFFFF" d="M226,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L226,35.5z"/><path fill="#FFFFFF" d="M236.5,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M252.2,35.5l0.3,0.3V38H248v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L244,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L252.2,35.5z"/><path fill="#FFFFFF" d="M268.1,35.5l0.3,0.3V38H264v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8L260,40h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L268.1,35.5z"/><path fill="#FFFFFF" d="M278.6,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M295.4,35.6l0.3,0.3v6.3l-2.7,2.9l-0.3,0.3h-5.3v3.2l1.5,0.9v2.6h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h11.1 L295.4,35.6z M291.3,37.1l-0.5-0.5h-3.4v4.8h3.4l0.5-0.5V37.1z"/><path fill="#FFFFFF" d="M312,35.6l0.3,0.3v6.3l-2.7,2.9l-0.3,0.3H304v3.2l1.5,0.9v2.6h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h11.1 L312,35.6z M307.9,37.1l-0.5-0.5H304v4.8h3.4l0.5-0.5V37.1z"/><path fill="#FFFFFF" d="M321.9,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M348,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L348,35.5z"/><path fill="#FFFFFF" d="M350.4,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6h-7.1v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#FFFFFF" d="M381.4,49.6v2.6h-6.8v-2.6l1.3-0.8l-0.8-2.7h-4.5l-0.9,2.7l1.3,0.8v2.6h-6.5v-2.5l1.3-1l4.7-15.3l0.2-0.7h4.5 l4.7,15.9L381.4,49.6z M374,42.4l-1.1-3.9l-1.2,3.9H374z"/><path fill="#FFFFFF" d="M379.7,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6H384v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#FFFFFF" d="M397.6,32.6h14.2v6.1h-4.4v-2.1h-4.1v3.7h4.7v3.7h-4.7v4.1h4.1v-1.4h4.4v5.4h-14.2v-2.6l1.4-0.9V36.2l-1.4-0.9 V32.6z"/><path fill="#FFFFFF" d="M434.1,32.6h6.9v2.7l-1.6,0.9v12.7l-2.7,2.9l-0.3,0.3h-6.9l-3-3.2V36.2l-1.4-0.9v-2.6h6.6v2.5L431,36v11.6 l0.5,0.5h3l0.5-0.5V36l-0.9-0.9V32.6z"/><path fill="#FFFFFF" d="M450.7,49.5v2.6h-6.6v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h5.9l5.7,10.8v-7.3l-1.2-0.9v-2.6h6.4v2.6l-1.3,0.9v16 h-4.1l-6.2-11.9v8.3L450.7,49.5z"/><path fill="#FFFFFF" d="M471.2,52.1H464v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M483.3,32.6h7.4v2.7l-2,1L484,52.1h-3.8l-4.9-15.9l-1.8-1v-2.7h7.1v2.6l-1.2,0.8l2.6,8.5l2.6-8.5l-1.3-0.8 V32.6z"/><path fill="#FFFFFF" d="M492.8,32.6h14.2v6.1h-4.4v-2.1h-4.1v3.7h4.7v3.7h-4.7v4.1h4.1v-1.4h4.4v5.4h-14.2v-2.6l1.4-0.9V36.2l-1.4-0.9 V32.6z"/><path fill="#FFFFFF" d="M525.7,49.6v2.5h-6.5v-2.6l0.9-0.7l-2-4.5h-2.2v4.3l1,0.9v2.5h-6.7v-2.6l1.3-0.9V36.1l-1.3-0.9v-2.6h11l3,3.2 v5.4l-2,2.1l2.3,5.2L525.7,49.6z M519.8,37.1l-0.6-0.5h-3.3v3.8h3.2l0.6-0.7V37.1z"/><path fill="#FFFFFF" d="M540.8,35.5l0.3,0.3V38h-4.4v-0.9l-0.5-0.5h-3l-0.5,0.5v2.8l0.1,0.1h6.1l2.1,2.2l0.3,0.3v6.3l-3,3.3h-6.9 l-2.7-3.1l-0.2-0.3v-2.7h4.4v1.5l0.6,0.7h2.9l0.6-0.7v-3.8l-0.1-0.1h-6.2l-2.2-2.6v-5.3l2.6-2.9l0.3-0.3h7L540.8,35.5z"/><path fill="#FFFFFF" d="M551.3,52.1h-7.2v-2.6l1.4-0.9V36.2l-1.4-0.9v-2.6h7.2v2.6l-1.4,0.9v12.5l1.4,0.9V52.1z"/><path fill="#FFFFFF" d="M553.5,32.6h15.7v6.2h-3.6v-2.1h-2v12l1.4,0.9v2.6h-7.1v-2.6l1.4-0.9v-12h-2v2.1h-3.6V32.6z"/><path fill="#FFFFFF" d="M580.4,32.6h6.4v2.5l-1.3,1.1l-4.3,8.5v3.9l1.4,0.9v2.6h-7.1v-2.6l1.3-0.9v-3.9l-4.3-8.5l-1.2-1.1v-2.5h6.3 v2.5l-0.8,0.7l2.2,4.2l2.1-4.2l-0.8-0.7V32.6z"/></g><g><polyline fill="#FFFFFF" points="144.4,17.7 144.4,98.6 147.1,98.6 147.1,17.7 "/></g><g><path fill="#FFFFFF" d="M593.8,45.3v1.1h-2.2v5.7h-1.4v-5.7h-2.2v-1.1H593.8z M601.1,52.1l-0.3-4c0-0.5,0-1.2,0-1.9h-0.1 c-0.2,0.6-0.4,1.4-0.6,2L599,52h-1.4l-1.2-3.9c-0.1-0.5-0.3-1.3-0.5-1.9h-0.1c0,0.6,0,1.3-0.1,1.9l-0.2,4h-1.3l0.5-6.8h2l1.2,3.3 c0.1,0.5,0.3,1,0.5,1.7h0c0.2-0.6,0.3-1.2,0.5-1.7l1.2-3.4h2l0.5,6.8H601.1z"/></g></svg></a>
+      <p class="note">Josh Maples, Department of Agricultural Economics, MSU Extension. <a href="mailto:josh.maples@msstate.edu">josh.maples@msstate.edu</a>. <span id="foot-gen"></span></p>
+      <!-- MSU's full nondiscrimination statement, word for word from extension.msstate.edu/about-extension/
+           extension-statements-disclaimer (revised March 2025; checked 11/4/2026): recheck it if MSU revises it -->
+      <p class="note">Mississippi State University is an equal opportunity institution. Discrimination is prohibited in
+        university employment, programs, or activities based on race, color, ethnicity, sex, pregnancy, religion, national
+        origin, disability, age, sexual orientation, genetic information, status as a U.S. veteran, or any other status to
+        the extent protected by applicable law. Questions about equal opportunity programs or compliance should be directed
+        to the <a href="https://www.civilrights.msstate.edu/">Office of Civil Rights Compliance</a>, 231 Famous Maroon Band
+        Street, P.O. 6044, Mississippi State, MS 39762.</p>
+      <p class="note">Visits to this page are counted with GoatCounter, without cookies or any personal data.</p>
+      <p class="note">Copyright <span id="foot-year"></span> by Mississippi State University. All rights reserved.
+        <a href="https://www.msstate.edu">www.msstate.edu</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const NS = "http://www.w3.org/2000/svg";
+  const MON = ["Jan.", "Feb.", "March", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+  const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const MON_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const store = {
+    get(k) { try { return localStorage.getItem("fedcattle." + k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem("fedcattle." + k, v); } catch (e) { /* private window */ } }
+  };
+  // region: 5area, us, ne, iamn, sc; fcls/fbasis: Price trend, Seasonal trend and Compare's class and selling basis;
+  // gcls/gbasis: This week's grade table; f1-f3: Compare's regions; bkind: Boxed beef's year chart
+  const S = { side: "fed", tab: "fweek", region: "5area", fcls: "steer", fbasis: "live", gcls: "steer", gbasis: "live", f1: null, f2: "", f3: "", bkind: "choice" };
+  const FEW = 20;           // under 20 head: a thin sample
+  const fewTag = () => el("span", { class: "few", text: "Few sales" });
+  const fewLegend = () => el("li", {}, [el("span", { class: "fewkey" }), el("span", { text: `Fewer than ${FEW} head` })]);
+
+  // ---------- formatting ----------
+  const fmt$ = (v, cents = true) => v == null ? "–" : (v < 0 ? "−" : "") +
+    "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 });
+  const R = Math.round;
+  const pctS = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";   // signed %, true minus sign
+  const an = n => /^8\d\d$/.test(String(n)) || /^(11|18)\d$/.test(String(n)) ? "an" : "a";  // "an 800-lb", "a 550-lb"
+  // dates counted from today on the calendar (not 24-hour blocks, which slip a day across a time change)
+  const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
+  const STALE_DAYS = 2;   // builds run every day (weekends too since 11/2/2026): two missed mornings show the banner (11/6/2026; was 4)
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const lastDay = s => s > D.meta.through ? D.meta.through : s;      // a window's end, never after the latest sale
+  const fmtN = v => v == null ? "–" : v.toLocaleString("en-US");
+  const iso = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const day = (s, year) => { const d = iso(s); return `${MON[d.getMonth()]} ${d.getDate()}` + (year ? `, ${d.getFullYear()}` : ""); };
+  const DOW = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  // "Wednesday, Oct. 28": the weekday shows a Monday-Wednesday state is current on a Friday (11/2/2026);
+  // non-breaking spaces keep a date on one line when the sentence wraps on a phone
+  const wday = (s, year) => `${DOW[iso(s).getDay()]}, ${day(s, year)}`.replace(/ /g, " ");
+  const span = (a, b) => {
+    const x = iso(a), y = iso(b);
+    if (x.getMonth() === y.getMonth()) return `${MON[x.getMonth()]} ${x.getDate()}-${y.getDate()}`;
+    return `${day(a)}-${day(b)}`;
+  };
+  const signed$ = v => v == null ? "–" : (v > 0 ? "+" : v < 0 ? "−" : "") + fmt$(Math.abs(v));
+  const el = (tag, attrs = {}, kids = []) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "text") e.textContent = v; else if (k === "html") e.innerHTML = v; else e.setAttribute(k, v);
+    }
+    for (const k of [].concat(kids)) if (k != null) e.append(k);
+    return e;
+  };
+  // ---------- small controls ----------
+  // re-focus the rebuilt button with the same label, so keyboard users don't lose their place
+  const refocus = (host, t) => { const b = [...host.querySelectorAll("button")].find(x => x.textContent === t); if (b) b.focus(); };
+  function seg(host, opts, get, set) {
+    host.replaceChildren(...opts.map(o => {
+      const b = el("button", { type: "button", "aria-pressed": String(get() === o.v), text: o.t });
+      b.addEventListener("click", () => { set(o.v); render(); refocus(host, o.t); });
+      return b;
+    }));
+  }
+  function chips(host, opts, get, set) {
+    host.replaceChildren(...opts.map(o => {
+      const b = el("button", { type: "button", "aria-pressed": String(get() === o.v), text: o.t });
+      b.addEventListener("click", () => { set(o.v); render(); refocus(host, o.t); });
+      return b;
+    }));
+  }
+  const CLS = [{ v: "Steers", t: "Steers" }, { v: "Heifers", t: "Heifers" }];
+
+  // ---------- SVG chart kit ----------
+  function svgEl(tag, attrs = {}) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  }
+  function niceTicks(lo, hi, n = 5) {
+    const raw = (hi - lo) / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(m => m * p).find(s => s >= raw) || p * 10;
+    const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
+    return { ticks: out, step };
+  }
+  // the charts work from the keyboard too (WCAG 2.1.1; as the drought dashboard): tab to a chart, then the arrow keys,
+  // Home and End move the same readout the pointer does; a mouse click or tap that focuses it shows nothing extra
+  function keyNav(node, n, at, show, hide) {
+    node.setAttribute("tabindex", "0");
+    node.addEventListener("focus", () => { let kb = true; try { kb = node.matches(":focus-visible"); } catch (e) { /* old browser */ } if (kb) show(at(), true); });
+    node.addEventListener("blur", hide);
+    node.addEventListener("keydown", ev => {
+      const i = { ArrowLeft: at() - 1, ArrowRight: at() + 1, Home: 0, End: n - 1 }[ev.key];
+      if (i == null) return;
+      ev.preventDefault(); show(Math.max(0, Math.min(n - 1, i)), true);
+    });
+  }
+  // and the chart's values as a table for screen readers (WCAG 1.1.1), captioned with the chart's label, inside a
+  // hidden wrapper (a table won't shrink to 1px, and a wide one widens the page even when clipped)
+  const srTable = (label, head, rows) => el("div", { class: "sr-only" }, el("table", {}, [el("caption", { text: label }),
+    el("thead", {}, el("tr", {}, head.map(h => el("th", { scope: "col", text: h })))),
+    el("tbody", {}, rows.map(([r, ...cells]) => el("tr", {}, [el("th", { scope: "row", text: r }), ...cells.map(v => el("td", { text: v }))])))]));
+  // a dashed box around the bar the keyboard is on (bars have no hover marker)
+  const kbox = svg => { const b = svgEl("rect", { class: "kbox", visibility: "hidden" }); svg.append(b);
+    return { at: (x, y, w, h) => { for (const [k, v] of Object.entries({ x, y, width: w, height: h })) b.setAttribute(k, v); b.setAttribute("visibility", "visible"); },
+             off: () => b.setAttribute("visibility", "hidden") }; };
+
+  // series: [{cls:"1|2|3", dash, width, pts:[{x,y,head,label}], end:"label", dot:bool, name}]
+  function lineChart(host, cfg) {
+    const W = Math.max(280, host.clientWidth || 600), small = W < 520;
+    const H = cfg.height || (small ? 290 : 320);
+    const m = { t: 12, r: cfg.endLabels ? (small ? 74 : 104) : 14, b: 30, l: small ? 46 : 54 };
+    const all = cfg.series.flatMap(s => s.pts);
+    if (!all.length) { host.replaceChildren(el("p", { class: "none", text: cfg.empty || "No sales to chart." })); return; }
+    const B = cfg.band ? cfg.band.pts : [];
+    let ylo = Math.min(...all.map(p => p.y), ...B.map(p => p.lo)), yhi = Math.max(...all.map(p => p.y), ...B.map(p => p.hi));
+    if (cfg.marker && cfg.marker.y != null) { ylo = Math.min(ylo, cfg.marker.y); yhi = Math.max(yhi, cfg.marker.y); }
+    const pad = (yhi - ylo) * 0.08 || 10; ylo -= pad; yhi += pad;
+    if (cfg.floor != null) ylo = Math.max(ylo, cfg.floor);        // the axis starts there (break-evens: $0; review, build 68)
+    const { ticks } = niceTicks(ylo, yhi, small ? 4 : 5);
+    ylo = Math.min(ylo, ticks[0]); yhi = Math.max(yhi, ticks[ticks.length - 1]);
+    const X = v => m.l + (v - cfg.x.min) / (cfg.x.max - cfg.x.min) * (W - m.l - m.r);
+    const Y = v => m.t + (1 - (v - ylo) / (yhi - ylo)) * (H - m.t - m.b);
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img", "aria-label": cfg.aria || "" });
+    // axes
+    svg.append(svgEl("path", { class: "axis", d: `M${m.l},${m.t} V${H - m.b} H${W - m.r}` }));
+    for (const t of ticks) {
+      const y = Y(t);
+      svg.append(svgEl("path", { class: "axis", d: `M${m.l - 4},${y} H${m.l}` }));
+      const tx = svgEl("text", { x: m.l - 7, y: y + 4, "text-anchor": "end" }); tx.textContent = cfg.yfmt(t); svg.append(tx);
+    }
+    for (const t of cfg.x.ticks) {
+      const x = X(t.v);
+      svg.append(svgEl("path", { class: "axis", d: `M${x},${H - m.b} V${H - m.b + 4}` }));
+      const tx = svgEl("text", { x, y: H - m.b + 18, "text-anchor": "middle" }); tx.textContent = t.t; svg.append(tx);
+    }
+    if (B.length > 1) svg.append(svgEl("path", { class: "fband", opacity: .6,
+      d: "M" + B.map(p => `${X(p.x).toFixed(1)},${Y(p.hi).toFixed(1)}`).join("L") + "L" +
+         [...B].reverse().map(p => `${X(p.x).toFixed(1)},${Y(p.lo).toFixed(1)}`).join("L") + "Z" }));
+    if (cfg.zero && ylo < 0 && yhi > 0) svg.append(svgEl("path", { class: "axis", d: `M${m.l},${Y(0)} H${W - m.r}` }));
+    let mkLab = null;                                             // the marker's label, flipped left below if it would run off the right edge
+    if (cfg.marker) {
+      const x = X(cfg.marker.x);
+      svg.append(svgEl("path", { class: "ref", d: `M${x},${m.t} V${H - m.b}` }));
+      mkLab = svgEl("text", { x: x + 6, y: m.t + 12, class: "endlab" }); mkLab.textContent = cfg.marker.t; svg.append(mkLab);
+      mkLab.dataset.mx = x;
+    }
+    // lines, drawn back to front, breaking at gaps
+    const ends = []; let thin = 0;
+    [...cfg.series].reverse().forEach(s => {
+      if (!s.pts.length) return;
+      let d = "", prev = null;
+      for (const p of s.pts) {
+        const brk = prev == null || (cfg.gap && p.x - prev.x > cfg.gap);
+        d += (brk ? "M" : "L") + X(p.x).toFixed(1) + "," + Y(p.y).toFixed(1);
+        prev = p;
+      }
+      svg.append(svgEl("path", { d, class: "s" + s.cls, fill: "none", "stroke-width": s.width || 2,
+        "stroke-linejoin": "round", "stroke-linecap": "round", ...(s.dash ? { "stroke-dasharray": s.dash } : {}) }));
+      for (const p of s.pts) if (s.dots) {
+        svg.append(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: small ? 3 : 3.5, class: "f" + s.cls }));
+      }
+      // dots at chosen x only (Sell or keep's 30/60/90/120 days, 11/12/2026)
+      if (s.marks) for (const p of s.pts) if (s.marks.includes(p.x)) svg.append(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: small ? 4.5 : 5,
+        class: "f" + s.cls, stroke: "var(--surface)", "stroke-width": 2 }));
+      for (const p of s.pts) if (p.head != null && p.head < FEW) {
+        svg.append(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: 5, class: "fewpt" })); thin++;
+      }
+      const last = s.pts[s.pts.length - 1];
+      if (s.dot) svg.append(svgEl("circle", { cx: X(last.x), cy: Y(last.y), r: 5, class: "f" + s.cls,
+        stroke: "var(--surface)", "stroke-width": 2 }));
+      if (s.markAt != null) { const q = s.pts.reduce((b, p) => Math.abs(p.x - s.markAt) < Math.abs(b.x - s.markAt) ? p : b, s.pts[0]);
+        svg.append(svgEl("circle", { cx: X(q.x), cy: Y(q.y), r: 4.5, class: "f" + s.cls, stroke: "var(--surface)", "stroke-width": 2 })); }
+      if (cfg.endLabels && s.end) {   // labelAt: read the label at that x (a full-year average vs. a year to date), not the line's end
+        const lp = s.labelAt != null ? s.pts.reduce((b, p) => Math.abs(p.x - s.labelAt) < Math.abs(b.x - s.labelAt) ? p : b, s.pts[0]) : last;
+        ends.push({ x: X(lp.x), y: Y(lp.y), t: s.end, v: cfg.yfmt(lp.y, true) });
+      }
+    });
+    // end labels: spread so they never overlap
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 30) ends[i].y = ends[i - 1].y + 30;
+    const over = ends.length ? ends[ends.length - 1].y - (H - m.b) : 0;
+    if (over > 0) ends.forEach(e => e.y -= over);
+    for (const e of ends) {
+      const lx = W - m.r + 8;
+      const t1 = svgEl("text", { x: lx, y: e.y - 2, class: "endlab" }); t1.textContent = e.t;
+      const t2 = svgEl("text", { x: lx, y: e.y + 13 }); t2.textContent = e.v;
+      svg.append(t1, t2);
+    }
+    // hover / tap layer
+    const xs = [...new Set(all.map(p => p.x))].sort((a, b) => a - b);
+    const cross = svgEl("path", { class: "cross", d: "", visibility: "hidden" });
+    const hit = svgEl("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
+    svg.append(cross, hit);
+    const tip = el("div", { class: "tip", hidden: "", "aria-live": "polite" });
+    // the keyboard starts at the first line's latest point (this year's latest week), not last year's December
+    const p0 = cfg.series[0] && cfg.series[0].pts.length ? cfg.series[0].pts[cfg.series[0].pts.length - 1].x : null;
+    let cur = p0 != null ? xs.indexOf(p0) : xs.length - 1;
+    const move = ev => {
+      const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+      let best = xs[0];
+      for (const x of xs) if (Math.abs(X(x) - px) < Math.abs(X(best) - px)) best = x;
+      showX(best);
+    };
+    const showX = best => {
+      const r = svg.getBoundingClientRect();
+      cur = xs.indexOf(best);
+      const rows = cfg.series.map(s => ({ s, p: s.pts.find(p => p.x === best) })).filter(o => o.p);
+      if (!rows.length) return;
+      cross.setAttribute("d", `M${X(best)},${m.t} V${H - m.b}`); cross.setAttribute("visibility", "visible");
+      const bp = B.find(p => p.x === best);
+      tip.replaceChildren(el("b", { text: cfg.xlab(best) }), ...rows.map(({ s, p }) => el("div", { class: "row" }, [
+        el("span", { class: `key k${s.cls}${s.dash === "2 3" ? " dot" : s.dash ? " dash" : ""}` }),
+        el("span", { text: `${s.name}: ${p.t ?? cfg.yfmt(p.y, true)}${p.head != null ? ` · ${fmtN(p.head)} head` : ""}${p.head != null && p.head < FEW ? " ⚠ few sales" : ""}` })])),
+        ...(bp ? [el("div", { class: "row" }, [el("span", { class: "key kband" }),
+          el("span", { text: `${cfg.band.name}: ${cfg.yfmt(bp.lo, true)} to ${cfg.yfmt(bp.hi, true)}` })])] : []));
+      tip.hidden = false;
+      const tw = tip.offsetWidth, cx = X(best) * r.width / W;
+      tip.style.left = Math.max(0, Math.min(r.width - tw, cx + 12 > r.width - tw ? cx - tw - 12 : cx + 12)) + "px";
+      tip.style.top = "8px";
+    };
+    const leave = () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); };
+    hit.addEventListener("pointermove", move); hit.addEventListener("pointerdown", move);
+    hit.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") leave(); });
+    keyNav(svg, xs.length, () => cur, i => showX(xs[i]), leave);
+    // cfg.pick = {xs, on}: a tap on one of the first line's dots at those x, or Enter on one from the keyboard,
+    // calls on(x) (Sell or keep: the dots pick the table row)
+    if (cfg.pick) {
+      const s0 = cfg.series[0];
+      hit.addEventListener("click", ev => {
+        const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width, py = (ev.clientY - r.top) * H / r.height;
+        for (const x of cfg.pick.xs) { const p = s0.pts.find(q => q.x === x); if (p && Math.hypot(X(x) - px, Y(p.y) - py) < 18) { cfg.pick.on(x); return; } }
+      });
+      svg.addEventListener("keydown", ev => {
+        if ((ev.key === "Enter" || ev.key === " ") && cfg.pick.xs.includes(xs[cur])) {
+          ev.preventDefault(); cfg.pick.on(xs[cur]);
+          const n = host.querySelector("svg"); if (n) n.focus();
+        }
+      });
+    }
+    // the hidden table: one row per x, one column per series (and the band), the readout's values
+    const cell = (s, x) => { const p = s.pts.find(q => q.x === x); return p ? `${p.t ?? cfg.yfmt(p.y, true)}${p.head != null ? ` (${fmtN(p.head)} head${p.head < FEW ? ", few sales" : ""})` : ""}` : "–"; };
+    host.replaceChildren(svg, tip, srTable(cfg.aria || "Chart", [cfg.xname || "", ...cfg.series.map(s => s.name), ...(cfg.band ? [cfg.band.name] : [])],
+      xs.map(x => { const bp = B.find(p => p.x === x);
+        return [cfg.xlab(x), ...cfg.series.map(s => cell(s, x)), ...(cfg.band ? [bp ? `${cfg.yfmt(bp.lo, true)} to ${cfg.yfmt(bp.hi, true)}` : "–"] : [])]; })));
+    // a marker at the right end (120 days kept, the planner's last point): its label goes to the left of the line,
+    // measured once the chart is on the page (an estimate while the tab is hidden)
+    if (mkLab) {
+      const mx = +mkLab.dataset.mx, w = mkLab.getComputedTextLength() || mkLab.textContent.length * 7.5;
+      if (mx + 6 + w > W - 2) { mkLab.setAttribute("x", mx - 6); mkLab.setAttribute("text-anchor", "end"); }
+    }
+    return thin;
+  }
+
+  // seasonal index bars around 100
+  function monthBars(host, rows, label) {
+    const W = Math.max(280, host.clientWidth || 600), small = W < 520, H = small ? 250 : 300;
+    const m = { t: 14, r: 10, b: 30, l: small ? 40 : 46 };
+    const vals = rows.flatMap(r => [r.low, r.high, r.index]);
+    let lo = Math.min(90, ...vals), hi = Math.max(110, ...vals);
+    const { ticks } = niceTicks(lo, hi, 4); lo = Math.min(lo, ticks[0]); hi = Math.max(hi, ticks[ticks.length - 1]);
+    const bw = (W - m.l - m.r) / 12;
+    const Y = v => m.t + (1 - (v - lo) / (hi - lo)) * (H - m.t - m.b);
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img",
+      "aria-label": label || "Seasonal pattern by month" });
+    svg.append(svgEl("path", { class: "axis", d: `M${m.l},${m.t} V${H - m.b}` }));
+    for (const t of ticks) {
+      const tx = svgEl("text", { x: m.l - 7, y: Y(t) + 4, "text-anchor": "end" }); tx.textContent = t === 100 ? "0%" : (t > 100 ? "+" : "−") + Math.abs(t - 100) + "%"; svg.append(tx);
+      svg.append(svgEl("path", { class: "axis", d: `M${m.l - 4},${Y(t)} H${m.l}` }));
+    }
+    const tip = el("div", { class: "tip", hidden: "", "aria-live": "polite" });
+    const shows = []; let cur = new Date().getMonth();      // the keyboard starts at this month
+    const rg = v => { const d = Math.round(v - 100); return `${d >= 0 ? "+" : "−"}${Math.abs(d)}%`; };   // a year's index as % vs. a typical month
+    rows.forEach((r, i) => {
+      const x = m.l + i * bw, w = bw * 0.62, cx = x + bw / 2;
+      const y0 = Y(100), y1 = Y(r.index);
+      svg.append(svgEl("rect", { x: cx - w / 2, y: Math.min(y0, y1), width: w, height: Math.max(1.5, Math.abs(y1 - y0)),
+        rx: 3, class: r.index >= 100 ? "fpos" : "fneg" }));
+      svg.append(svgEl("path", { class: "s2", d: `M${cx},${Y(r.high)} V${Y(r.low)}`, "stroke-width": 1.2, opacity: .55 }));
+      const tx = svgEl("text", { x: cx, y: H - m.b + 18, "text-anchor": "middle" });
+      tx.textContent = small ? (i % 2 ? "" : MON3[i]) : MON3[i]; svg.append(tx);   // every other month on a phone
+      const hit = svgEl("rect", { x, y: m.t, width: bw, height: H - m.t - m.b, fill: "transparent" });
+      const show = () => {
+        tip.replaceChildren(el("b", { text: MON_FULL[i] }),
+          el("div", { text: `${r.index >= 100 ? "+" : "−"}${Math.abs(r.index - 100).toFixed(1)}% vs. a typical month` }),
+          el("div", { text: `Range across years: ${rg(r.low)} to ${rg(r.high)}` }));   // no average price: in a rising market it contradicts the bars (review, build 65)
+        tip.hidden = false;
+        const rr = svg.getBoundingClientRect(), px = cx * rr.width / W, tw = tip.offsetWidth;
+        tip.style.left = Math.max(0, Math.min(rr.width - tw, px - tw / 2)) + "px"; tip.style.top = "6px";
+      };
+      shows.push(show);
+      hit.addEventListener("pointerenter", show); hit.addEventListener("pointerdown", show);
+      hit.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") tip.hidden = true; });
+      svg.append(hit);
+    });
+    svg.append(svgEl("path", { class: "ref", d: `M${m.l},${Y(100)} H${W - m.r}` }));
+    const box = kbox(svg);
+    keyNav(svg, rows.length, () => cur, i => { cur = i; shows[i](); box.at(m.l + i * bw + 1, m.t, bw - 2, H - m.t - m.b); },
+      () => { tip.hidden = true; box.off(); });
+    const sg = v => `${v >= 100 ? "+" : "−"}${Math.abs(v - 100).toFixed(1)}%`;
+    host.replaceChildren(svg, tip, srTable(label || "Seasonal pattern by month", ["Month", "vs. a typical month", "Range across years"],
+      rows.map((r, i) => [MON_FULL[i], sg(r.index), `${rg(r.low)} to ${rg(r.high)}`])));
+  }
+
+  function changeCell(v, pct, heads) {
+    if (v == null) return el("td", { class: "none", text: "–" });
+    const cls = v > 0 ? "up" : v < 0 ? "down" : "";
+    const arrow = v > 0 ? "▲ " : v < 0 ? "▼ " : "";
+    const p = pct != null ? el("span", { class: "pct", text: ` (${pctS(pct)})` }) : null;
+    // a change resting on a thin week (either side) is shown in grey, without an arrow
+    const thin = heads && Math.min(...heads) < FEW;
+    if (thin) return el("td", { class: "chg muted", title: `Rests on ${heads[0]} head vs. ${heads[1]} head` },
+      [document.createTextNode((v > 0 ? "+" : v < 0 ? "−" : "") + fmt$(Math.abs(v))), p]);
+    return el("td", { class: `chg ${cls}` }, [document.createTextNode(arrow + fmt$(Math.abs(v))), p]);
+  }
+  function yearChart(pre, g, Y, aria) {
+    const weekly = Y.by === "week", yr = Y.year, base = Y.base || D.meta.base_years;
+    const doy = s => { const [mm, dd] = s.split("-").map(Number); return Math.round((Date.UTC(yr, mm - 1, dd) - Date.UTC(yr, 0, 1)) / 864e5); };
+    const P = arr => arr.map(p => ({ x: doy(p[0]), y: p[1], head: p[2] }));
+    const cur = P(g.cur), ago = P(g.ago), avg = P(g.avg);
+    const ticks = MON3.map((t, i) => ({ v: Math.round((Date.UTC(yr, i, 1) - Date.UTC(yr, 0, 1)) / 864e5), t: t }));
+    const narrow = $(`#${pre}-chart`).clientWidth < 520;
+    const series = [{ cls: 1, pts: cur, name: String(yr), end: String(yr), dot: true, width: 2.6 },
+      { cls: 3, pts: ago, name: String(yr - 1), end: String(yr - 1), width: 1.8, markAt: cur.length ? cur[cur.length - 1].x : null,
+        labelAt: cur.length ? cur[cur.length - 1].x : null },
+      { cls: 2, pts: avg, name: `${base} avg.`, end: narrow ? "3-yr avg." : `${base} avg.`, dash: "6 4", width: 1.8,
+        markAt: cur.length ? cur[cur.length - 1].x : null, labelAt: cur.length ? cur[cur.length - 1].x : null }].filter(s => s.pts.length);
+    $(`#${pre}-legend`).replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
+    const thinT = lineChart($(`#${pre}-chart`), {
+      series, x: { min: 0, max: 365, ticks: window.innerWidth < 520 ? ticks.filter((_, i) => i % 2 === 0) : ticks },
+      gap: weekly ? 20 : 45, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+      // weekly points are labeled by the week's Friday; the week starts that Monday
+      xlab: x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5); return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : MON_FULL[d.getUTCMonth()]; },
+      xname: weekly ? "Week" : "Month", aria });
+    if (thinT) $(`#${pre}-legend`).append(fewLegend());
+    const last = cur[cur.length - 1];
+    const near = (arr) => arr.reduce((b, p) => Math.abs(p.x - last.x) < Math.abs(b.x - last.x) ? p : b, arr[0]);
+    const parts = [];
+    const unit = weekly ? "week" : "month";
+    // name the week or month (audit 11/3/2026): the latest point is the last complete week, which the
+    // This week tab may call "last week", so "This week" here could name two different numbers
+    const when = x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5);
+      return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : d.toLocaleString("en-US", { month: "long", timeZone: "UTC" }); };
+    if (last) parts.push(`${when(last.x)}: ${fmt$(Math.round(last.y), false)}`);
+    if (last && ago.length) { const a = near(ago); if (Math.abs(a.x - last.x) <= (weekly ? 7 : 20)) parts.push(`same ${unit} last year ${fmt$(Math.round(a.y), false)}`); }
+    // each value stays with its label; a narrow screen breaks the line at the dot
+    const kids = parts.flatMap((p, i) => [i ? " · " : null, el("span", { style: "white-space:nowrap", text: p })]).filter(Boolean);
+    $(`#${pre}-summary`).replaceChildren(...kids, " ($/cwt)", ...(last && last.head != null && last.head < FEW ? [fewTag()] : []));
+    return avg.length > 0;
+  }
+  const noChart = (pre, text) => { $(`#${pre}-chart`).replaceChildren(el("p", { class: "none", text }));
+    $(`#${pre}-summary`).textContent = ""; $(`#${pre}-legend`).replaceChildren(); };
+
+  // the two highest and two lowest months, each with its own figure, in calendar order (review of build 70: "March-April
+  // (about +7%)" quoted March alone; April was +4%)
+  function seasonSummary(rows) {
+    const by = [...rows].sort((a, b) => b.index - a.index);
+    const nm = r => MON_FULL[MON3.indexOf(r.month)];
+    const sg = v => { const x = Math.round(v - 100); return x === 0 ? "0%" : (x > 0 ? "+" : "−") + Math.abs(x) + "%"; };
+    const pair = (a, b) => { const [x, y] = [a, b].sort((p, q) => MON3.indexOf(p.month) - MON3.indexOf(q.month));
+      const yx = MON3.indexOf(y.month) - MON3.indexOf(x.month) === 11 ? [y, x] : [x, y];   // Dec. before Jan.
+      return yx.map(m => `${nm(m)} (${sg(m.index)})`).join(" and "); };
+    return `Highest: ${pair(by[0], by[1])}. Lowest: ${pair(by[by.length - 1], by[by.length - 2])}.`;
+  }
+  const CMP_STYLE = [{ cls: 1, width: 2.6 }, { cls: 2, dash: "6 4", width: 2 }, { cls: 3, width: 2 }];
+  // ---------- fed cattle (11/24/2026) ----------
+  // The page's second side: USDA's negotiated cash fed cattle prices by region (5-Area, National, Nebraska, Iowa-Minnesota,
+  // South Central) and the national boxed beef cutout, from data/fed.json, loaded the first time Fed cattle is picked.
+  // Nothing here is estimated: every price is USDA's (monthly ones average USDA's weeks by head).
+  let FED = null, FEDERR = false, FEDLOAD = null, LINK_REGION = "";
+  const FCLS = [{ v: "steer", t: "Steers" }, { v: "heifer", t: "Heifers" }];
+  const FBASIS = [{ v: "live", t: "Live" }, { v: "dressed", t: "Dressed" }];
+  const BASIS_SUB = { live: "live weight at the feedlot (FOB)", dressed: "dressed (carcass) weight, delivered to the plant" };
+  const BANDS = [["total", "All grades"], ["choice_over80", "Over 80% Choice"], ["choice_65_80", "65-80% Choice"],
+    ["choice_35_65", "35-65% Choice"], ["choice_0_35", "Under 35% Choice"]];
+  const PRIMALS = [["cutout", "Cutout value"], ["rib", "Rib"], ["chuck", "Chuck"], ["round", "Round"], ["loin", "Loin"],
+    ["brisket", "Brisket"], ["short_plate", "Short plate"], ["flank", "Flank"]];
+  const REG_SHORT = { "5area": "5-Area", us: "National", ne: "Nebraska", iamn: "IA-MN", sc: "S. Central" };
+  const fedOn = () => S.side === "fed";
+  const regById = id => FED && FED.regions.find(r => r.id === id);
+  const reg = () => regById(S.region) || FED.regions[0];
+  const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const shift = (s, n) => ymd(addDays(iso(s), n));
+  const weekOf = fri => span(shift(fri, -4), fri);                  // "Nov. 16-20": a week by its Monday through Friday
+  const clsT = v => (FCLS.find(c => c.v === v) || FCLS[0]).t;
+  const basisT = v => v === "live" ? "live" : "dressed";
+  const chgSpan = (v, pct) => v == null ? el("span", { class: "none", text: "–" })
+    : el("span", { class: `chg ${v > 0 ? "up" : v < 0 ? "down" : ""}`, text: `${v > 0 ? "▲ " : v < 0 ? "▼ " : ""}${fmt$(Math.abs(v))}${pct != null ? ` (${pctS(pct)})` : ""}` });
+  function loadFed() {
+    if (FED || FEDLOAD || FEDERR) return;
+    FEDLOAD = fetch("data/fed.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => {
+        FED = d;
+        $("#region").replaceChildren(...FED.regions.map(r => el("option", { value: r.id, text: r.name })));
+        if (!regById(S.region)) {           // a ?region= this page doesn't cover opens the first region, with a line saying so
+          if (LINK_REGION) { const n = $("#linknote"); n.textContent = `This page doesn't have fed cattle prices for "${LINK_REGION}"; showing ${FED.regions[0].name}.`; n.hidden = false; }
+          S.region = FED.regions[0].id;
+        }
+        writeAddr();
+      })
+      .catch(e => { console.error(e); FEDERR = true; })
+      .finally(() => { FEDLOAD = null; if (fedOn()) render(); });
+  }
+  function renderFed() {
+    for (const b of document.querySelectorAll(".tab")) {
+      const on = b.dataset.tab === S.tab && !!FED;
+      b.setAttribute("aria-selected", String(b.dataset.tab === S.tab)); b.tabIndex = b.dataset.tab === S.tab ? 0 : -1;
+      $("#p-" + b.dataset.tab).hidden = !on;
+    }
+    if (!FED) {
+      loadFed();
+      $("#asof").textContent = FEDERR ? "The fed cattle prices didn't load. Refresh the page to try again." : "Loading fed cattle prices…";
+      $("#tally").replaceChildren(); $("#fed-note").hidden = true; $("#stale-row").hidden = true;
+      return;
+    }
+    fedHead();
+    tabFade();
+    VIEWS[S.tab]();
+  }
+  function fedHead() {
+    const r = reg(), m = FED.meta;
+    $("#region").value = r.id;
+    const upd = (m.generated || "").slice(0, 10);
+    $("#asof").textContent = `${/^\d{4}-\d\d-\d\d$/.test(upd) ? `Updated ${wday(upd)}. ` : ""}Latest weekly report: week of ${weekOf(m.week)}. ` +
+      `Boxed beef through ${wday(m.cutout_through)}.`;
+    const age = /^\d{4}-\d\d-\d\d$/.test(upd) ? Math.round((today() - iso(upd)) / 864e5) : 0;
+    $("#stale-row").hidden = age <= STALE_DAYS;
+    if (age > STALE_DAYS) $("#stale").textContent = `The fed cattle prices last updated ${wday(upd, true)}, ${age} days ago. They normally update every morning, so prices may be out of date.`;
+    // Boxed beef is national: its tab shows National, not the region picker, and the region's note stays off
+    const beefTab = S.tab === "beef";
+    $(".fed-pick").hidden = beefTab; $(".nat-pick").hidden = !beefTab;
+    $("#fed-note").hidden = beefTab || !r.note;
+    if (r.note) $("#fed-note-p").textContent = r.note;
+    // one line of head counts, as the auction side's: that week, the week before, a year ago
+    const h = r.head || {}, item = (n, label, big) => el("span", { style: "white-space:nowrap" }, [el("b", { class: big ? "big" : "", text: fmtN(n) }), " " + label]);
+    if (beefTab) {   // on Boxed beef, the loads sold instead: the latest day, the trading day before, a year earlier
+      const bd = FED.beef.days, tl = x => x && x.loads ? x.loads.total : null;
+      $("#tally").replaceChildren(
+        el("div", { class: "lead", text: `Boxed beef sold, national, ${wday(bd.latest.date)} (Choice and Select cuts, trimmings and coarse grinds)` }),
+        tl(bd.latest) == null ? el("div", { class: "row", text: "USDA didn't report a full load count that day." })
+          : el("div", { class: "row" }, [item(tl(bd.latest), "loads", true), ...(tl(bd.prior) == null ? [] : [" · ", item(tl(bd.prior), "the day before")]),
+            ...(tl(bd.year_ago) == null ? [] : [" · ", item(tl(bd.year_ago), "a year earlier")])]));
+    } else $("#tally").replaceChildren(
+      el("div", { class: "lead", text: `Fed steers and heifers bought on a negotiated cash basis, ${r.name}, week of ${weekOf(r.weeks.latest)}` }),
+      h.latest == null ? el("div", { class: "row", text: "USDA reported no negotiated trade for this region that week." })
+        : el("div", { class: "row" }, [item(h.latest, "head", true), " · ", item(h.prior, "the week before"), " · ", item(h.year_ago, "a year ago")]));
+    // the footer's build line, from the fed file
+    const g = m.generated || "", bt = new Date(g), okB = !isNaN(bt), ct = o => bt.toLocaleString("en-US", { timeZone: "America/Chicago", ...o });
+    const hm = okB ? ct({ hour: "numeric", minute: "2-digit" }).replace(/\s?([AP])M$/, (_, x) => ` ${x.toLowerCase()}.m.`) : "";
+    const bday = okB ? bt.toLocaleDateString("en-CA", { timeZone: "America/Chicago" }) : g.slice(0, 10);
+    $("#foot-gen").textContent = `Fed cattle through the week of ${weekOf(m.week)}; boxed beef through ${wday(m.cutout_through, true)}. ` +
+      `Page ${m.build ? `version ${m.build}, ` : ""}built ${/^\d{4}-\d\d-\d\d$/.test(bday) ? wday(bday, true) : g}${hm ? `, ${hm} CT` : ""}. Updates every morning as USDA posts new reports.`;
+    $("#foot-year").textContent = okB ? ct({ year: "numeric" }) : g.slice(0, 4);
+  }
+
+  // This week: the latest weekly report, the week before and a year ago, all grades; then by Choice grade band; then the
+  // days traded since (USDA's daily report, 5-Area and South Central)
+  function renderFweek() {
+    if (!FED) return;
+    const r = reg(), wk = r.weeks;
+    $("#fweek-sub").textContent = `Negotiated cash trade, week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt).`;
+    const head = el("thead", {}, el("tr", {}, [el("th", { text: "Steers and heifers" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
+      el("th", { text: "vs. a year ago" }), el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })]));
+    let missing = 0;
+    const rows = FCLS.flatMap(c => FBASIS.map(b => {
+      const W = r.week[`${c.v}.${b.v}`] || {}, cell = x => W[x] && W[x].total && W[x].total[0] != null ? W[x].total : null;
+      const now = cell("latest"), pr = cell("prior"), ya = cell("year_ago");
+      const first = el("td", {}, [document.createTextNode(`${c.t}, ${basisT(b.v)}`), el("small", { text: b.v === "live" ? "FOB the feedlot" : "delivered" }),
+        ...(now ? [el("span", { class: "headsm", text: `${fmtN(now[1])} head` })] : [])]);
+      if (!now) { missing++; return el("tr", {}, [first, el("td", { class: "none", style: "text-align:left", colspan: "5", text: "Not reported" })]); }
+      return el("tr", {}, [first, el("td", { class: "price", text: fmt$(now[0]) }),
+        changeCell(pr ? now[0] - pr[0] : null, null, pr ? [now[1], pr[1]] : null),
+        changeCell(ya ? now[0] - ya[0] : null, ya ? (now[0] / ya[0] - 1) * 100 : null, ya ? [now[1], ya[1]] : null),
+        el("td", { class: "headcol", text: fmtN(now[1]) }), el("td", { class: "headcol", text: now[2] ? `${fmtN(now[2])} lb` : "–" })]);
+    }));
+    $("#fweek-table").replaceChildren(el("caption", { text: `All grades, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
+    $("#fweek-missing").hidden = !missing;
+    $("#fweek-missing").textContent = "Not reported: USDA withholds a region's figures for a week when too few cattle trade to keep them confidential." +
+      (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no year-ago week yet.` : "");
+    // by grade band, for the class and basis picked
+    seg($("#fgrade-class"), FCLS, () => S.gcls, v => S.gcls = v);
+    seg($("#fgrade-basis"), FBASIS, () => S.gbasis, v => S.gbasis = v);
+    const G = r.week[`${S.gcls}.${S.gbasis}`] || {}, now = G.latest || {}, pr = G.prior || {};
+    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}. Pens are grouped by the share expected to grade Choice.`;
+    $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
+      el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })])),
+      el("tbody", {}, BANDS.filter(([k]) => now[k]).map(([k, t]) => {
+        const x = now[k], y = pr[k];
+        const first = el("td", {}, [document.createTextNode(t), el("span", { class: "headsm", text: `${fmtN(x[1])} head` })]);
+        if (x[0] == null) return el("tr", {}, [first, el("td", { class: "none", style: "text-align:left", colspan: "4", text: "Not priced" })]);
+        return el("tr", { class: x[1] != null && x[1] < FEW ? "thin" : "" }, [first, el("td", { class: k === "total" ? "price" : "", text: fmt$(x[0]) }),
+          changeCell(y && y[0] != null ? x[0] - y[0] : null, null, y ? [x[1], y[1]] : null),
+          el("td", { class: "headcol", text: fmtN(x[1]) }), el("td", { class: "headcol", text: x[2] ? `${fmtN(x[2])} lb` : "–" })]);
+      })));
+    if (!Object.keys(now).length) $("#fgrade-table").replaceChildren(el("caption", { class: "none", text: "Not reported that week." }));
+    // the days traded since that week (the next weekly report replaces them)
+    const dd = r.daily || [];
+    $("#fdaily-card").hidden = !dd.length;
+    if (dd.length) {
+      $("#fdaily-sub").textContent = `USDA's daily ${r.name} report, all grades, $/cwt, head in parentheses. These days count toward next week's report.`;
+      const cellT = (cells, c) => el("td", {}, FBASIS.map(b => { const x = cells[`${c}.${b.v}`];
+        return el("span", { style: "display:block", text: `${b.t}: ${x && x[0] != null ? `${fmt$(x[0])} (${fmtN(x[1])})` : "–"}` }); }));
+      $("#fdaily-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Trade day" }), el("th", { text: "Steers" }), el("th", { text: "Heifers" })])),
+        el("tbody", {}, dd.map(([d, cells]) => el("tr", {}, [el("td", { text: wday(d) }), cellT(cells, "steer"), cellT(cells, "heifer")]))));
+    }
+    fedFacts();
+  }
+
+  // About this week's trade (the auction side's About card): how fed cattle were bought, national --
+  // each purchase type's share of cattle delivered and its dressed steer price, and the negotiated cash share by month
+  const SALE_TYPES = [["negotiated", "Negotiated cash"], ["negotiated_grid", "Negotiated grid"], ["formula", "Formula"], ["forward", "Forward contract"]];
+  function fedFacts() {
+    const Sx = FED.sales, W = Sx.weeks, now = W.latest, pr = W.prior, ya = W.year_ago, card = $("#fweek-facts");
+    if (!now) { card.replaceChildren(el("h3", { text: "About this week's trade" }), el("p", { class: "gmix", text: "USDA's purchase-type report for that week isn't in yet." })); return; }
+    const items = [], pct = v => v == null ? "–" : `${v.toFixed(1)}%`;
+    const add = (k, v, sub, wide) => items.push(el("div", wide ? { class: "wide" } : {}, [el("dt", { text: k }), el("dd", {}, [typeof v === "string" ? document.createTextNode(v) : v, sub ? el("small", { text: sub }) : null])]));
+    add("Fed cattle delivered to packers", `${fmtN(now.total)} head`, `National, every purchase type${ya ? `; ${fmtN(ya.total)} a year ago` : ""}`);
+    const cs = w => w && w.types.negotiated[1];
+    add("Bought on a negotiated cash basis", pct(cs(now)), [pr ? `${pct(cs(pr))} the week before` : null, ya ? `${pct(cs(ya))} a year ago` : null].filter(Boolean).join("; "));
+    const hd = ["Share", "Year ago", "Head", "Dressed steers", "vs. a year ago"].map((t, i) => el("span", { class: "hd" + (i === 1 || i === 4 ? " sm-hide" : i === 2 ? " xs-hide" : ""), text: t }));
+    const cells = [el("span", { class: "lab" }), ...hd];
+    for (const [t, name] of SALE_TYPES) {
+      const x = now.types[t], y = ya && ya.types[t];
+      cells.push(el("span", { class: "lab", text: name }), el("span", { text: pct(x[1]) }), el("span", { class: "yr sm-hide", text: y ? pct(y[1]) : "–" }),
+        el("span", { class: "xs-hide", text: fmtN(x[0]) }), el("span", { text: x[2] != null ? fmt$(x[2]) : "–" }),
+        el("span", { class: "sm-hide" }, [chgSpan(x[2] != null && y && y[2] != null ? x[2] - y[2] : null)]));
+    }
+    add("How the cattle were bought", el("div", { class: "gr gr-wide" }, cells), "", true);
+    const why = el("a", { href: "#about", text: "More on these numbers" });
+    why.addEventListener("click", e => { e.preventDefault(); $("#foot-fed-how").open = true; $("#foot-fed-how").scrollIntoView({ behavior: "smooth", block: "start" }); });
+    const chart = el("div", { class: "chart" }), legend = el("ul", { class: "legend" });
+    card.replaceChildren(el("h3", { text: `About the week of ${weekOf(now.date)}` }), el("dl", {}, items),
+      el("p", { class: "gmix" }, [document.createTextNode("National: USDA reports how cattle were bought for the whole country only, so these figures " +
+        "are the same for every region. Shares count every animal delivered to packers that week, as USDA's own negotiated share does. Dressed steer " +
+        "prices for grid, formula and forward contract cattle are net of the grid's premiums and discounts, and most forward contract prices were set " +
+        "weeks or months earlier, so they differ from the cash price for reasons other than the market. "), why]),
+      el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
+        el("p", { class: "note", text: `Each purchase type's share of all fed cattle delivered, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial.` }),
+        legend, chart]));
+    const X = m => +m.slice(0, 4) * 12 + +m.slice(5, 7) - 1, pts = i => Sx.monthly.filter(r => r[i] != null).map(r => ({ x: X(r[0]), y: r[i] }));
+    // 11/24/2026: formula and forward contract too, so the four shares add up to every animal delivered
+    const series = [{ cls: 1, width: 2.4, name: "Negotiated cash", end: "Cash", dot: true, pts: pts(1) },
+      { cls: 2, dash: "6 4", width: 1.8, name: "Formula", end: "Formula", pts: pts(3) },
+      { cls: 3, width: 1.8, name: "Negotiated grid", end: "Grid", pts: pts(2) },
+      { cls: 3, dash: "2 3", width: 1.8, name: "Forward contract", end: "Forward", pts: pts(4) }];
+    legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash === "2 3" ? " dot" : s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
+    const xs = series[0].pts.map(p => p.x), xmin = Math.min(...xs), xmax = Math.max(...xs), narrow = chart.clientWidth < 520, ticks = [];
+    for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12 * (narrow ? 4 : 2)) ticks.push({ v, t: String(v / 12) });
+    lineChart(chart, { series, height: narrow ? 220 : 240, endLabels: true, x: { min: xmin, max: xmax, ticks }, gap: 1.5, floor: 0,
+      yfmt: (y, full) => full ? `${y.toFixed(1)}%` : `${y}%`, xlab: x => `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`, xname: "Month",
+      aria: "Share of fed cattle bought by negotiated cash, formula, negotiated grid and forward contract, by month, national" });
+  }
+
+  function renderFtrend() {
+    if (!FED) return;
+    const r = reg();
+    seg($("#ftrend-class"), FCLS, () => S.fcls, v => S.fcls = v);
+    seg($("#ftrend-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
+    const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years;
+    $("#ftrend-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly average, $/cwt.`;
+    if (g) yearChart("ftrend", g, { by: "week", year: g.year, base }, `Fed ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)} price this year, last year and the ${base} average, ${r.name}`);
+    else noChart("ftrend", "No negotiated trade reported this year.");
+    if (r.season[k]) {
+      const b = el("button", { type: "button", class: "linkish", text: `See the usual seasonal pattern for ${clsT(S.fcls).toLowerCase()}` });
+      b.addEventListener("click", () => { setTab("fseason", false); window.scrollTo({ top: 0 }); });
+      $("#ftrend-season").replaceChildren(b);
+    } else $("#ftrend-season").replaceChildren();
+    $("#ftrend-note").textContent = `Each point is USDA's weekly weighted average for the week's negotiated cash trade. The ${base} average is ` +
+      "drawn only for weeks all three years had trade." +
+      (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no last-year or average line.` : "");
+  }
+
+  function renderFseason() {
+    if (!FED) return;
+    const r = reg();
+    seg($("#fseason-class"), FCLS, () => S.fcls, v => S.fcls = v);
+    seg($("#fseason-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
+    const sea = r.season[`${S.fcls}.${S.fbasis}`];
+    $("#fseason-off").hidden = !!sea;
+    for (const x of document.querySelectorAll(".fseason-part")) x.hidden = !sea && !Object.keys(r.season).length;
+    if (!sea) {
+      $("#fseason-off p").textContent = r.since ? `The ${r.name} report started ${day(r.since, true)}: too new for a seasonal pattern. Pick 5-Area or National for the pattern across these feedlots.`
+        : `Too few years of ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)} trade in ${r.name} for a seasonal pattern.`;
+      $("#fseason-sub").textContent = ""; $("#fseason-chart").replaceChildren(); $("#fseason-summary").textContent = "";
+      return;
+    }
+    const yrs = sea.years;
+    $("#fseason-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, ${basisT(S.fbasis)}: % above or below a typical month, ${yrs[0]}-${yrs[yrs.length - 1]}, ${r.name}.`;
+    $("#fseason-summary").textContent = seasonSummary(sea.rows);
+    monthBars($("#fseason-chart"), sea.rows, `Fed ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)}: seasonal pattern by month, ${r.name}, ${yrs[0]}-${yrs[yrs.length - 1]}`);
+  }
+
+  // Compare regions: up to three on one chart, like Compare states; no rankings
+  function renderFcmp() {
+    if (!FED) return;
+    const regs = FED.regions;
+    if (!S.f1 || !regById(S.f1)) S.f1 = S.region;
+    const fill = (sel, v, none) => { sel.replaceChildren(...(none ? [el("option", { value: "", text: "None" })] : []), ...regs.map(x => el("option", { value: x.id, text: x.name }))); sel.value = v || ""; };
+    fill($("#fcmp-s1"), S.f1, false); fill($("#fcmp-s2"), S.f2, true); fill($("#fcmp-s3"), S.f3, true);
+    seg($("#fcmp-class"), FCLS, () => S.fcls, v => S.fcls = v);
+    seg($("#fcmp-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
+    const k = `${S.fcls}.${S.fbasis}`, what = `fed ${clsT(S.fcls).toLowerCase().replace(/s$/, "")} ${basisT(S.fbasis)}`;
+    $("#fcmp-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt.`;
+    const ids = [...new Set([S.f1, S.f2, S.f3].filter(Boolean))];
+    const draw = (by, host, legend, sub) => {
+      const weekly = by === "weekly", series = [];
+      ids.forEach((id, i) => {
+        const pts = (regById(id)[by] || {})[k];
+        if (!pts || !pts.length) return;
+        series.push({ ...CMP_STYLE[i], name: regById(id).name, end: REG_SHORT[id] || id, dot: i === 0,
+          pts: pts.filter(p => p[1] != null).map(p => ({ x: weekly ? Date.parse(p[0] + "T12:00:00Z") / 864e5 : +p[0].slice(0, 4) * 12 + +p[0].slice(5, 7) - 1, y: p[1], head: p[2] })) });
+      });
+      const xs = series.flatMap(s => s.pts.map(p => p.x)), xmax = xs.length ? Math.max(...xs) : 0;
+      const xmin = weekly ? xmax - 364 : xmax - 59, ticks = [];
+      if (weekly) {
+        const d0 = new Date(xmin * 864e5), y0 = d0.getUTCFullYear();
+        for (let mo = d0.getUTCMonth() + 1, v; (v = Date.UTC(y0, mo, 1) / 864e5) <= xmax; mo++) ticks.push({ v, t: mo % 12 ? MON3[mo % 12] : String(y0 + mo / 12) });
+      } else for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12) ticks.push({ v, t: String(v / 12) });
+      const narrow = window.innerWidth < 520;
+      legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
+      sub.textContent = weekly ? "Weekly average, the past 52 weeks." : "Monthly average, the past 60 months.";
+      const thin = lineChart(host, { series, x: { min: xmin, max: xmax, ticks: narrow && weekly ? ticks.filter((_, i) => i % 2 === 0) : ticks },
+        gap: weekly ? 10 : 1.5, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+        xlab: x => { if (weekly) { const d = new Date((x - 4) * 864e5); return `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`; }
+          return `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`; },
+        xname: weekly ? "Week" : "Month", empty: `No ${what} trade to chart for the regions picked.`,
+        aria: `${what} price ${weekly ? "by week, the past year" : "by month, the past 5 years"}: ${series.map(s => s.name).join(", ")}` });
+      if (thin) legend.append(fewLegend());
+    };
+    draw("weekly", $("#fcmp-week"), $("#fcmp-wlegend"), $("#fcmp-wsub"));
+    draw("monthly", $("#fcmp-month"), $("#fcmp-mlegend"), $("#fcmp-msub"));
+    $("#fcmp-missing").textContent = ids.map(id => { const x = regById(id);
+      if ((x.weekly[k] || []).length) return x.since ? `${x.name}: reported only since ${day(x.since, true)}.` : null;
+      return `${x.name}: no ${what} trade reported in the past year.`; }).filter(Boolean).join(" ");
+    $("#fcmp-note").textContent = "The regions overlap: 5-Area includes the Nebraska, Iowa-Minnesota and South Central feedlots, and National " +
+      "includes every region. Regions also differ in the cattle they sell (weights, grades and how many sell dressed rather than live), " +
+      "so part of a gap between two lines can come from those differences, not price alone.";
+  }
+
+  // Boxed beef: national, the same whatever region is picked
+  function renderBeef() {
+    if (!FED) return;
+    const b = FED.beef, d = b.days, L = d.latest;
+    $("#beef-sub").textContent = `Choice and Select cutout, 600-900 lb carcasses, USDA's afternoon report for ${wday(L.date, true)}. $/cwt. ` +
+      "The same for every region.";
+    const vs = (g, k, x) => x && x[g] && x[g][k] != null && L[g][k] != null ? L[g][k] - x[g][k] : null;
+    const pc = (g, k, x) => x && x[g] && x[g][k] ? (L[g][k] / x[g][k] - 1) * 100 : null;
+    const card = (g, t) => el("div", {}, [el("div", { class: "k", text: t }), el("div", { class: "v" + (g === "choice" ? " hero" : ""), text: fmt$(L[g].cutout) }),
+      ...[["prior", "the day before"], ["week_ago", "a week earlier"], ["year_ago", "a year earlier"]].map(([w, lab]) =>
+        el("div", { class: "d" }, [`vs. ${lab}${d[w] ? ` (${day(d[w].date, w === "year_ago")})` : ""}: `, chgSpan(vs(g, "cutout", d[w]), w === "year_ago" ? pc(g, "cutout", d[w]) : null)])),
+      el("div", { class: "d", text: L.loads[g] != null ? `${fmtN(L.loads[g])} loads sold` : "" })]);
+    const spr = x => x && x.choice.cutout != null && x.select.cutout != null ? x.choice.cutout - x.select.cutout : null;
+    $("#beef-cards").replaceChildren(card("choice", "Choice cutout"), card("select", "Select cutout"),
+      el("div", {}, [el("div", { class: "k", text: "Choice-Select spread" }), el("div", { class: "v", text: fmt$(spr(L)) }),
+        el("div", { class: "d", text: `A week earlier ${fmt$(spr(d.week_ago))}` }), el("div", { class: "d", text: `A year earlier ${fmt$(spr(d.year_ago))}` })]));
+    $("#beef-primals").replaceChildren(el("caption", { text: `Cutout and primal values, ${wday(L.date)}` }),
+      el("thead", {}, el("tr", {}, [el("th", { text: "Primal" }), el("th", { text: "Choice" }), el("th", { text: "Select" }),
+        el("th", { class: "sm-hide", text: "Choice vs. week earlier" }), el("th", { text: "Choice vs. year earlier" })])),
+      el("tbody", {}, PRIMALS.map(([k, t]) => {
+        const td = v => el("td", { class: k === "cutout" ? "price" : "", text: fmt$(v) });
+        const w = changeCell(vs("choice", k, d.week_ago), null); w.classList.add("sm-hide");
+        return el("tr", {}, [el("td", { text: t }), td(L.choice[k]), td(L.select[k]), w, changeCell(vs("choice", k, d.year_ago), pc("choice", k, d.year_ago))]);
+      })));
+    // the last 65 trading days
+    const X = s => Date.parse(s + "T12:00:00Z") / 864e5, pts = i => b.daily.filter(p => p[i] != null).map(p => ({ x: X(p[0]), y: p[i] }));
+    const xs = b.daily.map(p => X(p[0])), xmin = Math.min(...xs), xmax = Math.max(...xs), ticks = [];
+    const d0 = new Date(xmin * 864e5);
+    for (let mo = d0.getUTCMonth() + 1, v; (v = Date.UTC(d0.getUTCFullYear(), mo, 1) / 864e5) <= xmax; mo++) ticks.push({ v, t: MON3[((mo % 12) + 12) % 12] });
+    const series = [{ cls: 1, width: 2.4, name: "Choice", end: "Choice", dot: true, pts: pts(1) }, { cls: 2, dash: "6 4", width: 1.8, name: "Select", end: "Select", pts: pts(2) }];
+    $("#beef-dsub").textContent = `Each trading day's cutout, ${day(b.daily[0][0], true)} to ${day(b.daily[b.daily.length - 1][0], true)}, $/cwt.`;
+    $("#beef-dlegend").replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
+    lineChart($("#beef-daily"), { series, x: { min: xmin, max: xmax, ticks }, gap: 6, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+      xlab: x => { const t = new Date(x * 864e5); return `${DOW[t.getUTCDay()]}, ${MON[t.getUTCMonth()]} ${t.getUTCDate()}`; }, xname: "Day",
+      aria: "Choice and Select boxed beef cutout by trading day, the last 13 weeks" });
+    // this year vs. last year vs. the 3-year average, weekly
+    const KINDS = [{ v: "choice", t: "Choice" }, { v: "select", t: "Select" }, { v: "spread", t: "Choice-Select spread" }];
+    seg($("#beefy-kind"), KINDS, () => S.bkind, v => S.bkind = v);
+    const k = KINDS.find(x => x.v === S.bkind) || KINDS[0], g = b.years[k.v], base = FED.meta.base_years;
+    $("#beefy-sub").textContent = `${k.v === "spread" ? "Choice cutout minus Select cutout" : `${k.t} cutout`}, weekly average of the daily values, $/cwt.`;
+    if (g) yearChart("beefy", g, { by: "week", year: g.year, base }, `${k.t} ${k.v === "spread" ? "" : "cutout "}this year, last year and the ${base} average`);
+    else noChart("beefy", "No cutout to chart.");
+  }
+
+  // ---------- tabs, address, wiring ----------
+  const VIEWS = { fweek: renderFweek, ftrend: renderFtrend, fseason: renderFseason, fcmp: renderFcmp, beef: renderBeef };
+  // the address (Data_Forecasts/ADDRESS_STANDARD.md): ?region=ne#beef. Tab names never change; old ones keep opening.
+  const ADDR = { fweek: "week", ftrend: "trend", fseason: "season", fcmp: "compare", beef: "beef" };
+  const FROM_ADDR = { week: "fweek", trend: "ftrend", season: "fseason", compare: "fcmp", cmp: "fcmp", beef: "beef" };
+  const hashTab = h => FROM_ADDR[h] || (VIEWS[h] ? h : null);
+  function writeAddr() {
+    let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
+    q.set("region", S.region);
+    const qs = q.toString(), url = `${location.pathname}${qs ? "?" + qs : ""}#${ADDR[S.tab] || S.tab}`;
+    try { if (location.pathname + location.search + location.hash !== url) history.replaceState(null, "", url); } catch (e) { /* sandboxed */ }
+  }
+  function render() {
+    for (const b of document.querySelectorAll(".tab")) {
+      const on = b.dataset.tab === S.tab;
+      b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
+    }
+    renderFed();
+  }
+  const tabFade = () => {};
+  // a jump within the page (#more-tools, #disclaimer) puts the tab back in the address, so a share right after it opens this view
+  window.addEventListener("hashchange", () => { const h = hashTab((location.hash || "").slice(1));
+    if (h && h !== S.tab) setTab(h, "tab"); else if (!h) writeAddr(); });
+  // a tab opens at its top when the reader is below the tab bar; at the top of the page nothing moves
+  function setTab(t, scroll) {
+    if (!VIEWS[t]) return;
+    S.tab = t; store.set("tab", t);
+    writeAddr();
+    render();
+    const top = $("main").getBoundingClientRect().top + window.scrollY - $(".tabs").offsetHeight;
+    if (scroll === "tab" && window.scrollY > top + 1) window.scrollTo({ top });
+  }
+  document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab, "tab")));
+  const tabsH = () => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px");
+  tabsH(); new ResizeObserver(tabsH).observe($(".tabs")); window.addEventListener("resize", tabsH);
+  $("#tablist").addEventListener("keydown", e => {
+    const tabs = [...document.querySelectorAll(".tab")], i = tabs.findIndex(b => b.dataset.tab === S.tab);
+    const n = e.key === "ArrowRight" ? tabs[(i + 1) % tabs.length] : e.key === "ArrowLeft" ? tabs[(i + tabs.length - 1) % tabs.length]
+      : e.key === "Home" ? tabs[0] : e.key === "End" ? tabs[tabs.length - 1] : null;
+    if (n) { setTab(n.dataset.tab, "tab"); n.focus(); e.preventDefault(); }
+  });
+  // a tap outside a chart closes its tooltip (touch has no "mouse left")
+  document.addEventListener("pointerdown", e => {
+    for (const c of document.querySelectorAll(".chart")) if (!c.contains(e.target)) {
+      const t = c.querySelector(".tip"), x = c.querySelector(".cross");
+      if (t) t.hidden = true; if (x) x.setAttribute("visibility", "hidden");
+    }
+  });
+  $("#to-disc").addEventListener("click", e => { e.preventDefault(); $("#disc-full").open = true; $("#disclaimer").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  $("#region").addEventListener("change", e => { S.region = e.target.value; store.set("region", S.region); S.f1 = S.region; writeAddr(); render(); });
+  for (const [i, k] of [[1, "f1"], [2, "f2"], [3, "f3"]]) $(`#fcmp-s${i}`).addEventListener("change", e => { S[k] = e.target.value; renderFcmp(); });
+  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => FED && VIEWS[S.tab](), 120); }).observe(document.querySelector("main"));
+
+  // first view: a ?region= or #tab in the link wins over what this viewer last used (ADDRESS_STANDARD.md rule 4)
+  let q0 = null; try { q0 = new URLSearchParams(location.search); } catch (e) { /* no query */ }
+  const qr = q0 && q0.get("region"), LINKED = !!qr;
+  if (qr) { S.region = qr.toLowerCase(); LINK_REGION = qr; } else if (store.get("region")) S.region = store.get("region");
+  const saved = store.get("tab");
+  S.tab = hashTab((location.hash || "").slice(1)) || (!LINKED && VIEWS[saved] ? saved : "fweek");
+  render();
+})();
+
+// Links between the MSU Extension tools (11/2026; ADDRESS_STANDARD.md). "Share this view" opens the phone's
+// share sheet where there is one, otherwise copies the address, which always holds the view on screen.
+// Links to the other tools carry this page's state (?state=) to the tools that use one.
+(() => {
+  const btn = document.getElementById("share-view"), msg = document.getElementById("share-msg");
+  if (btn) {
+    const say = t => { msg.textContent = t; btn.textContent = t; clearTimeout(btn._t);
+      btn._t = setTimeout(() => { btn.textContent = "Share this view"; msg.textContent = ""; }, 2500); };
+    btn.addEventListener("click", async () => {
+      const url = location.href;
+      if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+        try { await navigator.share({ title: document.title, url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+      }
+      try { await navigator.clipboard.writeText(url); say("Link copied"); hideBox(); }
+      catch (e) { showBox(url); }
+    });
+    // Where the clipboard is blocked (some in-app browsers; window.prompt can fail there too), show the
+    // link as selected text under the button so it can be copied by hand (catfish dashboard, versions 43-44)
+    const box = document.getElementById("share-box"), field = document.getElementById("share-url");
+    const hideBox = () => { box.hidden = true; };
+    const showBox = (url) => {
+      field.value = url; box.hidden = false; field.focus(); field.select();
+      let ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (ok) { hideBox(); btn.focus(); say("Link copied"); }   // copied after all: nothing left to do by hand
+      else { msg.textContent = "Copy the link shown below the button."; }
+    };
+    document.getElementById("share-close").addEventListener("click", () => { hideBox(); btn.focus(); });
+    field.addEventListener("focus", () => field.select());
+    field.addEventListener("keydown", (e) => { if (e.key === "Escape") { hideBox(); btn.focus(); } });
+  }
+  const STATE_TOOLS = ["cattleprices", "drought"];
+  const carry = a => {
+    let st = ""; try { st = (new URLSearchParams(location.search).get("state") || "").toLowerCase(); } catch (e) { /* no query */ }
+    const base = `../${a.dataset.tool}/`;
+    a.href = STATE_TOOLS.includes(a.dataset.tool) && /^[a-z]{2}$/.test(st) ? `${base}?state=${st}` : base;
+  };
+  document.querySelectorAll("a[data-tool]").forEach(a => ["pointerdown", "focus", "mouseenter", "click"].forEach(ev => a.addEventListener(ev, () => carry(a))));
+})();
+
+// A table that scrolls sideways (on a phone) takes keyboard focus, so it can be scrolled with the arrow keys, and
+// is named by its caption or its card's heading (as on the budget page). Rechecked on every redraw and resize.
+(() => {
+  const FOCUSABLE = "a[href], button, input, select, textarea, summary, [tabindex]";
+  const fix = () => document.querySelectorAll(".tablewrap").forEach(s => {
+    const over = s.scrollWidth > s.clientWidth + 1 && !s.querySelector(FOCUSABLE);
+    if (over && !s.hasAttribute("tabindex")) {
+      s.tabIndex = 0; s.setAttribute("role", "region");
+      const name = s.querySelector("caption")?.textContent.trim() || s.closest(".card")?.querySelector("h3")?.textContent.trim();
+      s.setAttribute("aria-label", name || "Table");
+    } else if (!over && s.getAttribute("role") === "region") {
+      ["tabindex", "role", "aria-label"].forEach(a => s.removeAttribute(a));
+    }
+  });
+  let q = 0; const later = () => { if (!q) q = setTimeout(() => { q = 0; fix(); }, 50); };
+  new MutationObserver(later).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "class", "open"] });
+  addEventListener("resize", later); later();
+})();
+
+// Visit counts (GoatCounter): which tabs people open and how often they share, as plain events with no
+// identity attached. Named "<tool>: <tab label>"; nothing is sent when the counter didn't load.
+(() => {
+  const tool = location.pathname.split("/").filter(Boolean).pop() || "page";
+  const count = path => { try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path, title: path, event: true }); } catch (e) { /* counting never breaks the page */ } };
+  document.addEventListener("click", e => {
+    const t = e.target.closest('[role="tab"]');
+    if (t) count(`${tool}: ${t.dataset.side === "fed" ? "Fed " : ""}${(t.querySelector(".l") || t).textContent.trim()}`);   // the long label where a tab has two
+    if (e.target.closest("#share-view")) count(`${tool}: share`);
+  });
+})();
+</script>
+</body>
+</html>
