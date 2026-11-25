@@ -315,6 +315,24 @@ details.calc#keep-calc { max-width: none; }
 .chart text.sm { font-size: 11px; }
 .sqkey { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
 .wkey { display: inline-block; width: 2px; height: 14px; background: var(--ink-2); }
+/* Share this chart (11/25/2026; Cattle Auction Prices' design): the button under each chart and the picture's panel */
+.chart-share { display: grid; justify-items: end; gap: 10px; margin-top: 4px; }
+.chart:not(:has(svg)) + .chart-share { display: none; }
+.cs-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--body); color: var(--ink-2); background: transparent;
+          border: 1px solid var(--rule); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.cs-btn:hover { color: var(--ink); border-color: var(--muted); }
+.cs-btn[disabled] { cursor: progress; }
+.cs-btn svg { width: 14px; height: 14px; flex: none; }
+.cs-btn:focus-visible, .cs-act:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.cs-panel { justify-self: stretch; display: grid; gap: 10px; padding: 12px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--bg); }
+.cs-panel[hidden] { display: none; }
+.cs-img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 6px; background: #fff; }
+.cs-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-act { font: 600 14px/1 var(--body); padding: 10px 16px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+.cs-act:first-child { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.cs-panel .note { margin: 0; }
+.cs-msg:empty { display: none; }
+@media print { .chart-share { display: none; } }
 .tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink);
        border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 13px;
        box-shadow: 0 4px 16px rgba(0,0,0,.12); white-space: nowrap; z-index: 2; }
@@ -899,7 +917,11 @@ details.method .card { margin-top: 10px; }
     const H = cfg.height || (small ? 290 : 320);
     const m = { t: 12, r: cfg.endLabels ? (small ? 74 : 104) : 14, b: 30, l: small ? 46 : 54 };
     const all = cfg.series.flatMap(s => s.pts);
-    if (!all.length) { host.replaceChildren(el("p", { class: "none", text: cfg.empty || "No sales to chart." })); return; }
+    if (!all.length) { host._redraw = null; host.replaceChildren(el("p", { class: "none", text: cfg.empty || "No sales to chart." })); return; }
+    // Share this chart: the same chart again at the picture's size, with the full axis ticks and end labels a phone drops
+    // (x.all, endFull); minHeight keeps room for many end labels (Boxed beef since 2010)
+    host._redraw = (h, ht) => lineChart(h, { ...cfg, height: Math.max(ht || cfg.height || 0, cfg.minHeight || 0) || undefined,
+      x: { ...cfg.x, ticks: cfg.x.all || cfg.x.ticks }, series: cfg.series.map(s => s.endFull ? { ...s, end: s.endFull } : s) });
     const B = cfg.band ? cfg.band.pts : [];
     let ylo = Math.min(...all.map(p => p.y), ...B.map(p => p.lo)), yhi = Math.max(...all.map(p => p.y), ...B.map(p => p.hi));
     if (cfg.marker && cfg.marker.y != null) { ylo = Math.min(ylo, cfg.marker.y); yhi = Math.max(yhi, cfg.marker.y); }
@@ -1042,6 +1064,7 @@ details.method .card { margin-top: 10px; }
 
   // seasonal index bars around 100
   function monthBars(host, rows, label) {
+    host._redraw = h => monthBars(h, rows, label);      // the picture: every month labeled (the width decides)
     const W = Math.max(280, host.clientWidth || 600), small = W < 520, H = small ? 250 : 300;
     const m = { t: 14, r: 10, b: 30, l: small ? 40 : 46 };
     const vals = rows.flatMap(r => [r.low, r.high, r.index]);
@@ -1118,11 +1141,11 @@ details.method .card { margin-top: 10px; }
     const series = [{ cls: 1, pts: cur, name: String(yr), end: String(yr), dot: true, width: 2.6 },
       { cls: 3, pts: ago, name: String(yr - 1), end: String(yr - 1), width: 1.8, markAt: cur.length ? cur[cur.length - 1].x : null,
         labelAt: cur.length ? cur[cur.length - 1].x : null },
-      { cls: 2, pts: avg, name: `${base} avg.`, end: narrow ? "3-yr avg." : `${base} avg.`, dash: "6 4", width: 1.8,
+      { cls: 2, pts: avg, name: `${base} avg.`, end: narrow ? "3-yr avg." : `${base} avg.`, endFull: `${base} avg.`, dash: "6 4", width: 1.8,
         markAt: cur.length ? cur[cur.length - 1].x : null, labelAt: cur.length ? cur[cur.length - 1].x : null }].filter(s => s.pts.length);
     $(`#${pre}-legend`).replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
     const thinT = lineChart($(`#${pre}-chart`), {
-      series, x: { min: 0, max: 365, ticks: window.innerWidth < 520 ? ticks.filter((_, i) => i % 2 === 0) : ticks },
+      series, x: { min: 0, max: 365, ticks: window.innerWidth < 520 ? ticks.filter((_, i) => i % 2 === 0) : ticks, all: ticks },
       gap: weekly ? 20 : 45, endLabels: true, yfmt,
       // weekly points are labeled by the week's Friday; the week starts that Monday
       xlab: x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5); return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : MON_FULL[d.getUTCMonth()]; },
@@ -1360,7 +1383,7 @@ details.method .card { margin-top: 10px; }
     add("How the cattle were bought", el("div", { class: "gr gr-wide" }, cells), "", true);
     const why = el("a", { href: "#about", text: "More on these numbers" });
     why.addEventListener("click", e => { e.preventDefault(); $("#foot-fed-how").open = true; $("#foot-fed-how").scrollIntoView({ behavior: "smooth", block: "start" }); });
-    const chart = el("div", { class: "chart" }), legend = el("ul", { class: "legend" });
+    const chart = el("div", { class: "chart", id: "fsales-chart" }), legend = el("ul", { class: "legend" });
     // the card is national whatever region is picked (11/24/2026): a National chip on the heading and a line saying so
     card.replaceChildren(el("h3", {}, [`About the week of ${weekOf(now.date)} `, el("span", { class: "chip-scope", text: "National" })]),
       el("p", { class: "gmix nat-line", text: reg().id === "us" ? "Every U.S. feedlot selling to packers that report to USDA."
@@ -1371,7 +1394,7 @@ details.method .card { margin-top: 10px; }
         WEEKLY + " "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
         el("p", { class: "note", text: `Each purchase type's share of all fed cattle delivered, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial; October 2013 is missing (the federal government shutdown).` }),
-        legend, chart]));
+        legend, chart, shareControl(chart)]));
     const X = m => +m.slice(0, 4) * 12 + +m.slice(5, 7) - 1, pts = i => Sx.monthly.filter(r => r[i] != null).map(r => ({ x: X(r[0]), y: r[i] }));
     // 11/24/2026: formula and forward contract too, so the four shares add up to every animal delivered
     const series = [{ cls: 1, width: 2.4, name: "Negotiated cash", end: "Cash", dot: true, pts: pts(1) },
@@ -1381,7 +1404,8 @@ details.method .card { margin-top: 10px; }
     legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash === "2 3" ? " dot" : s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
     const xs = series[0].pts.map(p => p.x), xmin = Math.min(...xs), xmax = Math.max(...xs), narrow = chart.clientWidth < 520, ticks = [];
     for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12 * (narrow ? 4 : 2)) ticks.push({ v, t: String(v / 12) });
-    lineChart(chart, { series, height: narrow ? 220 : 240, endLabels: true, x: { min: xmin, max: xmax, ticks }, gap: 1.5, floor: 0,
+    const allT = []; for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 24) allT.push({ v, t: String(v / 12) });   // the picture
+    lineChart(chart, { series, height: narrow ? 220 : 240, endLabels: true, x: { min: xmin, max: xmax, ticks, all: allT }, gap: 1.5, floor: 0,
       yfmt: (y, full) => full ? `${y.toFixed(1)}%` : `${y}%`, xlab: x => `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`, xname: "Month",
       aria: "Share of fed cattle bought by negotiated cash, formula, negotiated grid and forward contract, by month, national" });
   }
@@ -1461,10 +1485,12 @@ details.method .card { margin-top: 10px; }
         const d0 = new Date(xmin * 864e5), y0 = d0.getUTCFullYear();
         for (let mo = d0.getUTCMonth() + 1, v; (v = Date.UTC(y0, mo, 1) / 864e5) <= xmax; mo++) ticks.push({ v, t: mo % 12 ? MON3[mo % 12] : String(y0 + mo / 12) });
       } else for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += host.clientWidth < 360 ? 24 : 12) ticks.push({ v, t: String(v / 12) });   // every other year on a narrow phone, where five ran together
+      const allT = weekly ? ticks : [];      // the picture: every year (Share this chart)
+      if (!weekly) for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12) allT.push({ v, t: String(v / 12) });
       const narrow = window.innerWidth < 520;
       legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
       sub.textContent = weekly ? "Weekly weighted average, the past 52 weeks." : "Monthly average of the weeks, weighted by head, the past 60 months.";
-      const thin = lineChart(host, { series, x: { min: xmin, max: xmax, ticks: narrow && weekly ? ticks.filter((_, i) => i % 2 === 0) : ticks },
+      const thin = lineChart(host, { series, x: { min: xmin, max: xmax, ticks: narrow && weekly ? ticks.filter((_, i) => i % 2 === 0) : ticks, all: allT },
         gap: weekly ? 10 : 1.5, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
         xlab: x => { if (weekly) { const d = new Date((x - 4) * 864e5); return `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`; }
           return `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`; },
@@ -1563,14 +1589,245 @@ details.method .card { margin-top: 10px; }
     $("#beefh-sub").textContent = `${gt}, monthly average of the daily values, ${MON_FULL[+H.months[0].slice(5) - 1]} ${H.months[0].slice(0, 4)} ` +
       `to ${MON_FULL[+H.months[H.months.length - 1].slice(5) - 1]} ${H.months[H.months.length - 1].slice(0, 4)} (the latest month can be partial), $/cwt.`;
     $("#beefh-legend").replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash === "2 3" ? " dot" : s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
-    if (!series.length) { $("#beefh-chart").replaceChildren(el("p", { class: "none", text: "Pick the cutout or a primal to chart." })); return; }
+    if (!series.length) { $("#beefh-chart")._redraw = null; $("#beefh-chart").replaceChildren(el("p", { class: "none", text: "Pick the cutout or a primal to chart." })); return; }
+    const allT = []; for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 24) allT.push({ v, t: String(v / 12) });   // the picture
     lineChart($("#beefh-chart"), { series, height: Math.max(narrow ? 240 : 280, series.length * 34 + 40), endLabels: true,
-      x: { min: xmin, max: xmax, ticks }, gap: 1.5, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+      minHeight: series.length * 34 + 40, x: { min: xmin, max: xmax, ticks, all: allT }, gap: 1.5, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
       xlab: x => `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`, xname: "Month",
       aria: `${gt} boxed beef by month since ${H.months[0].slice(0, 4)}: ${series.map(s => s.name).join(", ")}` });
   }
 
   // ---------- tabs, address, wiring ----------
+  // ---------- Share this chart (11/25/2026; Cattle Auction Prices' design, so the AgEconTools dashboards match) ----------
+  // A button under each chart makes a picture of it to paste into a slide, document or text message: the chart drawn
+  // again at a fixed size (800 x about 450, saved at 2x: 1600 px wide, so lines and type hold up on a slide) in the
+  // light colors whatever the page's theme, plain white (no band on top, as Cattle Auction Prices), a title naming the
+  // measure, comparison and place, a subtitle, its legend, the Source line with the data's latest date, any footnote,
+  // and the page's name and address. The phone's share sheet where it takes files, Copy image where the clipboard takes
+  // pictures, Download always; the picture shows in the panel too, to press and hold where a browser blocks all three.
+  const SHOT = { W: 800, PAD: 28, H: 450, SCALE: 2 };
+  const SHOT_SITE = "Chart: Live Cattle and Boxed Beef Dashboard, Mississippi State University Extension (agecontools.github.io/livecattle)";   // the wording asked for, 11/25/2026
+  const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const one = c => c.toLowerCase().replace(/s$/, "");                     // "Steers" -> "steer"
+  const andList = a => a.length < 2 ? (a[0] || "") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`;
+  const legendNames = id => [...$(id).querySelectorAll("li")].filter(li => !li.querySelector(".fewkey")).map(li => li.textContent.trim());
+  const fedWhat = () => `Fed ${one(clsT(S.fcls))} ${basisT(S.fbasis)}`;   // "Fed steer live"
+  const weekThru = () => `Through the week of ${weekOf(FED.meta.week)}, ${FED.meta.week.slice(0, 4)}.`;
+  const shotSource = thru => `Source: USDA-AMS. ${thru || weekThru()}`;   // the page's own credit (Source lines: credit only)
+  const cmpShot = weekly => {
+    const names = legendNames(weekly ? "#fcmp-wlegend" : "#fcmp-mlegend"), solo = names.length < 2;
+    const beef = names.some(n => n.startsWith("Boxed beef")), regions = names.filter(n => !n.startsWith("Boxed beef"));
+    const ended = [...new Set([S.f1, S.f2, S.f3].filter(Boolean))].some(id => (FED.ended || []).some(e => e.id === id));
+    const notes = [];
+    if (regions.length > 1) notes.push("The regions overlap: 5-Area includes Nebraska, Iowa-Minnesota and South Central, and National includes " +
+      "every region. They also sell different cattle, so part of a gap can come from those differences, not price alone.");
+    if (ended) notes.push("USDA has withheld the Kansas and Texas-Oklahoma-New Mexico reports for confidentiality since summer 2026.");
+    if (beef) notes.push("The cutout is what a carcass's beef brings sold in boxes, not what packers paid for cattle; the gap is not a packer margin.");
+    return { title: solo ? `${fedWhat()} price, ${names[0] || reg().name}: the past ${weekly ? "year" : "5 years"}`
+        : `${fedWhat()} prices${beef ? " and boxed beef" : ""}: ${andList(names)}, the past ${weekly ? "year" : "5 years"}`,
+      sub: `Negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt. ${weekly ? "Weekly weighted average, the past 52 weeks." :
+        "Monthly average of the weeks, weighted by head, the past 5 years."}`, notes };
+  };
+  // one title rule per chart, keyed by chart id; a new chart needs one (tools/check_fedcattle.py)
+  const SHARE_SPECS = {
+    "fvol-chart": () => { const Y = FED.sales.ytd, base = FED.meta.base_years;
+      return { title: `Fed cattle delivered to packers so far in ${Y.year}, national: ${Y.year} vs. ${Y.year - 1} and the ${base} average`,
+        sub: "All fed steers and heifers delivered, every purchase type, domestic and imported. Running total by week of the year, head." }; },
+    "fsales-chart": () => { const M = FED.sales.monthly, a = M[0][0], b = M[M.length - 1][0], mo = s => `${MON_FULL[+s.slice(5) - 1]} ${s.slice(0, 4)}`;
+      return { title: "How fed cattle were bought, national: each purchase type's share by month",
+        sub: `Share of all fed steers and heifers delivered to packers, domestic and imported, ${mo(a)} to ${mo(b)}, %.`,
+        note: "October 2013 is missing (the federal government shutdown). The latest month can be partial." }; },
+    "ftrend-chart": () => { const r = reg(), g = r.years[`${S.fcls}.${S.fbasis}`], base = FED.meta.base_years, hist = g && g.ago.length;
+      return { title: `${fedWhat()} price, ${r.name}: ${g.year}${hist ? " vs. recent years" : ""}`,
+        sub: `Negotiated cash, ${BASIS_SUB[S.fbasis]}. USDA's weekly weighted average, $/cwt` +
+          (hist ? `: this year, last year and the ${base} average.` : `, since the report began (trading on ${day(r.since, true)}).`) }; },
+    "fweight-chart": () => { const r = reg(), g = r.wyears[`${S.fcls}.${S.fbasis}`], base = FED.meta.base_years, hist = g && g.ago.length;
+      const live = S.fbasis === "live";
+      return { title: `Fed ${one(clsT(S.fcls))} average ${live ? "live" : "carcass"} weight, ${r.name}: ${g.year}${hist ? " vs. recent years" : ""}`,
+        sub: `Negotiated cash ${clsT(S.fcls).toLowerCase()}, USDA's weekly weighted average ${live ? "live weight at the feedlot" : "carcass (dressed) weight"}, lb` +
+          (hist ? `: this year, last year and the ${base} average.` : `, since the report began (trading on ${day(r.since, true)}).`) }; },
+    "fseason-chart": () => { const r = reg(), sea = r.season[`${S.fcls}.${S.fbasis}`], y = sea.years, yy = `${y[0]}-${y[y.length - 1]}`;
+      return { title: `Seasonal price pattern, fed ${clsT(S.fcls).toLowerCase()} (${basisT(S.fbasis)}), ${r.name}`,
+        sub: `How far each month's negotiated cash price usually runs above or below the average of the 12 months around it, ${yy}.`,
+        note: "Thin lines on each bar show the lowest and highest year.", source: `Source: USDA-AMS. Monthly prices, ${yy}.` }; },
+    "fcmp-week": () => cmpShot(true),
+    "fcmp-month": () => cmpShot(false),
+    "beefy-chart": () => {
+      const k = S.bkind, g = FED.beef.years[k][S.bprimal], base = FED.meta.base_years, last = g.cur[g.cur.length - 1][0];
+      const pn = S.bprimal === "cutout" ? "cutout value" : `${PRIMALS.find(([v]) => v === S.bprimal)[1].toLowerCase()} primal value`;
+      return { title: `${k === "spread" ? `Choice-Select spread, ${pn.replace(/ value$/, "")}` : `${cap(k)} ${pn}`}, national: ${g.year} vs. recent years`,
+        sub: `USDA's daily boxed beef values, 600-900 lb carcasses, averaged by week (finished weeks only), $/cwt: this year, last year and the ${base} average.`,
+        source: shotSource(`Through the week of ${weekOf(`${g.year}-${last}`)}, ${g.year}.`) }; },
+    "beefh-chart": () => {
+      const names = PRIMALS.filter(([p]) => S.hprimals.includes(p)).map(([, t]) => t === "Cutout value" ? "cutout" : t.toLowerCase());
+      return { title: `${S.hgrade === "select" ? "Select" : "Choice"} boxed beef values since 2010, national: ${andList(names)}`,
+        sub: "USDA's daily values, 600-900 lb carcasses, averaged by month (the latest month can be partial), $/cwt.",
+        source: shotSource(`Through ${day(FED.meta.cutout_through, true)}.`) }; },
+  };
+  // the light theme's colors (the plain :root rules, outside the dark-mode ones), set on the chart drawn for the picture
+  const lightTokens = () => {
+    const t = {};
+    for (const sh of document.styleSheets) {
+      let rules; try { rules = sh.cssRules; } catch (e) { continue; }
+      for (const r of rules) if (r.selectorText === ":root") for (const p of r.style) if (p.startsWith("--")) t[p] = r.style.getPropertyValue(p).trim();
+    }
+    return t;
+  };
+  // the page's own fonts inside the picture, so it draws in them (a picture can't reach the page's fonts)
+  let SHOT_FONTS = null;
+  const shotFonts = async () => {
+    if (SHOT_FONTS != null) return SHOT_FONTS;
+    const face = async (fam, file, wt) => {
+      const b = await (await fetch(`fonts/${file}`)).blob();
+      const u = await new Promise((ok, no) => { const f = new FileReader(); f.onload = () => ok(f.result); f.onerror = no; f.readAsDataURL(b); });
+      return `@font-face{font-family:"${fam}";font-weight:${wt};src:url(${u.replace(/^data:[^;,]*/, "data:font/woff2")}) format("woff2")}`;
+    };
+    try { SHOT_FONTS = (await Promise.all([face("Bitter", "bitter-latin-700-normal.woff2", 700), face("Public Sans", "public-sans-latin-400-normal.woff2", 400),
+      face("Public Sans", "public-sans-latin-600-normal.woff2", 600), face("Public Sans", "public-sans-latin-700-normal.woff2", 700)])).join(""); }
+    catch (e) { SHOT_FONTS = ""; }        // Georgia and Arial then
+    return SHOT_FONTS;
+  };
+  const xesc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const SHOT_FONT = { title: ['700 22px Bitter, Georgia, serif', 22, 28], sub: ['400 14px "Public Sans", Arial, sans-serif', 14, 20],
+    leg: ['400 13.5px "Public Sans", Arial, sans-serif', 13.5, 22], src: ['400 11.5px "Public Sans", Arial, sans-serif', 11.5, 16],
+    site: ['600 11.5px "Public Sans", Arial, sans-serif', 11.5, 16] };
+  const measure = document.createElement("canvas").getContext("2d");
+  const wrapText = (text, font, w) => {
+    measure.font = font; const out = []; let cur = "";
+    for (const wd of String(text).split(/\s+/).filter(Boolean)) {
+      const t = cur ? `${cur} ${wd}` : wd;
+      if (cur && measure.measureText(t).width > w) { out.push(cur); cur = wd; } else cur = t;
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
+  const SHOT_PROPS = ["fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity",
+    "opacity", "visibility", "font-family", "font-size", "font-weight", "font-variant-numeric"];
+  async function chartPicture(host, spec) {
+    const { W, PAD, SCALE } = SHOT, IW = W - 2 * PAD, T = lightTokens();
+    await Promise.all(["700 22px Bitter", '400 14px "Public Sans"', '600 14px "Public Sans"'].map(f => document.fonts.load(f))).catch(() => {});
+    const parts = [], fam = { title: "Bitter, Georgia, serif", body: '"Public Sans", Arial, sans-serif' };
+    const lines = (key, text, y, color, weight) => {
+      const [font, size, lh] = SHOT_FONT[key];
+      for (const ln of wrapText(text, font, IW)) {
+        parts.push(`<text x="${PAD}" y="${(y + size).toFixed(1)}" font-family="${xesc(key === "title" ? fam.title : fam.body)}" font-size="${size}" font-weight="${weight}" fill="${color}">${xesc(ln)}</text>`);
+        y += lh;
+      }
+      return y;
+    };
+    let y = PAD;
+    y = lines("title", spec.title, y, T["--ink"], 700) + 2;
+    y = lines("sub", spec.sub, y, T["--ink-2"], 400) + 8;
+    // the legend, from the one on the page: lines (solid, dashed, dotted, four colors) and the few-sales circle, in the light colors
+    const leg = host.parentElement.querySelector(":scope > ul.legend");
+    const items = leg ? [...leg.querySelectorAll(":scope > li")].map(li => ({ key: li.querySelector("span"), text: li.textContent.trim() })) : [];
+    if (items.length) {
+      const [font, size, lh] = SHOT_FONT.leg; measure.font = font;
+      let x = PAD;
+      for (const it of items) {
+        const w = 18 + 7 + measure.measureText(it.text).width;
+        if (x > PAD && x + w > W - PAD) { x = PAD; y += lh; }
+        const k = it.key ? it.key.classList : { contains: () => false }, cy = y + lh / 2;
+        const col = T[`--line-${["1", "2", "3", "4"].find(n => k.contains("k" + n)) || "1"}`];
+        if (k.contains("fewkey")) parts.push(`<circle cx="${x + 9}" cy="${cy}" r="5" fill="${T["--warn-bg"]}" stroke="${T["--warn-line"]}" stroke-width="2.5"/>`);
+        else parts.push(`<line x1="${x}" x2="${x + 18}" y1="${cy}" y2="${cy}" stroke="${col}" stroke-width="${k.contains("dot") ? 2 : 3}"${k.contains("dot") ? ' stroke-dasharray="1.5 3"' : k.contains("dash") ? ' stroke-dasharray="5 3"' : ""}/>`);
+        parts.push(`<text x="${x + 25}" y="${(cy + size * 0.36).toFixed(1)}" font-family="${xesc(fam.body)}" font-size="${size}" fill="${T["--ink-2"]}">${xesc(it.text)}</text>`);
+        x += w + 18;
+      }
+      y += lh + 6;
+    }
+    // the footer first, so a line chart can take the height left to make about 16:9
+    const foot = [];
+    const fy = (key, text, color, weight) => { const n = wrapText(text, SHOT_FONT[key][0], IW).length; foot.push([key, text, color, weight]); return n * SHOT_FONT[key][2]; };
+    let fh = 14 + fy("src", spec.source || shotSource(), T["--ink-2"], 400);
+    for (const n of [spec.note, ...(spec.notes || [])].filter(Boolean)) fh += fy("src", n, T["--ink-2"], 400);
+    fh += 4 + fy("site", SHOT_SITE, T["--muted"], 600);
+    // the chart, drawn again off screen at the picture's width in the light colors, its styles written onto it
+    const off = el("div", { class: "chart", "aria-hidden": "true",
+      style: `position:fixed;left:-10000px;top:0;width:${IW}px;` + Object.entries(T).map(([k, v]) => `${k}:${v}`).join(";") });
+    document.body.append(off);
+    let svgXml, ch;
+    try {
+      host._redraw(off, Math.max(230, SHOT.H - y - fh - PAD));
+      const svg = off.querySelector("svg");
+      if (!svg) throw new Error("no chart");
+      ch = svg.viewBox.baseVal.height;
+      const copy = svg.cloneNode(true), a = [svg, ...svg.querySelectorAll("*")], b = [copy, ...copy.querySelectorAll("*")];
+      a.forEach((n, i) => { const cs = getComputedStyle(n);
+        b[i].setAttribute("style", SHOT_PROPS.map(p => `${p}:${cs.getPropertyValue(p)}`).join(";")); b[i].removeAttribute("class"); });
+      for (const k of ["role", "aria-label", "tabindex", "height"]) copy.removeAttribute(k);
+      for (const [k, v] of Object.entries({ x: PAD, y, width: IW, height: ch, overflow: "visible" })) copy.setAttribute(k, v);
+      svgXml = new XMLSerializer().serializeToString(copy);
+    } finally { off.remove(); }
+    y += ch;
+    if (spec.xaxis) {          // an axis title the page leaves to its controls
+      parts.push(`<text x="${W / 2}" y="${y + 14}" text-anchor="middle" font-family="${xesc(fam.body)}" font-size="12.5" fill="${T["--ink-2"]}">${xesc(spec.xaxis)}</text>`);
+      y += 20;
+    }
+    y += 14;
+    parts.push(`<line x1="${PAD}" x2="${W - PAD}" y1="${y}" y2="${y}" stroke="${T["--rule"]}" stroke-width="1"/>`);
+    y += 10;
+    for (const [key, text, color, weight] of foot) y = lines(key, text, y, color, weight);
+    const H = Math.ceil(y + PAD - 8);
+    const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${W * SCALE}" height="${H * SCALE}" viewBox="0 0 ${W} ${H}">` +
+      `<style>${await shotFonts()}</style><rect width="${W}" height="${H}" fill="#ffffff"/>` +   // plain white, no band (11/25/2026)
+      parts.join("") + svgXml + "</svg>";
+    const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      const cv = document.createElement("canvas"); cv.width = W * SCALE; cv.height = H * SCALE;
+      const c = cv.getContext("2d");
+      c.drawImage(img, 0, 0, cv.width, cv.height);
+      await new Promise(r => setTimeout(r, 150));      // Safari can apply a picture's own fonts a moment after it loads: draw again
+      c.clearRect(0, 0, cv.width, cv.height); c.drawImage(img, 0, 0, cv.width, cv.height);
+      return await new Promise((ok, no) => cv.toBlob(bl => bl ? ok(bl) : no(new Error("no picture")), "image/png"));
+    } finally { URL.revokeObjectURL(url); }
+  }
+  const SHARE_ICON = '<svg aria-hidden="true" focusable="false" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M8 10V2M5 4.8 8 2l3 2.8M4.5 7H3.5v7h9V7h-1"/></svg>';
+  function shareControl(host) {
+    const btn = el("button", { type: "button", class: "cs-btn", "aria-expanded": "false", html: `${SHARE_ICON}<span>Share this chart</span>` });
+    const panel = el("div", { class: "cs-panel", hidden: "" });
+    const close = () => { panel.hidden = true; if (panel._url) URL.revokeObjectURL(panel._url); panel._url = null; panel.replaceChildren(); btn.setAttribute("aria-expanded", "false"); };
+    btn.addEventListener("click", () => { if (!panel.hidden) { close(); return; } openShare(host, btn, panel, close); });
+    panel.addEventListener("keydown", e => { if (e.key === "Escape") { close(); btn.focus(); } });
+    new MutationObserver(close).observe(host, { childList: true });     // the chart changed: the picture is out of date
+    return el("div", { class: "chart-share" }, [btn, panel]);
+  }
+  async function openShare(host, btn, panel, close) {
+    const make = SHARE_SPECS[host.id];
+    if (!make || !host._redraw || !host.querySelector("svg")) return;
+    const spec = make(), lab = btn.querySelector("span");
+    btn.disabled = true; lab.textContent = "Making the picture…";
+    let blob;
+    try { blob = await chartPicture(host, spec); }
+    catch (e) { console.error(e); panel.replaceChildren(el("p", { class: "note", text: "The picture couldn't be made in this browser." })); panel.hidden = false; return; }
+    finally { btn.disabled = false; lab.textContent = "Share this chart"; }
+    const name = `live-cattle-${spec.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70).replace(/-$/, "")}-${FED.meta.week}.png`;
+    const file = new File([blob], name, { type: "image/png" }), url = URL.createObjectURL(blob);
+    panel._url = url;
+    const msg = el("p", { class: "note cs-msg", role: "status" });
+    const act = (t, f) => { const b = el("button", { type: "button", class: "cs-act", text: t }); b.addEventListener("click", f); return b; };
+    let files = false; try { files = !!(navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { files = false; }
+    const share = files && act("Share…", async () => {
+      try { await navigator.share({ files: [file], title: spec.title }); }
+      catch (e) { if (!e || e.name !== "AbortError") msg.textContent = "Sharing didn't work here. Use Download, or press and hold the picture."; }
+    });
+    const copy = !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) && act("Copy image", async () => {
+      try { await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]); msg.textContent = "Copied. Paste it into a slide, document or message."; }
+      catch (e) { msg.textContent = "This browser won't copy pictures. Use Download, or right-click the picture to copy it."; }
+    });
+    const dl = act("Download", () => { const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); });
+    const coarse = matchMedia("(pointer: coarse)").matches;
+    const acts = (coarse ? [share, dl, copy] : [copy, dl, share]).filter(Boolean);
+    panel.replaceChildren(el("img", { class: "cs-img", src: url, alt: `${spec.title}. ${spec.sub}` }),
+      el("div", { class: "cs-acts" }, [...acts, act("Close", () => { close(); btn.focus(); })]),
+      el("p", { class: "note cs-hint", text: coarse ? "Or press and hold the picture to save or copy it." : "Or right-click the picture to copy or save it." }), msg);
+    panel.hidden = false; btn.setAttribute("aria-expanded", "true");
+    acts[0].focus({ preventScroll: true });
+  }
+  // the About card's chart (fsales-chart) is drawn with its card, which adds its own button
+  for (const id of Object.keys(SHARE_SPECS)) { const h = document.getElementById(id); if (h) h.after(shareControl(h)); }
+
   const VIEWS = { fweek: renderFweek, ftrend: renderFtrend, fcmp: renderFcmp, beef: renderBeef };
   // the address (Data_Forecasts/ADDRESS_STANDARD.md): ?region=ne#beef. Tab names never change; old ones keep opening.
   // #season opened the Seasonal trend tab before Trends took it in (11/24/2026); it opens Trends at the seasonal chart
@@ -1625,7 +1882,10 @@ details.method .card { margin-top: 10px; }
   $("#region").addEventListener("change", e => setRegion(e.target.value));
   $("#beefy-primal").addEventListener("change", e => { S.bprimal = e.target.value; render(); });
   for (const [i, k] of [[1, "f1"], [2, "f2"], [3, "f3"]]) $(`#fcmp-s${i}`).addEventListener("change", e => { S[k] = e.target.value; renderFcmp(); });
-  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => FED && VIEWS[S.tab](), 120); }).observe(document.querySelector("main"));
+  // only a change of width redraws (a panel opening, such as Share this chart's, makes the page taller, not wider;
+  // redrawing on any size change closed it, as on Cattle Auction Prices)
+  let rt, mainW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === mainW) return; mainW = w;
+    clearTimeout(rt); rt = setTimeout(() => FED && VIEWS[S.tab](), 120); }).observe(document.querySelector("main"));
 
   // first view: a ?region= or #tab in the link wins over what this viewer last used (ADDRESS_STANDARD.md rule 4)
   let q0 = null; try { q0 = new URLSearchParams(location.search); } catch (e) { /* no query */ }
@@ -1703,6 +1963,7 @@ details.method .card { margin-top: 10px; }
     const t = e.target.closest('[role="tab"]');
     if (t) count(`${tool}: ${t.dataset.side === "fed" ? "Fed " : ""}${(t.querySelector(".l") || t).textContent.trim()}`);   // the long label where a tab has two
     if (e.target.closest("#share-view")) count(`${tool}: share`);
+    if (e.target.closest(".cs-btn")) count(`${tool}: share chart`);
   });
 })();
 </script>
