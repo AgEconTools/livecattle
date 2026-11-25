@@ -1243,8 +1243,10 @@ details.method .card { margin-top: 10px; }
   function renderFweek() {
     if (!FED) return;
     const r = reg(), wk = r.weeks;
-    $("#fweek-sub").textContent = `Negotiated cash trade, week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt). ${WEEKLY}`;
-    const head = el("thead", {}, el("tr", {}, [el("th", { text: "Steers and heifers" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
+    // the prices are USDA's weekly weighted averages (11/24/2026: said on the tab, not only in How this is calculated)
+    $("#fweek-sub").textContent = `USDA's weekly weighted average price for negotiated cash trades (each lot weighted by its head count), ` +
+      `week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt). ${WEEKLY}`;
+    const head = el("thead", {}, el("tr", {}, [el("th", { text: "Steers and heifers" }), el("th", { text: "Weighted avg. price" }), el("th", { text: "vs. week before" }),
       el("th", { text: "vs. a year ago" }), el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })]));
     let missing = 0;
     const rows = FCLS.flatMap(c => FBASIS.map(b => {
@@ -1258,7 +1260,7 @@ details.method .card { margin-top: 10px; }
         changeCell(ya ? now[0] - ya[0] : null, ya ? (now[0] / ya[0] - 1) * 100 : null, ya ? [now[1], ya[1]] : null),
         el("td", { class: "headcol", text: fmtN(now[1]) }), el("td", { class: "headcol", text: now[2] ? `${fmtN(now[2])} lb` : "–" })]);
     }));
-    $("#fweek-table").replaceChildren(el("caption", { text: `${r.name}, all grades, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
+    $("#fweek-table").replaceChildren(el("caption", { text: `${r.name}, all grades, weighted average, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
     $("#fweek-missing").hidden = !missing;
     $("#fweek-missing").textContent = "Not reported: USDA withholds a region's figures for a week when too few cattle trade to keep them confidential." +
       (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no year-ago week yet.` : "");
@@ -1266,9 +1268,10 @@ details.method .card { margin-top: 10px; }
     seg($("#fgrade-class"), FCLS, () => S.gcls, v => S.gcls = v);
     seg($("#fgrade-basis"), FBASIS, () => S.gbasis, v => S.gbasis = v);
     const G = r.week[`${S.gcls}.${S.gbasis}`] || {}, now = G.latest || {}, pr = G.prior || {};
-    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}. Pens are grouped by the share expected to grade Choice; ` +
+    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}: USDA's weighted average price ` +
+      "for each band. Pens are grouped by the share expected to grade Choice; " +
       "USDA doesn't price cash cattle as Select.";
-    $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
+    $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Weighted avg. price" }), el("th", { text: "vs. week before" }),
       el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })])),
       el("tbody", {}, BANDS.filter(([k]) => now[k]).map(([k, t]) => {
         const x = now[k], y = pr[k];
@@ -1298,7 +1301,7 @@ details.method .card { margin-top: 10px; }
     const dd = r.daily || [];
     $("#fdaily-card").hidden = !dd.length;
     if (dd.length) {
-      $("#fdaily-sub").textContent = `USDA's daily ${r.name} report, all grades, $/cwt, head in parentheses. These days count toward next week's report. ${DAILY}`;
+      $("#fdaily-sub").textContent = `USDA's daily ${r.name} report: each day's weighted average price, all grades, $/cwt, head in parentheses. These days count toward next week's report. ${DAILY}`;
       const cellT = (cells, c) => el("td", {}, FBASIS.map(b => { const x = cells[`${c}.${b.v}`];
         return el("span", { style: "display:block", text: `${b.t}: ${x && x[0] != null ? `${fmt$(x[0])} (${fmtN(x[1])})` : "–"}` }); }));
       $("#fdaily-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Trade day" }), el("th", { text: "Steers" }), el("th", { text: "Heifers" })])),
@@ -1361,7 +1364,7 @@ details.method .card { margin-top: 10px; }
     seg($("#ftrend-class"), FCLS, () => S.fcls, v => S.fcls = v);
     seg($("#ftrend-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
     const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years, cl = clsT(S.fcls).toLowerCase();
-    $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly averages. ${WEEKLY}`;
+    $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly weighted averages. ${WEEKLY}`;
     $("#ftrend-psub").textContent = `This year, last year and the ${base} average, $/cwt.`;
     if (g) yearChart("ftrend", g, { by: "week", year: g.year, base }, `Fed ${cl} ${basisT(S.fbasis)} price this year, last year and the ${base} average, ${r.name}`);
     else noChart("ftrend", "No negotiated trade reported this year.");
@@ -1432,7 +1435,7 @@ details.method .card { margin-top: 10px; }
       } else for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += host.clientWidth < 360 ? 24 : 12) ticks.push({ v, t: String(v / 12) });   // every other year on a narrow phone, where five ran together
       const narrow = window.innerWidth < 520;
       legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
-      sub.textContent = weekly ? "Weekly average, the past 52 weeks." : "Monthly average, the past 60 months.";
+      sub.textContent = weekly ? "Weekly weighted average, the past 52 weeks." : "Monthly average of the weeks, weighted by head, the past 60 months.";
       const thin = lineChart(host, { series, x: { min: xmin, max: xmax, ticks: narrow && weekly ? ticks.filter((_, i) => i % 2 === 0) : ticks },
         gap: weekly ? 10 : 1.5, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
         xlab: x => { if (weekly) { const d = new Date((x - 4) * 864e5); return `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`; }
