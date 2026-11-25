@@ -132,8 +132,9 @@ h1 { font: 700 clamp(28px, 5vw, 40px)/1.08 var(--display); margin: 0; text-wrap:
 td small, .cellsub { display: block; font-size: 12.5px; font-weight: 400; color: var(--muted); }
 
 /* sale tally: one line of head counts (the year-to-date count is in the About box) */
-.tally { background: var(--surface); border-bottom: 1px solid var(--rule); }
-.tally .wrap { padding-block: 11px 12px; display: grid; gap: 3px; }
+/* the head-count line, in the page flow under the region row (11/24/2026): no band of its own */
+.tally[hidden] { display: none; }
+.tally .wrap { padding-block: 12px 0; display: grid; gap: 3px; }
 .tally .lead { font-weight: 600; color: var(--ink-2); font-size: 14px; }
 .tally .row { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.5; }
 .tally .row b { font-size: 17px; color: var(--ink); }
@@ -442,6 +443,13 @@ details.method .card { margin-top: 10px; }
 .sold span { font-weight: 400; color: var(--muted); }
 .fewhead { color: var(--warn-ink); font-weight: 700; }
 .chg.muted { color: var(--muted); font-weight: 500; }
+/* the region row under the tabs (11/24/2026): buttons where all five fit, a full-width menu on a phone */
+.regionbar { padding-block: 14px 0; }
+.regionbar[hidden] { display: none; }
+.rb-wide { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rb-lab { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.rb-narrow { display: none; }
+@media (max-width: 599px) { .rb-wide { display: none; } .rb-narrow { display: grid; } .rb-narrow select { width: 100%; min-width: 0; font-size: 16px; } }
 .legend-few { margin: 0 0 6px; font-size: 13px; color: var(--warn-ink); font-weight: 600; }
 .short { margin: 0; font-size: 13.5px; color: var(--muted); }
 
@@ -467,7 +475,7 @@ details.method .card { margin-top: 10px; }
   .picker label, .picker .lab { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .picker select { padding-block: 8px; font-size: 15px; }
   .picker .seg.lots button { padding: 6px 10px; font-size: 14px; }
-  .tally .wrap { padding-block: 7px 8px; gap: 1px; }
+  .tally .wrap { padding-block: 10px 0; gap: 1px; }
   .tally .lead { font-size: 13px; }
   .tally .row { font-size: 13.5px; line-height: 1.4; }
   .tally .row b { font-size: 15px; } .tally .row b.big { font-size: 16px; }
@@ -518,24 +526,9 @@ details.method .card { margin-top: 10px; }
       <p class="asof tools-line"><a href="#more-tools">More cattle tools</a><button type="button" class="share-btn" id="share-view">Share this view</button><span class="sr-only" role="status" id="share-msg"></span></p>
       <div class="share-box" id="share-box" hidden><label for="share-url">Copy this link:</label><input id="share-url" type="text" readonly spellcheck="false"><button type="button" class="share-btn" id="share-close">Close</button></div>
     </div>
-    <div class="pickers">
-      <div class="picker fed-pick">
-        <label for="region">Region</label>
-        <select id="region"></select>
-      </div>
-      <!-- Boxed beef is reported for the U.S. only, so its tab shows National in place of the region picker -->
-      <div class="picker nat-pick" hidden>
-        <span class="lab">Region</span>
-        <span class="fixed">National</span>
-      </div>
-    </div>
   </div>
 </header>
 
-<section class="tally" aria-label="Cattle traded">
-  <div class="wrap" id="tally"></div>
-</section>
-<div class="wrap state-note" id="fed-note" hidden><p id="fed-note-p"></p></div>
 <div class="wrap stale-row" id="stale-row" hidden><p class="warn" role="status" id="stale"></p></div>
 
 <nav class="tabs" aria-label="Questions">
@@ -546,6 +539,19 @@ details.method .card { margin-top: 10px; }
     <button class="tab" role="tab" id="t-fcmp" aria-controls="p-fcmp" data-tab="fcmp">Compare</button>
   </div>
 </nav>
+
+<!-- the region (11/24/2026: moved from the masthead to under the tabs), largest first by cash cattle sold: buttons where
+     all five fit, a menu on a phone; shown on This week and Trends only (Boxed beef is national, Compare has its own) -->
+<div class="wrap regionbar" id="regionbar">
+  <div class="rb-wide"><span class="rb-lab" id="rb-lab">Region</span><div class="seg" id="region-seg" role="group" aria-labelledby="rb-lab"></div></div>
+  <label class="field rb-narrow" for="region"><span>Region</span><select id="region"></select></label>
+</div>
+<!-- the head-count line under the region it counts (11/24/2026; it sat above the tabs, before the control that sets it);
+     on Boxed beef the day's loads sold; not on Compare, which picks its own regions -->
+<section class="tally" id="tally-sec" aria-label="Cattle traded">
+  <div class="wrap" id="tally"></div>
+</section>
+<div class="wrap state-note" id="fed-note" hidden><p id="fed-note-p"></p></div>
 
 <!-- the panels are p-<tab> and the tab ids aren't address names, so a #week address never jumps past the masthead;
      data: data/fed.json (tools/export_fedcattle.py) -->
@@ -559,20 +565,20 @@ details.method .card { margin-top: 10px; }
     <div class="card tablewrap"><table id="fweek-table"></table></div>
     <p class="note" id="fweek-missing" hidden></p>
     <div class="card stack">
-      <div><h3 class="h3s">By grade</h3><p class="note" id="fgrade-sub"></p></div>
+      <div><h3 class="h3s" data-rtitle="By grade">By grade</h3><p class="note" id="fgrade-sub"></p></div>
       <div class="controls"><div class="seg" id="fgrade-class"></div><div class="seg" id="fgrade-basis"></div></div>
       <div class="tablewrap"><table id="fgrade-table"></table></div>
     </div>
     <!-- cattle sold so far this year (11/24/2026): the running total of negotiated cash head, this year vs. last year vs.
          the 3-year average -->
     <div class="card stack" id="fvol-card">
-      <div><h3 class="h3s">Cattle sold so far this year</h3><p class="note" id="fvol-sub"></p></div>
+      <div><h3 class="h3s" data-rtitle="Cattle sold so far this year">Cattle sold so far this year</h3><p class="note" id="fvol-sub"></p></div>
       <p style="margin:0;font-weight:600" id="fvol-summary"></p>
       <ul class="legend" id="fvol-legend"></ul>
       <div class="chart" id="fvol-chart"></div>
     </div>
     <div class="card stack" id="fdaily-card" hidden>
-      <div><h3 class="h3s">Trading since that week</h3><p class="note" id="fdaily-sub"></p></div>
+      <div><h3 class="h3s" data-rtitle="Trading since that week">Trading since that week</h3><p class="note" id="fdaily-sub"></p></div>
       <div class="tablewrap"><table id="fdaily-table"></table></div>
     </div>
     <div class="card facts" id="fweek-facts"></div>
@@ -593,19 +599,19 @@ details.method .card { margin-top: 10px; }
     </div>
     <div class="controls"><div class="seg" id="ftrend-class"></div><div class="seg" id="ftrend-basis"></div></div>
     <div class="card stack">
-      <div><h3 class="h3s">Price</h3><p class="note" id="ftrend-psub"></p></div>
+      <div><h3 class="h3s" data-rtitle="Price">Price</h3><p class="note" id="ftrend-psub"></p></div>
       <p style="margin:0;font-weight:600" id="ftrend-summary"></p>
       <ul class="legend" id="ftrend-legend"></ul>
       <div class="chart" id="ftrend-chart"></div>
     </div>
     <div class="card stack">
-      <div><h3 class="h3s">Weight</h3><p class="note" id="fweight-sub"></p></div>
+      <div><h3 class="h3s" data-rtitle="Weight">Weight</h3><p class="note" id="fweight-sub"></p></div>
       <p style="margin:0;font-weight:600" id="fweight-summary"></p>
       <ul class="legend" id="fweight-legend"></ul>
       <div class="chart" id="fweight-chart"></div>
     </div>
     <div class="card stack" id="fseason-card">
-      <div><h3 class="h3s">Seasonal price pattern</h3><p class="note" id="fseason-sub"></p></div>
+      <div><h3 class="h3s" data-rtitle="Seasonal price pattern">Seasonal price pattern</h3><p class="note" id="fseason-sub"></p></div>
       <p class="note" id="fseason-off" style="margin:0" hidden></p>
       <p style="margin:0;font-weight:600" id="fseason-summary"></p>
       <div class="chart" id="fseason-chart"></div>
@@ -1139,6 +1145,19 @@ details.method .card { margin-top: 10px; }
   const PRIMALS = [["cutout", "Cutout value"], ["rib", "Rib"], ["chuck", "Chuck"], ["round", "Round"], ["loin", "Loin"],
     ["brisket", "Brisket"], ["short_plate", "Short plate"], ["flank", "Flank"]];
   const REG_SHORT = { "5area": "5-Area", us: "National", ne: "Nebraska", iamn: "IA-MN", sc: "S. Central" };
+  // the region choice's order (11/24/2026): largest to smallest by negotiated cash cattle sold this year
+  const REG_ORDER = ["us", "5area", "ne", "iamn", "sc"];
+  const regsInOrder = () => [...REG_ORDER.map(id => regById(id)).filter(Boolean), ...FED.regions.filter(r => !REG_ORDER.includes(r.id))];
+  function setRegion(id) { S.region = id; store.set("region", S.region); S.f1 = S.region; writeAddr(); render(); }
+  function regionControls() {
+    const host = $("#region-seg");
+    host.replaceChildren(...regsInOrder().map(r => {
+      const b = el("button", { type: "button", "aria-pressed": String(r.id === S.region), text: r.name });
+      b.addEventListener("click", () => { setRegion(r.id); refocus(host, r.name); });
+      return b;
+    }));
+    $("#region").value = S.region;
+  }
   const fedOn = () => S.side === "fed";
   const regById = id => FED && FED.regions.find(r => r.id === id);
   const reg = () => regById(S.region) || FED.regions[0];
@@ -1154,7 +1173,7 @@ details.method .card { margin-top: 10px; }
     FEDLOAD = fetch("data/fed.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(d => {
         FED = d;
-        $("#region").replaceChildren(...FED.regions.map(r => el("option", { value: r.id, text: r.name })));
+        $("#region").replaceChildren(...regsInOrder().map(r => el("option", { value: r.id, text: r.name })));
         if (!regById(S.region)) {           // a ?region= this page doesn't cover opens the first region, with a line saying so
           if (LINK_REGION) { const n = $("#linknote"); n.textContent = `This page doesn't have fed cattle prices for "${LINK_REGION}"; showing ${FED.regions[0].name}.`; n.hidden = false; }
           S.region = FED.regions[0].id;
@@ -1182,7 +1201,9 @@ details.method .card { margin-top: 10px; }
   }
   function fedHead() {
     const r = reg(), m = FED.meta;
-    $("#region").value = r.id;
+    regionControls();
+    // each regional chart and table names the region in its title (11/24/2026), not only in its subtitle
+    document.querySelectorAll("[data-rtitle]").forEach(h => { h.textContent = `${h.dataset.rtitle}: ${r.name}`; });
     const upd = (m.generated || "").slice(0, 10);
     $("#asof").textContent = `${/^\d{4}-\d\d-\d\d$/.test(upd) ? `Updated ${wday(upd)}. ` : ""}Latest weekly report: week of ${weekOf(m.week)}. ` +
       `Boxed beef through ${wday(m.cutout_through)}.`;
@@ -1191,8 +1212,9 @@ details.method .card { margin-top: 10px; }
     if (age > STALE_DAYS) $("#stale").textContent = `The fed cattle prices last updated ${wday(upd, true)}, ${age} days ago. They normally update every morning, so prices may be out of date.`;
     // Boxed beef is national: its tab shows National, not the region picker, and the region's note stays off
     const beefTab = S.tab === "beef";
-    $(".fed-pick").hidden = beefTab; $(".nat-pick").hidden = !beefTab;
-    $("#fed-note").hidden = beefTab || !r.note;
+    $("#regionbar").hidden = beefTab || S.tab === "fcmp";   // Boxed beef is national; Compare has its own region menus
+    $("#fed-note").hidden = beefTab || S.tab === "fcmp" || !r.note;
+    $("#tally-sec").hidden = S.tab === "fcmp";   // Compare picks its own regions, so no one region's head count there
     if (r.note) $("#fed-note-p").textContent = r.note;
     // one line of head counts, as the auction side's: that week, the week before, a year ago
     const h = r.head || {}, item = (n, label, big) => el("span", { style: "white-space:nowrap" }, [el("b", { class: big ? "big" : "", text: fmtN(n) }), " " + label]);
@@ -1236,7 +1258,7 @@ details.method .card { margin-top: 10px; }
         changeCell(ya ? now[0] - ya[0] : null, ya ? (now[0] / ya[0] - 1) * 100 : null, ya ? [now[1], ya[1]] : null),
         el("td", { class: "headcol", text: fmtN(now[1]) }), el("td", { class: "headcol", text: now[2] ? `${fmtN(now[2])} lb` : "–" })]);
     }));
-    $("#fweek-table").replaceChildren(el("caption", { text: `All grades, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
+    $("#fweek-table").replaceChildren(el("caption", { text: `${r.name}, all grades, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
     $("#fweek-missing").hidden = !missing;
     $("#fweek-missing").textContent = "Not reported: USDA withholds a region's figures for a week when too few cattle trade to keep them confidential." +
       (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no year-ago week yet.` : "");
@@ -1567,7 +1589,7 @@ details.method .card { margin-top: 10px; }
     }
   });
   $("#to-disc").addEventListener("click", e => { e.preventDefault(); $("#disc-full").open = true; $("#disclaimer").scrollIntoView({ behavior: "smooth", block: "start" }); });
-  $("#region").addEventListener("change", e => { S.region = e.target.value; store.set("region", S.region); S.f1 = S.region; writeAddr(); render(); });
+  $("#region").addEventListener("change", e => setRegion(e.target.value));
   $("#beefy-primal").addEventListener("change", e => { S.bprimal = e.target.value; render(); });
   for (const [i, k] of [[1, "f1"], [2, "f2"], [3, "f3"]]) $(`#fcmp-s${i}`).addEventListener("change", e => { S[k] = e.target.value; renderFcmp(); });
   let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => FED && VIEWS[S.tab](), 120); }).observe(document.querySelector("main"));
