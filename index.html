@@ -261,10 +261,6 @@ tr.thin td, td.thinchg { background: var(--warn-bg); }
 .facts .gmix a { color: inherit; }
 /* the fed About card's purchase-type table (11/24/2026): five columns of figures */
 .facts .gr.gr-wide { grid-template-columns: auto repeat(3, minmax(0, 1fr)); max-width: 440px; }
-/* Selling on a grid (11/24/2026): grouped rows, the group names as quiet row headings */
-.h4s { margin: 6px 0 0; font: 700 15px/1.3 var(--body); }
-.gridtab tr.grp th { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--muted); padding-top: 10px; }
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; }
 .two > * { min-width: 0; }
 
@@ -566,11 +562,14 @@ details.method .card { margin-top: 10px; }
       <div><h3 class="h3s">By grade</h3><p class="note" id="fgrade-sub"></p></div>
       <div class="controls"><div class="seg" id="fgrade-class"></div><div class="seg" id="fgrade-basis"></div></div>
       <div class="tablewrap"><table id="fgrade-table"></table></div>
-      <div class="stack" id="fgrade-gridbox" hidden>
-        <h4 class="h4s">Selling on a grid</h4>
-        <div class="tablewrap"><table id="fgrade-grid" class="gridtab"></table></div>
-        <p class="note" id="fgrade-gridnote" style="margin:0"></p>
-      </div>
+    </div>
+    <!-- cattle sold so far this year (11/24/2026): the running total of negotiated cash head, this year vs. last year vs.
+         the 3-year average -->
+    <div class="card stack" id="fvol-card">
+      <div><h3 class="h3s">Cattle sold so far this year</h3><p class="note" id="fvol-sub"></p></div>
+      <p style="margin:0;font-weight:600" id="fvol-summary"></p>
+      <ul class="legend" id="fvol-legend"></ul>
+      <div class="chart" id="fvol-chart"></div>
     </div>
     <div class="card stack" id="fdaily-card" hidden>
       <div><h3 class="h3s">Trading since that week</h3><p class="note" id="fdaily-sub"></p></div>
@@ -730,12 +729,8 @@ details.method .card { margin-top: 10px; }
           premiums and discounts by carcass), formula (priced from another market, such as a cash average or futures, plus
           the grid) and forward contract (priced before the cattle are ready, often from futures). Shares count every
           animal delivered, domestic and imported, as USDA's published negotiated share does.</li>
-        <li>Selling on a grid (This week's By grade box) is from USDA's weekly premiums and discounts report: the simple
-          average, lowest and highest premium or discount on packers' grids for quality grade, yield grade and carcass
-          weight, $/cwt of carcass weight, against the grid's base (Choice, yield grade 3, 600-900 lb). The 5-Area report
-          is shown for 5-Area and the national report for the other regions; USDA publishes no other area's. Figures
-          are as USDA publishes them, even where an average falls outside its own range. Negotiated cash trade isn't priced by grade, only by the share of a pen
-          expected to grade Choice.</li>
+        <li>Negotiated cash trade isn't priced by grade, only by the share of a pen expected to grade Choice, so USDA
+          reports no cash price for Select cattle.</li>
         <li>Boxed beef is USDA's National Daily Boxed Beef Cutout (afternoon report), Choice and Select, 600-900 lb
           carcasses, negotiated sales. It is national: the region picked at the top doesn't change it.</li>
       </ul>
@@ -1080,8 +1075,12 @@ details.method .card { margin-top: 10px; }
     const ticks = MON3.map((t, i) => ({ v: Math.round((Date.UTC(yr, i, 1) - Date.UTC(yr, 0, 1)) / 864e5), t: t }));
     const narrow = $(`#${pre}-chart`).clientWidth < 520;
     // dollars by default; Y.unit "lb" for the Trends tab's weight chart (11/24/2026)
-    const lb = Y.unit === "lb", yfmt = lb ? (v, full) => full ? `${fmtN(Math.round(v))} lb` : fmtN(v) : (v, full) => full ? fmt$(v) : "$" + v;
-    const show = v => lb ? `${fmtN(Math.round(v))} lb` : fmt$(Math.round(v), false);
+    // Y.unit "head" for This week's cattle sold so far (11/24/2026): millions or thousands, short enough for the end labels
+    const lb = Y.unit === "lb", hd = Y.unit === "head";
+    const hfmt = v => v >= 1e6 ? `${(v / 1e6).toFixed(2)}M` : v >= 1e3 ? `${fmtN(Math.round(v / 1e3))}K` : fmtN(Math.round(v));
+    const yfmt = hd ? (v, full) => full ? hfmt(v) : (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : hfmt(v))
+      : lb ? (v, full) => full ? `${fmtN(Math.round(v))} lb` : fmtN(v) : (v, full) => full ? fmt$(v) : "$" + v;
+    const show = v => hd ? `${fmtN(Math.round(v))} head` : lb ? `${fmtN(Math.round(v))} lb` : fmt$(Math.round(v), false);
     const series = [{ cls: 1, pts: cur, name: String(yr), end: String(yr), dot: true, width: 2.6 },
       { cls: 3, pts: ago, name: String(yr - 1), end: String(yr - 1), width: 1.8, markAt: cur.length ? cur[cur.length - 1].x : null,
         labelAt: cur.length ? cur[cur.length - 1].x : null },
@@ -1107,7 +1106,7 @@ details.method .card { margin-top: 10px; }
     if (last && ago.length) { const a = near(ago); if (Math.abs(a.x - last.x) <= (weekly ? 7 : 20)) parts.push(`same ${unit} last year ${show(a.y)}`); }
     // each value stays with its label; a narrow screen breaks the line at the dot
     const kids = parts.flatMap((p, i) => [i ? " · " : null, el("span", { style: "white-space:nowrap", text: p })]).filter(Boolean);
-    $(`#${pre}-summary`).replaceChildren(...kids, ...(lb ? [] : [" ($/cwt)"]), ...(last && last.head != null && last.head < FEW ? [fewTag()] : []));
+    $(`#${pre}-summary`).replaceChildren(...kids, ...(lb || hd ? [] : [" ($/cwt)"]), ...(last && last.head != null && last.head < FEW ? [fewTag()] : []));
     return avg.length > 0;
   }
   const noChart = (pre, text) => { $(`#${pre}-chart`).replaceChildren(el("p", { class: "none", text }));
@@ -1247,35 +1246,6 @@ details.method .card { margin-top: 10px; }
     const G = r.week[`${S.gcls}.${S.gbasis}`] || {}, now = G.latest || {}, pr = G.prior || {};
     $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}. Pens are grouped by the share expected to grade Choice; ` +
       "USDA doesn't price cash cattle as Select.";
-    // selling on a grid (11/24/2026): USDA's weekly premiums and discounts, the core items, against the grid's base;
-    // 5-Area's report for 5-Area, else national's (USDA publishes no other area's). Figures as USDA publishes them.
-    const sk = r.id === "5area" ? "5area" : "national", gd = (FED.grid || {})[sk], gbox = $("#fgrade-gridbox");
-    gbox.hidden = !gd;
-    if (gd) {
-      const sgn = v => v == null ? "–" : v === 0 ? "$0" : `${v > 0 ? "+" : "−"}$${Math.abs(v).toFixed(2)}`;
-      const whole = v => v === 0 ? "$0" : `${v > 0 ? "+" : "−"}$${Math.abs(v) % 1 ? Math.abs(v).toFixed(2) : Math.abs(v)}`;
-      const GROUPS = { quality: "Quality grade", yield_grade: "Yield grade", weight: "Carcass weight" };
-      let odd = false, grp = "";
-      const body = [];
-      for (const [item, label, avg, lo, hi, prior] of gd.rows) {
-        const g = item.split(".")[0];
-        if (g !== grp) { grp = g; body.push(el("tr", { class: "grp" }, el("th", { colspan: "4", scope: "colgroup", text: GROUPS[g] }))); }
-        const out = avg != null && lo != null && hi != null && (avg < lo - 0.005 || avg > hi + 0.005);
-        odd = odd || out;
-        body.push(el("tr", {}, [el("td", { text: label + (out ? " *" : "") }), el("td", { class: "price", text: sgn(avg) }),
-          el("td", { class: "sm-hide", text: lo != null && hi != null ? (lo === hi ? whole(lo) : `${whole(lo)} to ${whole(hi)}`) : "–" }),
-          el("td", { text: sgn(prior) })]));
-      }
-      $("#fgrade-grid").replaceChildren(
-        el("caption", { text: `Grid premiums and discounts, ${sk === "5area" ? "5-Area" : "national"}, USDA's report of ${wday(gd.date)}` }),
-        el("thead", {}, el("tr", {}, [el("th", { text: "Carcass" }), el("th", { text: "Average" }), el("th", { class: "sm-hide", text: "Range" }),
-          el("th", { text: "Week before" })])), el("tbody", {}, body));
-      $("#fgrade-gridnote").textContent = "$/cwt of carcass weight, added to or taken off the grid's base price (Choice, yield grade 3, " +
-        "600-900 lb carcass). Averages are the simple average of packers' grids. Cash cattle are priced by the pen, not by " +
-        `grade, so a grid is where grade changes the price. ${WEEKLY}` +
-        (sk === "national" ? " USDA reports grids for 5-Area and the nation only, so other regions show the national report." : "") +
-        (odd ? " * USDA's published average falls outside its own range this week; shown as reported." : "");
-    }
     $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
       el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })])),
       el("tbody", {}, BANDS.filter(([k]) => now[k]).map(([k, t]) => {
@@ -1287,6 +1257,21 @@ details.method .card { margin-top: 10px; }
           el("td", { class: "headcol", text: fmtN(x[1]) }), el("td", { class: "headcol", text: x[2] ? `${fmtN(x[2])} lb` : "–" })]);
       })));
     if (!Object.keys(now).length) $("#fgrade-table").replaceChildren(el("caption", { class: "none", text: "Not reported that week." }));
+    // cattle sold so far this year (11/24/2026): the running total of the head line's count, by week of the year
+    const Y = r.ytd, vbase = FED.meta.base_years;
+    $("#fvol-sub").textContent = `Negotiated cash steers and heifers, live and dressed, ${r.name}: the running total from the year's ` +
+      `first week, this year, last year and the ${vbase} average, lined up by week of the year. Head. ${WEEKLY}`;
+    if (Y && Y.cur.length) {
+      yearChart("fvol", Y, { by: "week", year: Y.year, base: vbase, unit: "head" },
+        `Negotiated cash steers and heifers sold so far this year, ${r.name}: this year, last year and the ${vbase} average`);
+      const last = Y.cur[Y.cur.length - 1], at = arr => (arr.find(p => p[0] === last[0]) || [])[1];
+      const pctv = (a, b) => { const p = Math.round((a / b - 1) * 100); return p === 0 ? "about the same as" : `${Math.abs(p)}% ${p > 0 ? "more than" : "fewer than"}`; };
+      const ya = at(Y.ago), av = at(Y.avg), parts = [`Through the week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[1])} head`];
+      if (ya) parts.push(`${pctv(last[1], ya)} at this point last year (${fmtN(ya)})`);
+      if (av) parts.push(`${pctv(last[1], av)} the ${vbase} average (${fmtN(av)})`);
+      $("#fvol-summary").replaceChildren(...parts.flatMap((p, i) => [i ? " · " : null, el("span", { text: p })]).filter(Boolean));
+      if (r.since) $("#fvol-summary").append(`. The ${r.name} report started ${day(r.since, true)}, so its total starts then.`);
+    } else noChart("fvol", "No negotiated trade reported this year.");
     // the days traded since that week (the next weekly report replaces them)
     const dd = r.daily || [];
     $("#fdaily-card").hidden = !dd.length;
