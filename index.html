@@ -21,7 +21,9 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <!-- Visit counts: GoatCounter, no cookies and no personal data. It skips localhost. -->
-<script data-goatcounter="https://agecontools.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<!-- Pinned to GoatCounter's versioned script with its integrity hash (security review, 11/25/2026): the browser
+     refuses the file if it ever changes, so no outside code can run here. The Watchdog checks the hash daily. -->
+<script data-goatcounter="https://agecontools.goatcounter.com/count" async src="https://gc.zgo.at/count.v5.js" crossorigin="anonymous" integrity="sha384-atnOLvQb9t+jTSipvd75X2yginT4PjVbqDdlJAmxMm+wYElFmeR6EmLP5bYeoRVQ"></script>
 <style>
 /* fonts bundled in fonts/ (Fontsource, OFL); nothing is loaded from outside the site */
 @font-face { font-family: "Bitter"; font-weight: 600; font-display: swap; src: url(fonts/bitter-latin-600-normal.woff2) format("woff2"); }
@@ -740,23 +742,24 @@ details.method .card { margin-top: 10px; }
     <h2>About these numbers</h2>
     <p id="foot-fed-src">Fed cattle and boxed beef prices come from USDA Agricultural Marketing Service
       Livestock Mandatory Reporting, which packers file for their cattle purchases and boxed beef sales.</p>
-    <!-- USDA's reports by name and code, each linked to USDA's latest copy, so readers can check the figures (outside
-         review, 11/24/2026). Titles as USDA's datamart gives them. -->
+    <!-- USDA's reports by name and code, each linked to its MyMarketNews report page, so readers can check the figures
+         (outside review, 11/24/2026). The page lists the latest issue; the ams.usda.gov/mnreports PDFs weren't always
+         replaced (several served Oct. issues on 11/25/2026). Titles as USDA's datamart gives them. -->
     <details class="method reports" id="usda-reports"><summary>USDA's reports used, with links</summary>
-      <p>Each name links to USDA's latest copy of the report.</p>
+      <p>Each name links to USDA's page for the report, which lists its latest and past issues.</p>
       <ul>
-        <li>Weekly prices: <a href="https://www.ams.usda.gov/mnreports/ams_2477.pdf">5 Area Weekly Weighted Average Direct Slaughter Cattle</a> (LM_CT150);
-          <a href="https://www.ams.usda.gov/mnreports/ams_2481.pdf">National Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT154);
-          <a href="https://www.ams.usda.gov/mnreports/ams_2485.pdf">Nebraska Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT158);
-          <a href="https://www.ams.usda.gov/mnreports/ams_2487.pdf">Iowa/Minnesota Weekly Weighted Average Cattle Report - Negotiated Purchases</a> (LM_CT167);
-          <a href="https://www.ams.usda.gov/mnreports/ams_3930.pdf">South Central Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT149)</li>
+        <li>Weekly prices: <a href="https://mymarketnews.ams.usda.gov/viewReport/2477">5 Area Weekly Weighted Average Direct Slaughter Cattle</a> (LM_CT150);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2481">National Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT154);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2485">Nebraska Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT158);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2487">Iowa/Minnesota Weekly Weighted Average Cattle Report - Negotiated Purchases</a> (LM_CT167);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/3930">South Central Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT149)</li>
         <li>Kansas and Texas-Oklahoma-New Mexico on Compare (withheld since summer 2026):
-          <a href="https://www.ams.usda.gov/mnreports/ams_2484.pdf">Kansas Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT157);
-          <a href="https://www.ams.usda.gov/mnreports/ams_2483.pdf">Texas-Oklahoma Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT156)</li>
-        <li>Trading since that week: <a href="https://www.ams.usda.gov/mnreports/ams_2466.pdf">5 Area Daily Weighted Average Direct Slaughter Cattle - Negotiated</a> (LM_CT100);
-          <a href="https://www.ams.usda.gov/mnreports/ams_3929.pdf">South Central Daily Direct Slaughter Cattle - Negotiated Purchases - Summary</a> (LM_CT202)</li>
-        <li>How cattle were bought: <a href="https://www.ams.usda.gov/mnreports/ams_2472.pdf">Weekly Direct Slaughter Cattle - Committed and Delivered Cattle</a> (LM_CT142)</li>
-        <li>Boxed beef: <a href="https://www.ams.usda.gov/mnreports/ams_2453.pdf">National Daily Boxed Beef Cutout &amp; Boxed Beef Cuts - Negotiated Sales - PM</a> (LM_XB403)</li>
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2484">Kansas Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT157);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2483">Texas-Oklahoma Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT156)</li>
+        <li>Trading since that week: <a href="https://mymarketnews.ams.usda.gov/viewReport/2466">5 Area Daily Weighted Average Direct Slaughter Cattle - Negotiated</a> (LM_CT100);
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/3929">South Central Daily Direct Slaughter Cattle - Negotiated Purchases - Summary</a> (LM_CT202)</li>
+        <li>How cattle were bought: <a href="https://mymarketnews.ams.usda.gov/viewReport/2472">Weekly Direct Slaughter Cattle - Committed and Delivered Cattle</a> (LM_CT142)</li>
+        <li>Boxed beef: <a href="https://mymarketnews.ams.usda.gov/viewReport/2453">National Daily Boxed Beef Cutout &amp; Boxed Beef Cuts - Negotiated Sales - PM</a> (LM_XB403)</li>
       </ul>
     </details>
     <details class="method" id="foot-fed-how"><summary>How these numbers are calculated</summary>
@@ -771,15 +774,18 @@ details.method .card { margin-top: 10px; }
           add up to a little less. USDA's own "confirmed" count in its report is higher again: it also counts mixed
           steer-and-heifer lots (and dairy-bred cattle where USDA reports them).</li>
         <li>The regions are USDA's. 5-Area covers feedlots in Texas-Oklahoma-New Mexico, Kansas, Nebraska, Colorado and
-          Iowa-Minnesota; National covers every reporting U.S. feedlot (domestic cattle); South Central covers Colorado,
+          Iowa-Minnesota; National covers every U.S. feedlot selling to packers that report to USDA (domestic cattle); South Central covers Colorado,
           Kansas and Texas-Oklahoma-New Mexico together, starting with trading on Oct. 26, 2026. USDA withholds a
           region's figures for a week when too few cattle trade to keep them confidential.</li>
+        <li>Only packers that report to USDA are counted: Livestock Mandatory Reporting covers packers that slaughtered an
+          average of at least 125,000 cattle a year over the past five years. Smaller plants don't report, so the head
+          counts here, including fed cattle delivered so far this year, are less than all U.S. fed cattle slaughter.</li>
         <li>A week is labeled by its Monday. Monthly prices average the month's weeks by head.</li>
         <li>How cattle were bought (This week's About card) is USDA's national weekly report of cattle delivered to packers by
           purchase type: negotiated cash, negotiated grid (a price negotiated for the base, then the packer's grid of
           premiums and discounts by carcass), formula (priced from another market, such as a cash average or futures, plus
           the grid) and forward contract (priced before the cattle are ready, often from futures). Shares count every
-          animal delivered, domestic and imported, as USDA's published negotiated share does. USDA's purchase-type data
+          animal delivered to those packers, domestic and imported, as USDA's published negotiated share does. USDA's purchase-type data
           has a gap in October 2013 (the federal government shutdown), so the monthly chart skips that month.</li>
         <li>Negotiated cash trade isn't priced by grade, only by the share of a pen expected to grade Choice, so USDA
           reports no cash price for Select cattle.</li>
@@ -925,6 +931,9 @@ details.method .card { margin-top: 10px; }
     const B = cfg.band ? cfg.band.pts : [];
     let ylo = Math.min(...all.map(p => p.y), ...B.map(p => p.lo)), yhi = Math.max(...all.map(p => p.y), ...B.map(p => p.hi));
     if (cfg.marker && cfg.marker.y != null) { ylo = Math.min(ylo, cfg.marker.y); yhi = Math.max(yhi, cfg.marker.y); }
+    // minSpan: the axis covers at least that share of the level (a report with only a few weeks, review 11/25/2026)
+    if (cfg.minSpan) { const mid = (ylo + yhi) / 2, need = Math.abs(mid) * cfg.minSpan;
+      if (yhi - ylo < need) { ylo = mid - need / 2; yhi = mid + need / 2; } }
     const pad = (yhi - ylo) * 0.08 || 10; ylo -= pad; yhi += pad;
     if (cfg.floor != null) ylo = Math.max(ylo, cfg.floor);        // the axis starts there (break-evens: $0; review, build 68)
     const { ticks } = niceTicks(ylo, yhi, small ? 4 : 5);
@@ -1146,7 +1155,7 @@ details.method .card { margin-top: 10px; }
     $(`#${pre}-legend`).replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
     const thinT = lineChart($(`#${pre}-chart`), {
       series, x: { min: 0, max: 365, ticks: window.innerWidth < 520 ? ticks.filter((_, i) => i % 2 === 0) : ticks, all: ticks },
-      gap: weekly ? 20 : 45, endLabels: true, yfmt,
+      gap: weekly ? 20 : 45, endLabels: true, yfmt, minSpan: ago.length ? null : 0.1,
       // weekly points are labeled by the week's Friday; the week starts that Monday
       xlab: x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5); return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : MON_FULL[d.getUTCMonth()]; },
       xname: weekly ? "Week" : "Month", aria });
@@ -1336,14 +1345,14 @@ details.method .card { margin-top: 10px; }
     if (!Object.keys(now).length) $("#fgrade-table").replaceChildren(el("caption", { class: "none", text: "Not reported that week." }));
     // fed cattle delivered so far this year (11/24/2026): national, every purchase type, the same for every region
     const Y = FED.sales.ytd, vbase = FED.meta.base_years;
-    $("#fvol-sub").textContent = `All fed steers and heifers, every purchase type. Running total by week: this year, last year ` +
+    $("#fvol-sub").textContent = `Fed steers and heifers delivered to packers that report to USDA, every purchase type. Running total by week: this year, last year ` +
       `and the ${vbase} average. ${WEEKLY}`;
     if (Y && Y.cur.length) {
       yearChart("fvol", Y, { by: "week", year: Y.year, base: vbase, unit: "head" },
         `Fed cattle delivered to packers so far this year, national: this year, last year and the ${vbase} average`);
       const last = Y.cur[Y.cur.length - 1], at = arr => (arr.find(p => p[0] === last[0]) || [])[1];
       const pctv = (a, b) => { const p = Math.round((a / b - 1) * 100); return p === 0 ? "about the same as" : `${Math.abs(p)}% ${p > 0 ? "more than" : "fewer than"}`; };
-      const ya = at(Y.ago), av = at(Y.avg), parts = [`Through the week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[1])} head`];
+      const ya = at(Y.ago), av = at(Y.avg), parts = [`Through the week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[1])} head delivered to packers that report to USDA`];
       if (ya) parts.push(`${pctv(last[1], ya)} at this point last year (${fmtN(ya)})`);
       if (av) parts.push(`${pctv(last[1], av)} the ${vbase} average (${fmtN(av)})`);
       $("#fvol-summary").replaceChildren(...parts.flatMap((p, i) => [i ? " · " : null, el("span", { text: p })]).filter(Boolean));
@@ -1387,13 +1396,13 @@ details.method .card { margin-top: 10px; }
     // the card is national whatever region is picked (11/24/2026): a National chip on the heading and a line saying so
     card.replaceChildren(el("h3", {}, [`About the week of ${weekOf(now.date)} `, el("span", { class: "chip-scope", text: "National" })]),
       el("p", { class: "gmix nat-line", text: reg().id === "us" ? "Every U.S. feedlot selling to packers that report to USDA."
-        : `All U.S. fed cattle, not just ${reg().name}: USDA reports how cattle were bought for the whole country only.` }),
+        : `Every U.S. feedlot selling to packers that report to USDA, not just ${reg().name}: USDA reports how cattle were bought for the whole country only.` }),
       el("dl", {}, items),
       el("p", { class: "gmix" }, [document.createTextNode("These figures are the same for every region. " +
-        "Shares count every animal delivered to packers that week, as USDA's own negotiated share does. " +
+        "Shares count every animal delivered to packers that report to USDA that week, as USDA's own negotiated share does. " +
         WEEKLY + " "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
-        el("p", { class: "note", text: `Each purchase type's share of all fed cattle delivered, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial; October 2013 is missing (the federal government shutdown).` }),
+        el("p", { class: "note", text: `Each purchase type's share of fed cattle delivered to packers that report to USDA, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial; October 2013 is missing (the federal government shutdown).` }),
         legend, chart, shareControl(chart)]));
     const X = m => +m.slice(0, 4) * 12 + +m.slice(5, 7) - 1, pts = i => Sx.monthly.filter(r => r[i] != null).map(r => ({ x: X(r[0]), y: r[i] }));
     // 11/24/2026: formula and forward contract too, so the four shares add up to every animal delivered
@@ -1417,12 +1426,15 @@ details.method .card { margin-top: 10px; }
     seg($("#ftrend-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
     const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years, cl = clsT(S.fcls).toLowerCase();
     $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly weighted averages. ${WEEKLY}`;
-    $("#ftrend-psub").textContent = `This year, last year and the ${base} average, $/cwt.`;
+    // a report too new for a year-ago line (South Central, from Oct. 26, 2026) says so instead (review, 11/25/2026)
+    const since = (gg, unit) => gg && !gg.ago.length && r.since ? `Since the report began (trading on ${day(r.since, true)}), ${unit}.` : null;
+    $("#ftrend-psub").textContent = since(g, "$/cwt") || `This year, last year and the ${base} average, $/cwt.`;
     if (g) yearChart("ftrend", g, { by: "week", year: g.year, base }, `Fed ${cl} ${basisT(S.fbasis)} price this year, last year and the ${base} average, ${r.name}`);
     else noChart("ftrend", "No negotiated trade reported this year.");
     // weight (11/24/2026): the same chart, in pounds: live weight for live prices, carcass weight for dressed
     const gw = (r.wyears || {})[k];
-    $("#fweight-sub").textContent = `Average ${S.fbasis === "live" ? "live" : "carcass (dressed)"} weight, this year, last year and the ${base} average, lb.`;
+    $("#fweight-sub").textContent = `Average ${S.fbasis === "live" ? "live" : "carcass (dressed)"} weight, ` +
+      (since(gw, "lb") || `this year, last year and the ${base} average, lb.`).replace(/^S/, "s");
     if (gw) yearChart("fweight", gw, { by: "week", year: gw.year, base, unit: "lb" }, `Fed ${cl} average ${S.fbasis === "live" ? "live" : "carcass"} weight this year, last year and the ${base} average, ${r.name}`);
     else noChart("fweight", "No negotiated trade reported this year.");
     renderFseason();
@@ -1632,10 +1644,10 @@ details.method .card { margin-top: 10px; }
   const SHARE_SPECS = {
     "fvol-chart": () => { const Y = FED.sales.ytd, base = FED.meta.base_years;
       return { title: `Fed cattle delivered to packers so far in ${Y.year}, national: ${Y.year} vs. ${Y.year - 1} and the ${base} average`,
-        sub: "All fed steers and heifers delivered, every purchase type, domestic and imported. Running total by week of the year, head." }; },
+        sub: "Fed steers and heifers delivered to packers that report to USDA, every purchase type, domestic and imported. Running total by week of the year, head." }; },
     "fsales-chart": () => { const M = FED.sales.monthly, a = M[0][0], b = M[M.length - 1][0], mo = s => `${MON_FULL[+s.slice(5) - 1]} ${s.slice(0, 4)}`;
       return { title: "How fed cattle were bought, national: each purchase type's share by month",
-        sub: `Share of all fed steers and heifers delivered to packers, domestic and imported, ${mo(a)} to ${mo(b)}, %.`,
+        sub: `Share of fed steers and heifers delivered to packers that report to USDA, domestic and imported, ${mo(a)} to ${mo(b)}, %.`,
         note: "October 2013 is missing (the federal government shutdown). The latest month can be partial." }; },
     "ftrend-chart": () => { const r = reg(), g = r.years[`${S.fcls}.${S.fbasis}`], base = FED.meta.base_years, hist = g && g.ago.length;
       return { title: `${fedWhat()} price, ${r.name}: ${g.year}${hist ? " vs. recent years" : ""}`,
