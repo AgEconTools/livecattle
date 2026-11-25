@@ -542,8 +542,8 @@ details.method .card { margin-top: 10px; }
   <div class="wrap" role="tablist" id="tablist">
     <button class="tab" role="tab" id="t-fweek" aria-controls="p-fweek" data-tab="fweek">This week</button>
     <button class="tab" role="tab" id="t-ftrend" aria-controls="p-ftrend" data-tab="ftrend">Trends</button>
-    <button class="tab" role="tab" id="t-fcmp" aria-controls="p-fcmp" data-tab="fcmp">Compare</button>
     <button class="tab" role="tab" id="t-beef" aria-controls="p-beef" data-tab="beef">Boxed beef</button>
+    <button class="tab" role="tab" id="t-fcmp" aria-controls="p-fcmp" data-tab="fcmp">Compare</button>
   </div>
 </nav>
 
@@ -621,7 +621,7 @@ details.method .card { margin-top: 10px; }
 
   <section class="panel" id="p-fcmp" role="tabpanel" aria-labelledby="t-fcmp" hidden>
     <div>
-      <h2>How do regions compare?</h2>
+      <h2>How do regions and boxed beef compare?</h2>
       <p class="sub" id="fcmp-sub"></p>
     </div>
     <div class="card" style="display:grid;gap:14px">
@@ -1308,9 +1308,13 @@ details.method .card { margin-top: 10px; }
     const why = el("a", { href: "#about", text: "More on these numbers" });
     why.addEventListener("click", e => { e.preventDefault(); $("#foot-fed-how").open = true; $("#foot-fed-how").scrollIntoView({ behavior: "smooth", block: "start" }); });
     const chart = el("div", { class: "chart" }), legend = el("ul", { class: "legend" });
-    card.replaceChildren(el("h3", { text: `About the week of ${weekOf(now.date)}` }), el("dl", {}, items),
-      el("p", { class: "gmix" }, [document.createTextNode("National: USDA reports how cattle were bought for the whole country only, so these figures " +
-        "are the same for every region. Shares count every animal delivered to packers that week, as USDA's own negotiated share does. " +
+    // the card is national whatever region is picked (11/24/2026): a National chip on the heading and a line saying so
+    card.replaceChildren(el("h3", {}, [`About the week of ${weekOf(now.date)} `, el("span", { class: "chip-scope", text: "National" })]),
+      el("p", { class: "gmix nat-line", text: reg().id === "us" ? "Every U.S. feedlot selling to packers that report to USDA."
+        : `All U.S. fed cattle, not just ${reg().name}: USDA reports how cattle were bought for the whole country only.` }),
+      el("dl", {}, items),
+      el("p", { class: "gmix" }, [document.createTextNode("These figures are the same for every region. " +
+        "Shares count every animal delivered to packers that week, as USDA's own negotiated share does. " +
         WEEKLY + " "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
         el("p", { class: "note", text: `Each purchase type's share of all fed cattle delivered, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial.` }),
@@ -1373,7 +1377,8 @@ details.method .card { margin-top: 10px; }
   function renderFcmp() {
     if (!FED) return;
     // the current regions, then the reports USDA ended (11/24/2026: Compare only, never joined to South Central)
-    const regs = [...FED.regions, ...(FED.ended || [])], regById = id => regs.find(x => x.id === id);
+    // and the Choice and Select cutout (11/24/2026), drawn beside dressed prices only
+    const regs = [...FED.regions, ...(FED.ended || []), ...(FED.beef.cmp || [])], regById = id => regs.find(x => x.id === id);
     if (!S.f1 || !regById(S.f1)) S.f1 = S.region;
     if (S.f2 && !regById(S.f2)) S.f2 = ""; if (S.f3 && !regById(S.f3)) S.f3 = "";
     const fill = (sel, v, none) => { sel.replaceChildren(...(none ? [el("option", { value: "", text: "None" })] : []), ...regs.map(x => el("option", { value: x.id, text: x.name }))); sel.value = v || ""; };
@@ -1416,7 +1421,11 @@ details.method .card { margin-top: 10px; }
     };
     draw("weekly", $("#fcmp-week"), $("#fcmp-wlegend"), $("#fcmp-wsub"));
     draw("monthly", $("#fcmp-month"), $("#fcmp-mlegend"), $("#fcmp-msub"));
-    $("#fcmp-missing").textContent = ids.map(id => { const x = regById(id);
+    const beefLive = S.fbasis !== "dressed" && ids.some(id => regById(id).beef);
+    $("#fcmp-missing").textContent = (beefLive ? ["Boxed beef is shown with dressed prices only: the cutout is dollars per cwt of " +
+      "carcass and a live price is per cwt of live weight, so they can't share a chart. Pick Dressed to compare them."] : []).concat(
+      ids.map(id => { const x = regById(id);
+      if (x.beef) return null;
       if (x.ended) {   // an ended report: when it stopped, and its last priced week (USDA withheld its last months)
         const l = x.last[k];
         return `${x.short}: USDA ended this report after the week of ${weekOf(x.ended)}` +
@@ -1424,11 +1433,14 @@ details.method .card { margin-top: 10px; }
           ". Weeks with too few trades were withheld. South Central took over its area and is not joined to it.";
       }
       if ((x.weekly[k] || []).length) return x.since ? `${x.name}: reported only since ${day(x.since, true)}.` : null;
-      return `${x.name}: no ${what} trade reported in the past year.`; }).filter(Boolean).join(" ");
+      return `${x.name}: no ${what} trade reported in the past year.`; })).filter(Boolean).join(" ");
     $("#fcmp-note").textContent = "The regions overlap: 5-Area includes the Nebraska, Iowa-Minnesota and South Central feedlots (and, " +
       "until USDA ended their reports in October 2026, the Kansas and Texas-Oklahoma-New Mexico feedlots), and National " +
       "includes every region. Regions also differ in the cattle they sell (weights, grades and how many sell dressed rather than live), " +
-      "so part of a gap between two lines can come from those differences, not price alone.";
+      "so part of a gap between two lines can come from those differences, not price alone." +
+      (ids.some(id => regById(id).beef) ? " The cutout is what a carcass's beef brings sold in boxes (USDA's daily afternoon report, " +
+        "averaged by week or month), not what packers paid for cattle. The gap between it and a dressed price is not a packer " +
+        "margin: it leaves out the hide and offal value and the packer's costs." : "");
   }
 
   // Boxed beef: national, the same whatever region is picked
