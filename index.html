@@ -45,6 +45,7 @@
   --line-1: #9b3047;      /* this year / now */
   --line-2: #1c1c1c;      /* 3-year average, dashed */
   --line-3: #777777;      /* last year */
+  --line-4: #c99700;      /* gold: Boxed beef's since-2010 chart, a 4th line (11/24/2026) */
   --band: #c1c6c8;
   --up: #2e6b3f;          /* price up: green */
   --down: #b3261e;        /* price down: red */
@@ -60,7 +61,7 @@
   :root:not([data-theme="light"]) {
     --bg: #151112; --surface: #1f191b; --ink: #f1ecee; --ink-2: #cfc6c9; --muted: #a59a9e;
     --rule: #3a3134; --accent: #6e1d2e; --accent-ink: #ffffff; --accent-soft: #33212a;
-    --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --band: #4d4447;
+    --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --line-4: #e0b84a; --band: #4d4447;
     --up: #86c995; --down: #f2958c; --focus: #e2b93b;
     --warn-bg: #3b2c0e; --warn-ink: #f6c56a; --warn-line: #d9a032; color-scheme: dark;
   }
@@ -68,7 +69,7 @@
 :root[data-theme="dark"] {
   --bg: #151112; --surface: #1f191b; --ink: #f1ecee; --ink-2: #cfc6c9; --muted: #a59a9e;
   --rule: #3a3134; --accent: #6e1d2e; --accent-ink: #ffffff; --accent-soft: #33212a;
-  --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --band: #4d4447;
+  --line-1: #e07a90; --line-2: #f1ecee; --line-3: #9a9194; --line-4: #e0b84a; --band: #4d4447;
   --up: #86c995; --down: #f2958c; --focus: #e2b93b;
     --warn-bg: #3b2c0e; --warn-ink: #f6c56a; --warn-line: #d9a032; color-scheme: dark;
 }
@@ -259,7 +260,11 @@ tr.thin td, td.thinchg { background: var(--warn-bg); }
 .facts .gr .yr { font-size: 12.5px; font-weight: 400; color: var(--muted); }
 .facts .gmix a { color: inherit; }
 /* the fed About card's purchase-type table (11/24/2026): five columns of figures */
-.facts .gr.gr-wide { grid-template-columns: auto repeat(5, minmax(0, 1fr)); max-width: 600px; }
+.facts .gr.gr-wide { grid-template-columns: auto repeat(3, minmax(0, 1fr)); max-width: 440px; }
+/* Selling on a grid (11/24/2026): grouped rows, the group names as quiet row headings */
+.h4s { margin: 6px 0 0; font: 700 15px/1.3 var(--body); }
+.gridtab tr.grp th { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); padding-top: 10px; }
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; }
 .two > * { min-width: 0; }
 
@@ -303,6 +308,7 @@ details.calc#keep-calc { max-width: none; }
 .chart .s1 { stroke: var(--line-1); } .chart .f1 { fill: var(--line-1); }
 .chart .s2 { stroke: var(--line-2); } .chart .f2 { fill: var(--line-2); }
 .chart .s3 { stroke: var(--line-3); } .chart .f3 { fill: var(--line-3); }
+.chart .s4 { stroke: var(--line-4); } .chart .f4 { fill: var(--line-4); }
 .chart .fband { fill: var(--band); }
 .chart .fsurf { fill: var(--surface); }
 .chart .fpos { fill: var(--up); } .chart .fneg { fill: var(--down); }
@@ -322,7 +328,7 @@ details.calc#keep-calc { max-width: none; }
 .key.dot { border-top-style: dotted; border-top-width: 2px; }   /* the thin today's-prices line (review of build 71) */
 .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--ink-2); margin: 0; padding: 0; list-style: none; }
 .legend li { display: flex; align-items: center; gap: 7px; }
-.k1 { border-color: var(--line-1); } .k2 { border-color: var(--line-2); } .k3 { border-color: var(--line-3); }
+.k1 { border-color: var(--line-1); } .k2 { border-color: var(--line-2); } .k3 { border-color: var(--line-3); } .k4 { border-color: var(--line-4); }
 .key.kband { height: 12px; border: 0; border-radius: 2px; background: var(--band); opacity: .6; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chips button { border: 1px solid var(--rule); background: var(--surface); border-radius: 999px; padding: 6px 12px;
@@ -359,7 +365,8 @@ tr.pick td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 
 #week-cows[hidden], #cull-card[hidden], #keep-vog-card[hidden] { display: none; }
 /* Colorado and North Dakota's seasonal markets (11/10/2026): the parts that need a feeder seasonal pattern give way to
    a message; several carry an inline grid, which beats the hidden attribute */
-.keep-part[hidden], .buy-part[hidden], .season-part[hidden], .fseason-part[hidden], .off-msg[hidden] { display: none !important; }
+.keep-part[hidden], .buy-part[hidden], .season-part[hidden], .off-msg[hidden] { display: none !important; }
+#fseason-card { scroll-margin-top: calc(var(--tabs-h, 48px) + 12px); }   /* #season lands on it below the sticky tabs */
 .off-msg p { margin: 0; max-width: 70ch; }
 /* Compare states' pickers (11/10/2026): the page's field look, with the masthead select's arrow */
 .field select { appearance: none; -webkit-appearance: none; padding: 8px 34px 8px 10px; border: 1px solid var(--rule);
@@ -479,7 +486,7 @@ details.method .card { margin-top: 10px; }
   #week-slaughter td:first-child { white-space: normal; }   /* "Cows, Breaker", "Bulls, YG 1-2" wrap at the space; "300-400" never breaks */
   td.price { font-size: 15px; }
   .picker.lots-pick, .picker.side-pick, .picker.fed-pick { grid-column: 1 / -1; }
-  .facts .gr.gr-wide { grid-template-columns: auto repeat(3, minmax(0, 1fr)); }   /* the fed About card: year-ago columns off */
+  .facts .gr.gr-wide { grid-template-columns: auto repeat(2, minmax(0, 1fr)); }   /* the fed About card: year-ago column off */
   .picker .seg.side { display: flex; justify-self: stretch; } .picker .seg.side button { flex: 1; padding: 6px 10px; font-size: 14px; }
   .picker .seg.lots { display: flex; } .picker .seg.lots button { flex: 1; }
   .pct, .headcol, .sm-hide { display: none; }
@@ -492,7 +499,7 @@ details.method .card { margin-top: 10px; }
 }
 @media (max-width: 359px) {   /* under 360 px the first four don't fit: three even rows instead of a lone Compare */
   .tab-break { display: none; }
-  .facts .gr.gr-wide { grid-template-columns: auto repeat(2, minmax(0, 1fr)); } .facts .gr .xs-hide { display: none; }   /* the fed About card at 320 px */
+  .facts .gr .xs-hide { display: none; }
   /* the This week tables fit a 320 px screen (11/23/2026) */
   table { font-size: 13px; }
   th, td { padding: 8px 2px; }
@@ -538,8 +545,7 @@ details.method .card { margin-top: 10px; }
 <nav class="tabs" aria-label="Questions">
   <div class="wrap" role="tablist" id="tablist">
     <button class="tab" role="tab" id="t-fweek" aria-controls="p-fweek" data-tab="fweek">This week</button>
-    <button class="tab" role="tab" id="t-ftrend" aria-controls="p-ftrend" data-tab="ftrend">Price trend</button>
-    <button class="tab" role="tab" id="t-fseason" aria-controls="p-fseason" data-tab="fseason">Seasonal trend</button>
+    <button class="tab" role="tab" id="t-ftrend" aria-controls="p-ftrend" data-tab="ftrend">Trends</button>
     <button class="tab" role="tab" id="t-fcmp" aria-controls="p-fcmp" data-tab="fcmp">Compare</button>
     <button class="tab" role="tab" id="t-beef" aria-controls="p-beef" data-tab="beef">Boxed beef</button>
   </div>
@@ -557,9 +563,14 @@ details.method .card { margin-top: 10px; }
     <div class="card tablewrap"><table id="fweek-table"></table></div>
     <p class="note" id="fweek-missing" hidden></p>
     <div class="card stack">
-      <div><h3 class="h3s">By Choice grade</h3><p class="note" id="fgrade-sub"></p></div>
+      <div><h3 class="h3s">By grade</h3><p class="note" id="fgrade-sub"></p></div>
       <div class="controls"><div class="seg" id="fgrade-class"></div><div class="seg" id="fgrade-basis"></div></div>
       <div class="tablewrap"><table id="fgrade-table"></table></div>
+      <div class="stack" id="fgrade-gridbox" hidden>
+        <h4 class="h4s">Selling on a grid</h4>
+        <div class="tablewrap"><table id="fgrade-grid" class="gridtab"></table></div>
+        <p class="note" id="fgrade-gridnote" style="margin:0"></p>
+      </div>
     </div>
     <div class="card stack" id="fdaily-card" hidden>
       <div><h3 class="h3s">Trading since that week</h3><p class="note" id="fdaily-sub"></p></div>
@@ -574,36 +585,39 @@ details.method .card { margin-top: 10px; }
       are the head USDA priced in each row.</p></details>
   </section>
 
+  <!-- Trends (11/24/2026): price, weight and the seasonal price pattern on one tab, one set of switches for all three;
+       it replaces the Price trend and Seasonal trend tabs (#trend and #season both open it) -->
   <section class="panel" id="p-ftrend" role="tabpanel" aria-labelledby="t-ftrend" hidden>
     <div>
-      <h2>How do fed cattle prices this year compare?</h2>
+      <h2>How are prices and weights running?</h2>
       <p class="sub" id="ftrend-sub"></p>
     </div>
     <div class="controls"><div class="seg" id="ftrend-class"></div><div class="seg" id="ftrend-basis"></div></div>
     <div class="card stack">
+      <div><h3 class="h3s">Price</h3><p class="note" id="ftrend-psub"></p></div>
       <p style="margin:0;font-weight:600" id="ftrend-summary"></p>
       <ul class="legend" id="ftrend-legend"></ul>
       <div class="chart" id="ftrend-chart"></div>
-      <p class="note" id="ftrend-season" style="margin:0"></p>
     </div>
-    <details class="method"><summary>How this is calculated</summary><p class="note" id="ftrend-note"></p></details>
-  </section>
-
-  <section class="panel" id="p-fseason" role="tabpanel" aria-labelledby="t-fseason" hidden>
-    <div>
-      <h2>Seasonal trend</h2>
-      <p class="sub" id="fseason-sub"></p>
+    <div class="card stack">
+      <div><h3 class="h3s">Weight</h3><p class="note" id="fweight-sub"></p></div>
+      <p style="margin:0;font-weight:600" id="fweight-summary"></p>
+      <ul class="legend" id="fweight-legend"></ul>
+      <div class="chart" id="fweight-chart"></div>
     </div>
-    <div class="card off-msg" id="fseason-off" hidden><p></p></div>
-    <div class="controls fseason-part"><div class="seg" id="fseason-class"></div><div class="seg" id="fseason-basis"></div></div>
-    <div class="card stack fseason-part">
+    <div class="card stack" id="fseason-card">
+      <div><h3 class="h3s">Seasonal price pattern</h3><p class="note" id="fseason-sub"></p></div>
+      <p class="note" id="fseason-off" style="margin:0" hidden></p>
       <p style="margin:0;font-weight:600" id="fseason-summary"></p>
       <div class="chart" id="fseason-chart"></div>
     </div>
-    <details class="method"><summary>How this is calculated</summary><p class="note">Each bar shows how far that month's price
-      usually runs above or below the average of the 12 months around it, averaged over the years shown. Measuring against
-      the months around it keeps a rising market from making the late months look better than they were. A month's price
-      averages its weeks by head. Thin lines on each bar show the lowest and highest year.</p></details>
+    <details class="method"><summary>How this is calculated</summary><p class="note" id="ftrend-note"></p>
+      <p class="note">Weights are USDA's weighted averages for the same cattle as the prices: live weight for live
+      prices, carcass (dressed) weight for dressed prices.</p>
+      <p class="note">Each seasonal bar shows how far that month's price usually runs above or below the average of the 12
+      months around it, averaged over the years shown. Measuring against the months around it keeps a rising market from
+      making the late months look better than they were. A month's price averages its weeks by head. Thin lines on each
+      bar show the lowest and highest year.</p></details>
   </section>
 
   <section class="panel" id="p-fcmp" role="tabpanel" aria-labelledby="t-fcmp" hidden>
@@ -645,23 +659,30 @@ details.method .card { margin-top: 10px; }
     <div class="card"><div class="answer" id="beef-cards"></div></div>
     <div class="card tablewrap"><table id="beef-primals"></table></div>
     <div class="card stack">
-      <div><h3 class="h3s">Recent days</h3><p class="note" id="beef-dsub"></p></div>
-      <ul class="legend" id="beef-dlegend"></ul>
-      <div class="chart" id="beef-daily"></div>
-    </div>
-    <div class="card stack">
       <div><h3 class="h3s">This year vs. recent years</h3><p class="note" id="beefy-sub"></p></div>
-      <div class="controls"><div class="seg" id="beefy-kind"></div></div>
+      <div class="controls"><div class="seg" id="beefy-kind"></div>
+        <label class="field" for="beefy-primal"><span>Primal</span><select id="beefy-primal"></select></label></div>
       <p style="margin:0;font-weight:600" id="beefy-summary"></p>
       <ul class="legend" id="beefy-legend"></ul>
       <div class="chart" id="beefy-chart"></div>
+    </div>
+    <!-- since 2010 (11/24/2026): Choice or Select, then any of the cutout and primals; it replaces the last 65 trading days -->
+    <div class="card stack">
+      <div><h3 class="h3s">Since 2010</h3><p class="note" id="beefh-sub"></p></div>
+      <div class="controls"><div class="seg" id="beefh-grade"></div></div>
+      <div class="chips" id="beefh-primals" role="group" aria-label="Cutout and primals to chart"></div>
+      <ul class="legend" id="beefh-legend"></ul>
+      <div class="chart" id="beefh-chart"></div>
     </div>
     <details class="method"><summary>How this is calculated</summary><p class="note">The cutout is USDA's estimate of what a
       carcass's beef brings when sold in boxes to retailers and restaurants: the value of its cuts, in dollars per
       hundredweight of carcass. These are USDA's National Daily Boxed Beef Cutout figures (afternoon report) for Choice and
       Select carcasses of 600-900 lb, from negotiated sales packers report under Livestock Mandatory Reporting. A load is
-      about 40,000 lb of boxed beef. The weekly cutout is the average of the week's daily values. The Choice-Select
-      spread is the Choice cutout minus the Select cutout.</p></details>
+      about 40,000 lb of boxed beef. A primal is one of the carcass's eight major parts (rib, chuck, round, loin,
+      brisket, short plate, flank); USDA values each in $/cwt of that primal, so a primal's value isn't a share of the
+      cutout's. Weekly and monthly values are the simple average of the period's daily values; the this-year chart uses
+      finished weeks only, and the latest month since 2010 can be partial. The Choice-Select spread is the Choice value
+      minus the Select value, for the cutout or the primal picked.</p></details>
   </section>
 </main>
 
@@ -673,6 +694,7 @@ details.method .card { margin-top: 10px; }
       <li><a href="../cattleprices/" data-tool="cattleprices"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M6.5 22.5 L12 16.5 L16.5 19.5 L24.5 10.5"/><circle cx="24.5" cy="10.5" r="2.3" fill="#fff"/><path fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" d="M6.5 26.5 H25.5"/></svg><span><b>Cattle Auction Prices</b><span>Feeder cattle, cull cow and replacement prices at auction this week, by state, class and weight</span></span></a></li>
       <li><a href="../drought/" data-tool="drought"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M10 17.5 H22.3 A4.2 4.2 0 0 0 22.6 9.2 A6.4 6.4 0 0 0 10.6 10.6 A3.5 3.5 0 0 0 10 17.5 Z"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M11.5 21.5 L10.3 24.5 M16.5 21.5 L15.3 24.5 M21.5 21.5 L20.3 24.5"/></svg><span><b>Beef Cattle Drought Tracker</b><span>Drought by county, beef cows in drought and LFP payment months</span></span></a></li>
       <li><a href="../beeftrade/" data-tool="beeftrade"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M7 11.5 H24 M20 7.5 L24 11.5 L20 15.5"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M25 20.5 H8 M12 16.5 L8 20.5 L12 24.5"/></svg><span><b>U.S. Beef Trade</b><span>Beef imports and exports by country, tariff-rate quotas and cattle trade</span></span></a></li>
+      <li><a href="../cattlenotes/latest/"><svg aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#5d1725"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M9.5 6.5 H18.5 L23.5 11.5 V25.5 H9.5 Z"/><path fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M18.5 6.5 V11.5 H23.5 M13.5 16 H19.5 M13.5 20.5 H19.5"/></svg><span><b>Cattle Market Notes</b><span>Read the latest issue of our free weekly newsletter</span></span></a></li>
       </ul>
     </nav>
     <section class="disc" id="disclaimer" aria-labelledby="disc-h">
@@ -707,8 +729,13 @@ details.method .card { margin-top: 10px; }
           purchase type: negotiated cash, negotiated grid (a price negotiated for the base, then the packer's grid of
           premiums and discounts by carcass), formula (priced from another market, such as a cash average or futures, plus
           the grid) and forward contract (priced before the cattle are ready, often from futures). Shares count every
-          animal delivered, domestic and imported, as USDA's published negotiated share does. Prices by purchase type are
-          dressed steers, all grades.</li>
+          animal delivered, domestic and imported, as USDA's published negotiated share does.</li>
+        <li>Selling on a grid (This week's By grade box) is from USDA's weekly premiums and discounts report: the simple
+          average, lowest and highest premium or discount on packers' grids for quality grade, yield grade and carcass
+          weight, $/cwt of carcass weight, against the grid's base (Choice, yield grade 3, 600-900 lb). The 5-Area report
+          is shown for 5-Area and the national report for the other regions; USDA publishes no other area's. Figures
+          are as USDA publishes them, even where an average falls outside its own range. Negotiated cash trade isn't priced by grade, only by the share of a pen
+          expected to grade Choice.</li>
         <li>Boxed beef is USDA's National Daily Boxed Beef Cutout (afternoon report), Choice and Select, 600-900 lb
           carcasses, negotiated sales. It is national: the region picked at the top doesn't change it.</li>
       </ul>
@@ -744,8 +771,10 @@ details.method .card { margin-top: 10px; }
     set(k, v) { try { localStorage.setItem("fedcattle." + k, v); } catch (e) { /* private window */ } }
   };
   // region: 5area, us, ne, iamn, sc; fcls/fbasis: Price trend, Seasonal trend and Compare's class and selling basis;
-  // gcls/gbasis: This week's grade table; f1-f3: Compare's regions; bkind: Boxed beef's year chart
-  const S = { side: "fed", tab: "fweek", region: "5area", fcls: "steer", fbasis: "live", gcls: "steer", gbasis: "live", f1: null, f2: "", f3: "", bkind: "choice" };
+  // gcls/gbasis: This week's grade table; f1-f3: Compare's regions; bkind/bprimal: Boxed beef's year chart;
+  // hgrade/hprimals: Boxed beef's chart since 2010 (11/24/2026)
+  const S = { side: "fed", tab: "fweek", region: "5area", fcls: "steer", fbasis: "live", gcls: "steer", gbasis: "live", f1: null, f2: "", f3: "",
+    bkind: "choice", bprimal: "cutout", hgrade: "choice", hprimals: ["cutout", "rib", "chuck", "round", "loin"] };
   const FEW = 20;           // under 20 head: a thin sample
   const fewTag = () => el("span", { class: "few", text: "Few sales" });
   const fewLegend = () => el("li", {}, [el("span", { class: "fewkey" }), el("span", { text: `Fewer than ${FEW} head` })]);
@@ -903,7 +932,7 @@ details.method .card { margin-top: 10px; }
         svg.append(svgEl("circle", { cx: X(q.x), cy: Y(q.y), r: 4.5, class: "f" + s.cls, stroke: "var(--surface)", "stroke-width": 2 })); }
       if (cfg.endLabels && s.end) {   // labelAt: read the label at that x (a full-year average vs. a year to date), not the line's end
         const lp = s.labelAt != null ? s.pts.reduce((b, p) => Math.abs(p.x - s.labelAt) < Math.abs(b.x - s.labelAt) ? p : b, s.pts[0]) : last;
-        ends.push({ x: X(lp.x), y: Y(lp.y), t: s.end, v: cfg.yfmt(lp.y, true) });
+        ends.push({ x: X(lp.x), y: Y(lp.y), t: s.end, v: s.endV || cfg.yfmt(lp.y, true) });
       }
     });
     // end labels: spread so they never overlap
@@ -1050,6 +1079,9 @@ details.method .card { margin-top: 10px; }
     const cur = P(g.cur), ago = P(g.ago), avg = P(g.avg);
     const ticks = MON3.map((t, i) => ({ v: Math.round((Date.UTC(yr, i, 1) - Date.UTC(yr, 0, 1)) / 864e5), t: t }));
     const narrow = $(`#${pre}-chart`).clientWidth < 520;
+    // dollars by default; Y.unit "lb" for the Trends tab's weight chart (11/24/2026)
+    const lb = Y.unit === "lb", yfmt = lb ? (v, full) => full ? `${fmtN(Math.round(v))} lb` : fmtN(v) : (v, full) => full ? fmt$(v) : "$" + v;
+    const show = v => lb ? `${fmtN(Math.round(v))} lb` : fmt$(Math.round(v), false);
     const series = [{ cls: 1, pts: cur, name: String(yr), end: String(yr), dot: true, width: 2.6 },
       { cls: 3, pts: ago, name: String(yr - 1), end: String(yr - 1), width: 1.8, markAt: cur.length ? cur[cur.length - 1].x : null,
         labelAt: cur.length ? cur[cur.length - 1].x : null },
@@ -1058,7 +1090,7 @@ details.method .card { margin-top: 10px; }
     $(`#${pre}-legend`).replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
     const thinT = lineChart($(`#${pre}-chart`), {
       series, x: { min: 0, max: 365, ticks: window.innerWidth < 520 ? ticks.filter((_, i) => i % 2 === 0) : ticks },
-      gap: weekly ? 20 : 45, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+      gap: weekly ? 20 : 45, endLabels: true, yfmt,
       // weekly points are labeled by the week's Friday; the week starts that Monday
       xlab: x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5); return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : MON_FULL[d.getUTCMonth()]; },
       xname: weekly ? "Week" : "Month", aria });
@@ -1071,11 +1103,11 @@ details.method .card { margin-top: 10px; }
     // This week tab may call "last week", so "This week" here could name two different numbers
     const when = x => { const d = new Date(Date.UTC(yr, 0, 1) + (weekly ? x - 4 : x) * 864e5);
       return weekly ? `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` : d.toLocaleString("en-US", { month: "long", timeZone: "UTC" }); };
-    if (last) parts.push(`${when(last.x)}: ${fmt$(Math.round(last.y), false)}`);
-    if (last && ago.length) { const a = near(ago); if (Math.abs(a.x - last.x) <= (weekly ? 7 : 20)) parts.push(`same ${unit} last year ${fmt$(Math.round(a.y), false)}`); }
+    if (last) parts.push(`${when(last.x)}: ${show(last.y)}`);
+    if (last && ago.length) { const a = near(ago); if (Math.abs(a.x - last.x) <= (weekly ? 7 : 20)) parts.push(`same ${unit} last year ${show(a.y)}`); }
     // each value stays with its label; a narrow screen breaks the line at the dot
     const kids = parts.flatMap((p, i) => [i ? " · " : null, el("span", { style: "white-space:nowrap", text: p })]).filter(Boolean);
-    $(`#${pre}-summary`).replaceChildren(...kids, " ($/cwt)", ...(last && last.head != null && last.head < FEW ? [fewTag()] : []));
+    $(`#${pre}-summary`).replaceChildren(...kids, ...(lb ? [] : [" ($/cwt)"]), ...(last && last.head != null && last.head < FEW ? [fewTag()] : []));
     return avg.length > 0;
   }
   const noChart = (pre, text) => { $(`#${pre}-chart`).replaceChildren(el("p", { class: "none", text }));
@@ -1101,6 +1133,8 @@ details.method .card { margin-top: 10px; }
   const FCLS = [{ v: "steer", t: "Steers" }, { v: "heifer", t: "Heifers" }];
   const FBASIS = [{ v: "live", t: "Live" }, { v: "dressed", t: "Dressed" }];
   const BASIS_SUB = { live: "live weight at the feedlot (FOB)", dressed: "dressed (carcass) weight, delivered to the plant" };
+  // how often each section changes (11/24/2026): USDA's weekly reports come out Monday; boxed beef and the daily trades each day
+  const WEEKLY = "Updated weekly, after USDA's Monday reports.", DAILY = "Updated each trading day.";
   const BANDS = [["total", "All grades"], ["choice_over80", "Over 80% Choice"], ["choice_65_80", "65-80% Choice"],
     ["choice_35_65", "35-65% Choice"], ["choice_0_35", "Under 35% Choice"]];
   const PRIMALS = [["cutout", "Cutout value"], ["rib", "Rib"], ["chuck", "Chuck"], ["round", "Round"], ["loin", "Loin"],
@@ -1188,7 +1222,7 @@ details.method .card { margin-top: 10px; }
   function renderFweek() {
     if (!FED) return;
     const r = reg(), wk = r.weeks;
-    $("#fweek-sub").textContent = `Negotiated cash trade, week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt).`;
+    $("#fweek-sub").textContent = `Negotiated cash trade, week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt). ${WEEKLY}`;
     const head = el("thead", {}, el("tr", {}, [el("th", { text: "Steers and heifers" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
       el("th", { text: "vs. a year ago" }), el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })]));
     let missing = 0;
@@ -1211,7 +1245,37 @@ details.method .card { margin-top: 10px; }
     seg($("#fgrade-class"), FCLS, () => S.gcls, v => S.gcls = v);
     seg($("#fgrade-basis"), FBASIS, () => S.gbasis, v => S.gbasis = v);
     const G = r.week[`${S.gcls}.${S.gbasis}`] || {}, now = G.latest || {}, pr = G.prior || {};
-    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}. Pens are grouped by the share expected to grade Choice.`;
+    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}. Pens are grouped by the share expected to grade Choice; ` +
+      "USDA doesn't price cash cattle as Select.";
+    // selling on a grid (11/24/2026): USDA's weekly premiums and discounts, the core items, against the grid's base;
+    // 5-Area's report for 5-Area, else national's (USDA publishes no other area's). Figures as USDA publishes them.
+    const sk = r.id === "5area" ? "5area" : "national", gd = (FED.grid || {})[sk], gbox = $("#fgrade-gridbox");
+    gbox.hidden = !gd;
+    if (gd) {
+      const sgn = v => v == null ? "–" : v === 0 ? "$0" : `${v > 0 ? "+" : "−"}$${Math.abs(v).toFixed(2)}`;
+      const whole = v => v === 0 ? "$0" : `${v > 0 ? "+" : "−"}$${Math.abs(v) % 1 ? Math.abs(v).toFixed(2) : Math.abs(v)}`;
+      const GROUPS = { quality: "Quality grade", yield_grade: "Yield grade", weight: "Carcass weight" };
+      let odd = false, grp = "";
+      const body = [];
+      for (const [item, label, avg, lo, hi, prior] of gd.rows) {
+        const g = item.split(".")[0];
+        if (g !== grp) { grp = g; body.push(el("tr", { class: "grp" }, el("th", { colspan: "4", scope: "colgroup", text: GROUPS[g] }))); }
+        const out = avg != null && lo != null && hi != null && (avg < lo - 0.005 || avg > hi + 0.005);
+        odd = odd || out;
+        body.push(el("tr", {}, [el("td", { text: label + (out ? " *" : "") }), el("td", { class: "price", text: sgn(avg) }),
+          el("td", { class: "sm-hide", text: lo != null && hi != null ? (lo === hi ? whole(lo) : `${whole(lo)} to ${whole(hi)}`) : "–" }),
+          el("td", { text: sgn(prior) })]));
+      }
+      $("#fgrade-grid").replaceChildren(
+        el("caption", { text: `Grid premiums and discounts, ${sk === "5area" ? "5-Area" : "national"}, USDA's report of ${wday(gd.date)}` }),
+        el("thead", {}, el("tr", {}, [el("th", { text: "Carcass" }), el("th", { text: "Average" }), el("th", { class: "sm-hide", text: "Range" }),
+          el("th", { text: "Week before" })])), el("tbody", {}, body));
+      $("#fgrade-gridnote").textContent = "$/cwt of carcass weight, added to or taken off the grid's base price (Choice, yield grade 3, " +
+        "600-900 lb carcass). Averages are the simple average of packers' grids. Cash cattle are priced by the pen, not by " +
+        `grade, so a grid is where grade changes the price. ${WEEKLY}` +
+        (sk === "national" ? " USDA reports grids for 5-Area and the nation only, so other regions show the national report." : "") +
+        (odd ? " * USDA's published average falls outside its own range this week; shown as reported." : "");
+    }
     $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Price" }), el("th", { text: "vs. week before" }),
       el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })])),
       el("tbody", {}, BANDS.filter(([k]) => now[k]).map(([k, t]) => {
@@ -1227,7 +1291,7 @@ details.method .card { margin-top: 10px; }
     const dd = r.daily || [];
     $("#fdaily-card").hidden = !dd.length;
     if (dd.length) {
-      $("#fdaily-sub").textContent = `USDA's daily ${r.name} report, all grades, $/cwt, head in parentheses. These days count toward next week's report.`;
+      $("#fdaily-sub").textContent = `USDA's daily ${r.name} report, all grades, $/cwt, head in parentheses. These days count toward next week's report. ${DAILY}`;
       const cellT = (cells, c) => el("td", {}, FBASIS.map(b => { const x = cells[`${c}.${b.v}`];
         return el("span", { style: "display:block", text: `${b.t}: ${x && x[0] != null ? `${fmt$(x[0])} (${fmtN(x[1])})` : "–"}` }); }));
       $("#fdaily-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Trade day" }), el("th", { text: "Steers" }), el("th", { text: "Heifers" })])),
@@ -1237,7 +1301,7 @@ details.method .card { margin-top: 10px; }
   }
 
   // About this week's trade (the auction side's About card): how fed cattle were bought, national --
-  // each purchase type's share of cattle delivered and its dressed steer price, and the negotiated cash share by month
+  // each purchase type's share of cattle delivered and its head, and every type's share by month
   const SALE_TYPES = [["negotiated", "Negotiated cash"], ["negotiated_grid", "Negotiated grid"], ["formula", "Formula"], ["forward", "Forward contract"]];
   function fedFacts() {
     const Sx = FED.sales, W = Sx.weeks, now = W.latest, pr = W.prior, ya = W.year_ago, card = $("#fweek-facts");
@@ -1247,13 +1311,13 @@ details.method .card { margin-top: 10px; }
     add("Fed cattle delivered to packers", `${fmtN(now.total)} head`, `National, every purchase type${ya ? `; ${fmtN(ya.total)} a year ago` : ""}`);
     const cs = w => w && w.types.negotiated[1];
     add("Bought on a negotiated cash basis", pct(cs(now)), [pr ? `${pct(cs(pr))} the week before` : null, ya ? `${pct(cs(ya))} a year ago` : null].filter(Boolean).join("; "));
-    const hd = ["Share", "Year ago", "Head", "Dressed steers", "vs. a year ago"].map((t, i) => el("span", { class: "hd" + (i === 1 || i === 4 ? " sm-hide" : i === 2 ? " xs-hide" : ""), text: t }));
+    // share and head only (11/24/2026): the four types' prices aren't comparable, and the cash price is in the table above
+    const hd = ["Share", "Year ago", "Head"].map((t, i) => el("span", { class: "hd" + (i === 1 ? " sm-hide" : ""), text: t }));
     const cells = [el("span", { class: "lab" }), ...hd];
     for (const [t, name] of SALE_TYPES) {
       const x = now.types[t], y = ya && ya.types[t];
       cells.push(el("span", { class: "lab", text: name }), el("span", { text: pct(x[1]) }), el("span", { class: "yr sm-hide", text: y ? pct(y[1]) : "–" }),
-        el("span", { class: "xs-hide", text: fmtN(x[0]) }), el("span", { text: x[2] != null ? fmt$(x[2]) : "–" }),
-        el("span", { class: "sm-hide" }, [chgSpan(x[2] != null && y && y[2] != null ? x[2] - y[2] : null)]));
+        el("span", { text: fmtN(x[0]) }));
     }
     add("How the cattle were bought", el("div", { class: "gr gr-wide" }, cells), "", true);
     const why = el("a", { href: "#about", text: "More on these numbers" });
@@ -1261,9 +1325,8 @@ details.method .card { margin-top: 10px; }
     const chart = el("div", { class: "chart" }), legend = el("ul", { class: "legend" });
     card.replaceChildren(el("h3", { text: `About the week of ${weekOf(now.date)}` }), el("dl", {}, items),
       el("p", { class: "gmix" }, [document.createTextNode("National: USDA reports how cattle were bought for the whole country only, so these figures " +
-        "are the same for every region. Shares count every animal delivered to packers that week, as USDA's own negotiated share does. Dressed steer " +
-        "prices for grid, formula and forward contract cattle are net of the grid's premiums and discounts, and most forward contract prices were set " +
-        "weeks or months earlier, so they differ from the cash price for reasons other than the market. "), why]),
+        "are the same for every region. Shares count every animal delivered to packers that week, as USDA's own negotiated share does. " +
+        WEEKLY + " "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
         el("p", { class: "note", text: `Each purchase type's share of all fed cattle delivered, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial.` }),
         legend, chart]));
@@ -1286,15 +1349,18 @@ details.method .card { margin-top: 10px; }
     const r = reg();
     seg($("#ftrend-class"), FCLS, () => S.fcls, v => S.fcls = v);
     seg($("#ftrend-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
-    const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years;
-    $("#ftrend-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly average, $/cwt.`;
-    if (g) yearChart("ftrend", g, { by: "week", year: g.year, base }, `Fed ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)} price this year, last year and the ${base} average, ${r.name}`);
+    const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years, cl = clsT(S.fcls).toLowerCase();
+    $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly averages. ${WEEKLY}`;
+    $("#ftrend-psub").textContent = `This year, last year and the ${base} average, $/cwt.`;
+    if (g) yearChart("ftrend", g, { by: "week", year: g.year, base }, `Fed ${cl} ${basisT(S.fbasis)} price this year, last year and the ${base} average, ${r.name}`);
     else noChart("ftrend", "No negotiated trade reported this year.");
-    if (r.season[k]) {
-      const b = el("button", { type: "button", class: "linkish", text: `See the usual seasonal pattern for ${clsT(S.fcls).toLowerCase()}` });
-      b.addEventListener("click", () => { setTab("fseason", false); window.scrollTo({ top: 0 }); });
-      $("#ftrend-season").replaceChildren(b);
-    } else $("#ftrend-season").replaceChildren();
+    // weight (11/24/2026): the same chart, in pounds: live weight for live prices, carcass weight for dressed
+    const gw = (r.wyears || {})[k];
+    $("#fweight-sub").textContent = `Average ${S.fbasis === "live" ? "live" : "carcass (dressed)"} weight, this year, last year and the ${base} average, lb.`;
+    if (gw) yearChart("fweight", gw, { by: "week", year: gw.year, base, unit: "lb" }, `Fed ${cl} average ${S.fbasis === "live" ? "live" : "carcass"} weight this year, last year and the ${base} average, ${r.name}`);
+    else noChart("fweight", "No negotiated trade reported this year.");
+    renderFseason();
+    if (SEASON_JUMP) { SEASON_JUMP = false; requestAnimationFrame(() => $("#fseason-card").scrollIntoView({ block: "start" })); }
     $("#ftrend-note").textContent = `Each point is USDA's weekly weighted average for the week's negotiated cash trade. The ${base} average is ` +
       "drawn only for weeks all three years had trade." +
       (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no last-year or average line.` : "");
@@ -1303,13 +1369,11 @@ details.method .card { margin-top: 10px; }
   function renderFseason() {
     if (!FED) return;
     const r = reg();
-    seg($("#fseason-class"), FCLS, () => S.fcls, v => S.fcls = v);
-    seg($("#fseason-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
+    // part of the Trends tab (11/24/2026): its switches are the tab's
     const sea = r.season[`${S.fcls}.${S.fbasis}`];
     $("#fseason-off").hidden = !!sea;
-    for (const x of document.querySelectorAll(".fseason-part")) x.hidden = !sea && !Object.keys(r.season).length;
     if (!sea) {
-      $("#fseason-off p").textContent = r.since ? `The ${r.name} report started ${day(r.since, true)}: too new for a seasonal pattern. Pick 5-Area or National for the pattern across these feedlots.`
+      $("#fseason-off").textContent = r.since ? `The ${r.name} report started ${day(r.since, true)}: too new for a seasonal pattern. Pick 5-Area or National for the pattern across these feedlots.`
         : `Too few years of ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)} trade in ${r.name} for a seasonal pattern.`;
       $("#fseason-sub").textContent = ""; $("#fseason-chart").replaceChildren(); $("#fseason-summary").textContent = "";
       return;
@@ -1323,29 +1387,37 @@ details.method .card { margin-top: 10px; }
   // Compare regions: up to three on one chart, like Compare states; no rankings
   function renderFcmp() {
     if (!FED) return;
-    const regs = FED.regions;
+    // the current regions, then the reports USDA ended (11/24/2026: Compare only, never joined to South Central)
+    const regs = [...FED.regions, ...(FED.ended || [])], regById = id => regs.find(x => x.id === id);
     if (!S.f1 || !regById(S.f1)) S.f1 = S.region;
+    if (S.f2 && !regById(S.f2)) S.f2 = ""; if (S.f3 && !regById(S.f3)) S.f3 = "";
     const fill = (sel, v, none) => { sel.replaceChildren(...(none ? [el("option", { value: "", text: "None" })] : []), ...regs.map(x => el("option", { value: x.id, text: x.name }))); sel.value = v || ""; };
     fill($("#fcmp-s1"), S.f1, false); fill($("#fcmp-s2"), S.f2, true); fill($("#fcmp-s3"), S.f3, true);
     seg($("#fcmp-class"), FCLS, () => S.fcls, v => S.fcls = v);
     seg($("#fcmp-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
     const k = `${S.fcls}.${S.fbasis}`, what = `fed ${clsT(S.fcls).toLowerCase().replace(/s$/, "")} ${basisT(S.fbasis)}`;
-    $("#fcmp-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt.`;
+    $("#fcmp-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt. ${WEEKLY}`;
     const ids = [...new Set([S.f1, S.f2, S.f3].filter(Boolean))];
     const draw = (by, host, legend, sub) => {
       const weekly = by === "weekly", series = [];
       ids.forEach((id, i) => {
         const pts = (regById(id)[by] || {})[k];
         if (!pts || !pts.length) return;
-        series.push({ ...CMP_STYLE[i], name: regById(id).name, end: REG_SHORT[id] || id, dot: i === 0,
-          pts: pts.filter(p => p[1] != null).map(p => ({ x: weekly ? Date.parse(p[0] + "T12:00:00Z") / 864e5 : +p[0].slice(0, 4) * 12 + +p[0].slice(5, 7) - 1, y: p[1], head: p[2] })) });
+        const R = regById(id), P = pts.filter(p => p[1] != null);
+        if (!P.length) return;
+        // an ended report's line stops early: its end label names the month of its last price ("Jun $258"), so it isn't
+        // read as current; it fits the chart's narrow end-label margin on a phone
+        const lastP = P[P.length - 1];
+        const endV = R.ended ? `${MON3[+lastP[0].slice(5, 7) - 1]} ${fmt$(Math.round(lastP[1]), false)}` : null;
+        series.push({ ...CMP_STYLE[i], name: R.name, end: REG_SHORT[id] || R.short || id, endV, dot: i === 0,
+          pts: P.map(p => ({ x: weekly ? Date.parse(p[0] + "T12:00:00Z") / 864e5 : +p[0].slice(0, 4) * 12 + +p[0].slice(5, 7) - 1, y: p[1], head: p[2] })) });
       });
       const xs = series.flatMap(s => s.pts.map(p => p.x)), xmax = xs.length ? Math.max(...xs) : 0;
       const xmin = weekly ? xmax - 364 : xmax - 59, ticks = [];
       if (weekly) {
         const d0 = new Date(xmin * 864e5), y0 = d0.getUTCFullYear();
         for (let mo = d0.getUTCMonth() + 1, v; (v = Date.UTC(y0, mo, 1) / 864e5) <= xmax; mo++) ticks.push({ v, t: mo % 12 ? MON3[mo % 12] : String(y0 + mo / 12) });
-      } else for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12) ticks.push({ v, t: String(v / 12) });
+      } else for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += host.clientWidth < 360 ? 24 : 12) ticks.push({ v, t: String(v / 12) });   // every other year on a narrow phone, where five ran together
       const narrow = window.innerWidth < 520;
       legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
       sub.textContent = weekly ? "Weekly average, the past 52 weeks." : "Monthly average, the past 60 months.";
@@ -1360,9 +1432,16 @@ details.method .card { margin-top: 10px; }
     draw("weekly", $("#fcmp-week"), $("#fcmp-wlegend"), $("#fcmp-wsub"));
     draw("monthly", $("#fcmp-month"), $("#fcmp-mlegend"), $("#fcmp-msub"));
     $("#fcmp-missing").textContent = ids.map(id => { const x = regById(id);
+      if (x.ended) {   // an ended report: when it stopped, and its last priced week (USDA withheld its last months)
+        const l = x.last[k];
+        return `${x.short}: USDA ended this report after the week of ${weekOf(x.ended)}` +
+          (l ? `; its last ${what} price was the week of ${weekOf(l)}${l.slice(0, 4) !== x.ended.slice(0, 4) ? `, ${l.slice(0, 4)}` : ""}` : `; no ${what} price`) +
+          ". Weeks with too few trades were withheld. South Central took over its area and is not joined to it.";
+      }
       if ((x.weekly[k] || []).length) return x.since ? `${x.name}: reported only since ${day(x.since, true)}.` : null;
       return `${x.name}: no ${what} trade reported in the past year.`; }).filter(Boolean).join(" ");
-    $("#fcmp-note").textContent = "The regions overlap: 5-Area includes the Nebraska, Iowa-Minnesota and South Central feedlots, and National " +
+    $("#fcmp-note").textContent = "The regions overlap: 5-Area includes the Nebraska, Iowa-Minnesota and South Central feedlots (and, " +
+      "until USDA ended their reports in October 2026, the Kansas and Texas-Oklahoma-New Mexico feedlots), and National " +
       "includes every region. Regions also differ in the cattle they sell (weights, grades and how many sell dressed rather than live), " +
       "so part of a gap between two lines can come from those differences, not price alone.";
   }
@@ -1372,8 +1451,8 @@ details.method .card { margin-top: 10px; }
     if (!FED) return;
     const b = FED.beef, d = b.days, L = d.latest;
     $("#beef-sub").textContent = `Choice and Select cutout, 600-900 lb carcasses, USDA's afternoon report for ${wday(L.date, true)}. $/cwt. ` +
-      "The same for every region.";
-    const vs = (g, k, x) => x && x[g] && x[g][k] != null && L[g][k] != null ? L[g][k] - x[g][k] : null;
+      `The same for every region. ${DAILY}`;
+    const vs =(g, k, x) => x && x[g] && x[g][k] != null && L[g][k] != null ? L[g][k] - x[g][k] : null;
     const pc = (g, k, x) => x && x[g] && x[g][k] ? (L[g][k] / x[g][k] - 1) * 100 : null;
     const card = (g, t) => el("div", {}, [el("div", { class: "k", text: t }), el("div", { class: "v" + (g === "choice" ? " hero" : ""), text: fmt$(L[g].cutout) }),
       ...[["prior", "the day before"], ["week_ago", "a week earlier"], ["year_ago", "a year earlier"]].map(([w, lab]) =>
@@ -1391,31 +1470,61 @@ details.method .card { margin-top: 10px; }
         const w = changeCell(vs("choice", k, d.week_ago), null); w.classList.add("sm-hide");
         return el("tr", {}, [el("td", { text: t }), td(L.choice[k]), td(L.select[k]), w, changeCell(vs("choice", k, d.year_ago), pc("choice", k, d.year_ago))]);
       })));
-    // the last 65 trading days
-    const X = s => Date.parse(s + "T12:00:00Z") / 864e5, pts = i => b.daily.filter(p => p[i] != null).map(p => ({ x: X(p[0]), y: p[i] }));
-    const xs = b.daily.map(p => X(p[0])), xmin = Math.min(...xs), xmax = Math.max(...xs), ticks = [];
-    const d0 = new Date(xmin * 864e5);
-    for (let mo = d0.getUTCMonth() + 1, v; (v = Date.UTC(d0.getUTCFullYear(), mo, 1) / 864e5) <= xmax; mo++) ticks.push({ v, t: MON3[((mo % 12) + 12) % 12] });
-    const series = [{ cls: 1, width: 2.4, name: "Choice", end: "Choice", dot: true, pts: pts(1) }, { cls: 2, dash: "6 4", width: 1.8, name: "Select", end: "Select", pts: pts(2) }];
-    $("#beef-dsub").textContent = `Each trading day's cutout, ${day(b.daily[0][0], true)} to ${day(b.daily[b.daily.length - 1][0], true)}, $/cwt.`;
-    $("#beef-dlegend").replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
-    lineChart($("#beef-daily"), { series, x: { min: xmin, max: xmax, ticks }, gap: 6, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
-      xlab: x => { const t = new Date(x * 864e5); return `${DOW[t.getUTCDay()]}, ${MON[t.getUTCMonth()]} ${t.getUTCDate()}`; }, xname: "Day",
-      aria: "Choice and Select boxed beef cutout by trading day, the last 13 weeks" });
-    // this year vs. last year vs. the 3-year average, weekly
+    // this year vs. last year vs. the 3-year average, weekly, for the cutout or one primal (11/24/2026: the primal menu)
     const KINDS = [{ v: "choice", t: "Choice" }, { v: "select", t: "Select" }, { v: "spread", t: "Choice-Select spread" }];
     seg($("#beefy-kind"), KINDS, () => S.bkind, v => S.bkind = v);
-    const k = KINDS.find(x => x.v === S.bkind) || KINDS[0], g = b.years[k.v], base = FED.meta.base_years;
-    $("#beefy-sub").textContent = `${k.v === "spread" ? "Choice cutout minus Select cutout" : `${k.t} cutout`}, weekly average of the daily values, $/cwt.`;
-    if (g) yearChart("beefy", g, { by: "week", year: g.year, base }, `${k.t} ${k.v === "spread" ? "" : "cutout "}this year, last year and the ${base} average`);
-    else noChart("beefy", "No cutout to chart.");
+    const psel = $("#beefy-primal");
+    if (!psel.options.length) psel.replaceChildren(...PRIMALS.map(([v, t]) => el("option", { value: v, text: t === "Cutout value" ? "Cutout" : t })));
+    if (!PRIMALS.some(([v]) => v === S.bprimal)) S.bprimal = "cutout";
+    psel.value = S.bprimal;
+    const k = KINDS.find(x => x.v === S.bkind) || KINDS[0], g = (b.years[k.v] || {})[S.bprimal], base = FED.meta.base_years;
+    const pn = S.bprimal === "cutout" ? "cutout" : `${PRIMALS.find(([v]) => v === S.bprimal)[1].toLowerCase()} primal`;
+    $("#beefy-sub").textContent = `${k.v === "spread" ? `Choice ${pn} minus Select ${pn}` : `${k.t} ${pn}`}, weekly average of the daily values, $/cwt. ` +
+      "Finished weeks only.";
+    if (g) yearChart("beefy", g, { by: "week", year: g.year, base }, `${k.v === "spread" ? `Choice-Select spread, ${pn}` : `${k.t} ${pn}`} this year, last year and the ${base} average`);
+    else noChart("beefy", "Nothing to chart.");
+    renderBeefHistory();
+  }
+
+  // Since 2010 (11/24/2026): Choice or Select, and any of the cutout and primals, monthly. One y-axis; the lines
+  // take the page's four colors, then the same colors dashed, so up to eight stay apart; each is labeled at its end.
+  const HSTYLE = [{ cls: 1, width: 2.4 }, { cls: 2, dash: "6 4", width: 1.8 }, { cls: 3, width: 1.8 }, { cls: 4, width: 1.8 },
+    { cls: 1, dash: "2 3", width: 1.8 }, { cls: 2, dash: "2 3", width: 1.8 }, { cls: 3, dash: "6 4", width: 1.8 }, { cls: 4, dash: "6 4", width: 1.8 }];
+  function renderBeefHistory() {
+    const H = FED.beef.history;
+    seg($("#beefh-grade"), [{ v: "choice", t: "Choice" }, { v: "select", t: "Select" }], () => S.hgrade, v => S.hgrade = v);
+    // the primals as on-off buttons, as many as wanted
+    const box = $("#beefh-primals");
+    box.replaceChildren(...PRIMALS.map(([v, t]) => {
+      const lab = t === "Cutout value" ? "Cutout" : t, on = S.hprimals.includes(v), btn = el("button", { type: "button", "aria-pressed": String(on), text: lab });
+      btn.addEventListener("click", () => { S.hprimals = on ? S.hprimals.filter(x => x !== v) : PRIMALS.map(([p]) => p).filter(p => p === v || S.hprimals.includes(p));
+        renderBeefHistory(); refocus(box, lab); });
+      return btn;
+    }));
+    const X = m => +m.slice(0, 4) * 12 + +m.slice(5, 7) - 1, xs = H.months.map(X), xmin = xs[0], xmax = xs[xs.length - 1];
+    const narrow = $("#beefh-chart").clientWidth < 520, ticks = [];
+    for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12 * (narrow ? 4 : 2)) ticks.push({ v, t: String(v / 12) });
+    const gt = S.hgrade === "select" ? "Select" : "Choice";
+    const series = PRIMALS.filter(([p]) => S.hprimals.includes(p)).map(([p, t], i) => ({ ...HSTYLE[i], name: t === "Cutout value" ? "Cutout" : t,
+      end: t === "Cutout value" ? "Cutout" : t.replace("Short plate", "Plate"), dot: i === 0,
+      pts: (H[S.hgrade][p] || []).map((v, j) => ({ x: xs[j], y: v })).filter(q => q.y != null) })).filter(s => s.pts.length);
+    $("#beefh-sub").textContent = `${gt}, monthly average of the daily values, ${MON_FULL[+H.months[0].slice(5) - 1]} ${H.months[0].slice(0, 4)} ` +
+      `to ${MON_FULL[+H.months[H.months.length - 1].slice(5) - 1]} ${H.months[H.months.length - 1].slice(0, 4)} (the latest month can be partial), $/cwt.`;
+    $("#beefh-legend").replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash === "2 3" ? " dot" : s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
+    if (!series.length) { $("#beefh-chart").replaceChildren(el("p", { class: "none", text: "Pick the cutout or a primal to chart." })); return; }
+    lineChart($("#beefh-chart"), { series, height: Math.max(narrow ? 240 : 280, series.length * 34 + 40), endLabels: true,
+      x: { min: xmin, max: xmax, ticks }, gap: 1.5, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
+      xlab: x => `${MON_FULL[((x % 12) + 12) % 12]} ${Math.floor(x / 12)}`, xname: "Month",
+      aria: `${gt} boxed beef by month since ${H.months[0].slice(0, 4)}: ${series.map(s => s.name).join(", ")}` });
   }
 
   // ---------- tabs, address, wiring ----------
-  const VIEWS = { fweek: renderFweek, ftrend: renderFtrend, fseason: renderFseason, fcmp: renderFcmp, beef: renderBeef };
+  const VIEWS = { fweek: renderFweek, ftrend: renderFtrend, fcmp: renderFcmp, beef: renderBeef };
   // the address (Data_Forecasts/ADDRESS_STANDARD.md): ?region=ne#beef. Tab names never change; old ones keep opening.
-  const ADDR = { fweek: "week", ftrend: "trend", fseason: "season", fcmp: "compare", beef: "beef" };
-  const FROM_ADDR = { week: "fweek", trend: "ftrend", season: "fseason", compare: "fcmp", cmp: "fcmp", beef: "beef" };
+  // #season opened the Seasonal trend tab before Trends took it in (11/24/2026); it opens Trends at the seasonal chart
+  const ADDR = { fweek: "week", ftrend: "trend", fcmp: "compare", beef: "beef" };
+  const FROM_ADDR = { week: "fweek", trend: "ftrend", season: "ftrend", compare: "fcmp", cmp: "fcmp", beef: "beef" };
+  let SEASON_JUMP = (location.hash || "").slice(1) === "season";   // scroll to the seasonal chart once it is drawn
   const hashTab = h => FROM_ADDR[h] || (VIEWS[h] ? h : null);
   function writeAddr() {
     let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
@@ -1432,8 +1541,9 @@ details.method .card { margin-top: 10px; }
   }
   const tabFade = () => {};
   // a jump within the page (#more-tools, #disclaimer) puts the tab back in the address, so a share right after it opens this view
-  window.addEventListener("hashchange", () => { const h = hashTab((location.hash || "").slice(1));
-    if (h && h !== S.tab) setTab(h, "tab"); else if (!h) writeAddr(); });
+  window.addEventListener("hashchange", () => { const raw = (location.hash || "").slice(1), h = hashTab(raw);
+    if (raw === "season") SEASON_JUMP = true;
+    if (h && h !== S.tab) setTab(h, "tab"); else if (!h) writeAddr(); else if (raw === "season") { writeAddr(); render(); } });
   // a tab opens at its top when the reader is below the tab bar; at the top of the page nothing moves
   function setTab(t, scroll) {
     if (!VIEWS[t]) return;
@@ -1461,6 +1571,7 @@ details.method .card { margin-top: 10px; }
   });
   $("#to-disc").addEventListener("click", e => { e.preventDefault(); $("#disc-full").open = true; $("#disclaimer").scrollIntoView({ behavior: "smooth", block: "start" }); });
   $("#region").addEventListener("change", e => { S.region = e.target.value; store.set("region", S.region); S.f1 = S.region; writeAddr(); render(); });
+  $("#beefy-primal").addEventListener("change", e => { S.bprimal = e.target.value; render(); });
   for (const [i, k] of [[1, "f1"], [2, "f2"], [3, "f3"]]) $(`#fcmp-s${i}`).addEventListener("change", e => { S[k] = e.target.value; renderFcmp(); });
   let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => FED && VIEWS[S.tab](), 120); }).observe(document.querySelector("main"));
 
