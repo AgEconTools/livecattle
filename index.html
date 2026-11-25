@@ -597,10 +597,11 @@ details.method .card { margin-top: 10px; }
       <div class="tablewrap"><table id="fdaily-table"></table></div>
     </div>
     <div class="card facts" id="fweek-facts"></div>
-    <!-- fed cattle delivered so far this year (11/24/2026, in place of a negotiated-cash-only count): every purchase type,
-         national, beside the About card that comes from the same USDA report -->
+    <!-- fed cattle delivered each week (11/25/2026, in place of a running total that drew apart only late in the
+         year; 11/24/2026 in place of a negotiated-cash-only count): every purchase type, national, beside the About card
+         that comes from the same USDA report -->
     <div class="card stack" id="fvol-card">
-      <div><h3 class="h3s">Fed cattle delivered to packers so far this year <span class="chip-scope">National</span></h3>
+      <div><h3 class="h3s">Fed cattle delivered to packers each week <span class="chip-scope">National</span></h3>
         <p class="note" id="fvol-sub"></p></div>
       <p style="margin:0;font-weight:600" id="fvol-summary"></p>
       <ul class="legend" id="fvol-legend"></ul>
@@ -610,8 +611,8 @@ details.method .card { margin-top: 10px; }
       negotiated cash purchases that packers report under Livestock Mandatory Reporting: cattle bought at a price agreed
       that week, for delivery within 14 days. Formula, forward contract and negotiated grid purchases are not included.
       Live prices are per hundredweight of live weight at the feedlot (FOB); dressed prices are per hundredweight of
-      carcass weight, delivered to the packing plant. The year-ago week is the same week 52 weeks earlier. Head counts
-      are the head USDA priced in each row.</p></details>
+      carcass weight, delivered to the packing plant. The year-ago week is the same week 52 weeks earlier. Head is the
+      number of cattle USDA priced in each row.</p></details>
   </section>
 
   <!-- Trends (11/24/2026): price, weight and the seasonal price pattern on one tab, one set of switches for all three;
@@ -643,9 +644,9 @@ details.method .card { margin-top: 10px; }
     <details class="method"><summary>How this is calculated</summary><p class="note" id="ftrend-note"></p>
       <p class="note">Weights are USDA's weighted averages for the same cattle as the prices: live weight for live
       prices, carcass (dressed) weight for dressed prices.</p>
-      <p class="note">Each seasonal bar shows how far that month's price usually runs above or below the average of the 12
-      months around it, averaged over the years shown. Measuring against the months around it keeps a rising market from
-      making the late months look better than they were. A month's price averages its weeks by head. Thin lines on each
+      <p class="note">Each bar is how far that month's price ran above or below the average of the surrounding 12 months,
+      averaged over <span id="fseason-yrs">the years shown</span>. Measuring against the surrounding months keeps a rising
+      market from flattering the late months. A month's price averages its weeks by head. Thin lines on each
       bar show the lowest and highest year.</p></details>
   </section>
 
@@ -708,8 +709,8 @@ details.method .card { margin-top: 10px; }
       hundredweight of carcass. These are USDA's National Daily Boxed Beef Cutout figures (afternoon report) for Choice and
       Select carcasses of 600-900 lb, from negotiated sales packers report under Livestock Mandatory Reporting. A load is
       about 40,000 lb of boxed beef. A primal is one of the carcass's seven major parts (rib, chuck, round, loin,
-      brisket, short plate, flank); USDA values each in $/cwt of that primal, so a primal's value isn't a share of the
-      cutout's. Weekly and monthly values are the simple average of the period's daily values; the this-year chart uses
+      brisket, short plate, flank); each is valued per hundredweight of that primal, so the primal values don't add up to
+      the cutout. Weekly and monthly values are the simple average of the period's daily values; the this-year chart uses
       finished weeks only, and the latest month since 2010 can be partial. The Choice-Select spread is the Choice value
       minus the Select value, for the cutout or the primal picked.</p></details>
   </section>
@@ -755,7 +756,7 @@ details.method .card { margin-top: 10px; }
           <a href="https://mymarketnews.ams.usda.gov/viewReport/3930">South Central Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT149)</li>
         <li>Kansas and Texas-Oklahoma-New Mexico on Compare (withheld since summer 2026):
           <a href="https://mymarketnews.ams.usda.gov/viewReport/2484">Kansas Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT157);
-          <a href="https://mymarketnews.ams.usda.gov/viewReport/2483">Texas-Oklahoma Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT156)</li>
+          <a href="https://mymarketnews.ams.usda.gov/viewReport/2483">Texas-Oklahoma Weekly Direct Slaughter Cattle - Negotiated Purchases</a> (LM_CT156), which also covers New Mexico</li>
         <li>Trading since that week: <a href="https://mymarketnews.ams.usda.gov/viewReport/2466">5 Area Daily Weighted Average Direct Slaughter Cattle - Negotiated</a> (LM_CT100);
           <a href="https://mymarketnews.ams.usda.gov/viewReport/3929">South Central Daily Direct Slaughter Cattle - Negotiated Purchases - Summary</a> (LM_CT202)</li>
         <li>How cattle were bought: <a href="https://mymarketnews.ams.usda.gov/viewReport/2472">Weekly Direct Slaughter Cattle - Committed and Delivered Cattle</a> (LM_CT142)</li>
@@ -771,7 +772,7 @@ details.method .card { margin-top: 10px; }
           packing plant.</li>
         <li>The head count under the region counts every negotiated cash steer and heifer, live and dressed, FOB and
           delivered. The price table shows the two prices the trade quotes (live FOB and dressed delivered), so its rows
-          add up to a little less. USDA's own "confirmed" count in its report is higher again: it also counts mixed
+          add up to a little less. USDA's own "confirmed" count in its report is higher still: it also counts mixed
           steer-and-heifer lots (and dairy-bred cattle where USDA reports them).</li>
         <li>The regions are USDA's. 5-Area covers feedlots in Texas-Oklahoma-New Mexico, Kansas, Nebraska, Colorado and
           Iowa-Minnesota; National covers every U.S. feedlot selling to packers that report to USDA (domestic cattle); South Central covers Colorado,
@@ -1199,7 +1200,7 @@ details.method .card { margin-top: 10px; }
   const FBASIS = [{ v: "live", t: "Live" }, { v: "dressed", t: "Dressed" }];
   const BASIS_SUB = { live: "live weight at the feedlot (FOB)", dressed: "dressed (carcass) weight, delivered to the plant" };
   // how often each section changes (11/24/2026): USDA's weekly reports come out Monday; boxed beef and the daily trades each day
-  const WEEKLY = "Updated weekly, after USDA's Monday reports.", DAILY = "Updated each trading day.";
+  const WEEKLY = "Updated after USDA's Monday reports.", DAILY = "Updated each trading day.";
   const BANDS = [["total", "All grades"], ["choice_over80", "Over 80% Choice"], ["choice_65_80", "65-80% Choice"],
     ["choice_35_65", "35-65% Choice"], ["choice_0_35", "Under 35% Choice"]];
   const PRIMALS = [["cutout", "Cutout value"], ["rib", "Rib"], ["chuck", "Chuck"], ["round", "Round"], ["loin", "Loin"],
@@ -1287,7 +1288,7 @@ details.method .card { margin-top: 10px; }
           : el("div", { class: "row" }, [item(tl(bd.latest), "loads", true), ...(tl(bd.prior) == null ? [] : [" · ", item(tl(bd.prior), "the day before")]),
             ...(tl(bd.year_ago) == null ? [] : [" · ", item(tl(bd.year_ago), "a year earlier")])]));
     } else $("#tally").replaceChildren(
-      el("div", { class: "lead", text: `Fed steers and heifers bought on a negotiated cash basis (live and dressed, FOB and delivered), ` +
+      el("div", { class: "lead", text: `Fed steers and heifers sold on a negotiated cash basis, ` +
         `${r.name}, week of ${weekOf(r.weeks.latest)}` }),
       h.latest == null ? el("div", { class: "row", text: "USDA reported no negotiated trade for this region that week." })
         : el("div", { class: "row" }, [item(h.latest, "head", true), " · ", item(h.prior, "the week before"), " · ", item(h.year_ago, "a year ago")]));
@@ -1306,8 +1307,8 @@ details.method .card { margin-top: 10px; }
     if (!FED) return;
     const r = reg(), wk = r.weeks;
     // the prices are USDA's weekly weighted averages (11/24/2026: said on the tab, not only in How this is calculated)
-    $("#fweek-sub").textContent = `USDA's weekly weighted average price for negotiated cash trades (each lot weighted by its head count), ` +
-      `week of ${weekOf(wk.latest)}: ${r.name} (${r.area}). Dollars per hundredweight (cwt). ${WEEKLY}`;
+    $("#fweek-sub").textContent = `USDA's weighted average negotiated cash prices, week of ${weekOf(wk.latest)}, ${r.name} (${r.area}). ` +
+      `Dollars per hundredweight (cwt). ${WEEKLY}`;
     const head = el("thead", {}, el("tr", {}, [el("th", { text: "Steers and heifers" }), el("th", { text: "Weighted avg. price" }), el("th", { text: "vs. week before" }),
       el("th", { text: "vs. a year ago" }), el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })]));
     let missing = 0;
@@ -1324,15 +1325,13 @@ details.method .card { margin-top: 10px; }
     }));
     $("#fweek-table").replaceChildren(el("caption", { text: `${r.name}, all grades, weighted average, week of ${weekOf(wk.latest)}` }), head, el("tbody", {}, rows));
     $("#fweek-missing").hidden = !missing;
-    $("#fweek-missing").textContent = "Not reported: USDA withholds a region's figures for a week when too few cattle trade to keep them confidential." +
-      (r.since ? ` The ${r.name} report started ${day(r.since, true)}, so it has no year-ago week yet.` : "");
+    $("#fweek-missing").textContent = "Not reported: USDA withholds a region's figures for a week when too few cattle trade to keep them confidential.";
     // by grade band, for the class and basis picked
     seg($("#fgrade-class"), FCLS, () => S.gcls, v => S.gcls = v);
     seg($("#fgrade-basis"), FBASIS, () => S.gbasis, v => S.gbasis = v);
     const G = r.week[`${S.gcls}.${S.gbasis}`] || {}, now = G.latest || {}, pr = G.prior || {};
-    $("#fgrade-sub").textContent = `${clsT(S.gcls)}, ${BASIS_SUB[S.gbasis]}, week of ${weekOf(wk.latest)}: USDA's weighted average price ` +
-      "for each band. Pens are grouped by the share expected to grade Choice; " +
-      "USDA doesn't price cash cattle as Select.";
+    $("#fgrade-sub").textContent = `${cap(basisT(S.gbasis))} ${clsT(S.gcls).toLowerCase()} (${S.gbasis === "live" ? "FOB" : "delivered"}), ` +
+      `week of ${weekOf(wk.latest)}, by the share of the pen expected to grade Choice. USDA reports no Select price for cash cattle.`;
     $("#fgrade-table").replaceChildren(el("thead", {}, el("tr", {}, [el("th", { text: "Grade" }), el("th", { text: "Weighted avg. price" }), el("th", { text: "vs. week before" }),
       el("th", { class: "headcol", text: "Head" }), el("th", { class: "headcol", text: "Avg. weight" })])),
       el("tbody", {}, BANDS.filter(([k]) => now[k]).map(([k, t]) => {
@@ -1344,19 +1343,28 @@ details.method .card { margin-top: 10px; }
           el("td", { class: "headcol", text: fmtN(x[1]) }), el("td", { class: "headcol", text: x[2] ? `${fmtN(x[2])} lb` : "–" })]);
       })));
     if (!Object.keys(now).length) $("#fgrade-table").replaceChildren(el("caption", { class: "none", text: "Not reported that week." }));
-    // fed cattle delivered so far this year (11/24/2026): national, every purchase type, the same for every region
+    // fed cattle delivered each week (11/25/2026; a running total drew apart only late in the year): national, every
+    // purchase type, the same for every region. Each point is [MM-DD, running total, the week's head]: the chart draws the
+    // week's head; the summary gives the week and the year so far
     const Y = FED.sales.ytd, vbase = FED.meta.base_years;
-    $("#fvol-sub").textContent = `Fed steers and heifers delivered to packers that report to USDA, every purchase type. Running total by week: this year, last year ` +
-      `and the ${vbase} average. ${WEEKLY}`;
+    $("#fvol-sub").textContent = `All purchase types. Head each week: this year, last year and the ${vbase} average. Holiday ` +
+      "weeks run low, and a holiday can fall in a different week of the year from one year to the next.";
     if (Y && Y.cur.length) {
-      yearChart("fvol", Y, { by: "week", year: Y.year, base: vbase, unit: "head" },
-        `Fed cattle delivered to packers so far this year, national: this year, last year and the ${vbase} average`);
-      const last = Y.cur[Y.cur.length - 1], at = arr => (arr.find(p => p[0] === last[0]) || [])[1];
+      const wk = arr => arr.map(p => [p[0], p[2], p[2]]);
+      yearChart("fvol", { year: Y.year, cur: wk(Y.cur), ago: wk(Y.ago), avg: Y.avg.map(p => [p[0], p[2], null]) },
+        { by: "week", year: Y.year, base: vbase, unit: "head" },
+        `Fed cattle delivered to packers each week, national: this year, last year and the ${vbase} average`);
+      const last = Y.cur[Y.cur.length - 1], at = (arr, i) => (arr.find(p => p[0] === last[0]) || [])[i];
       const pctv = (a, b) => { const p = Math.round((a / b - 1) * 100); return p === 0 ? "about the same as" : `${Math.abs(p)}% ${p > 0 ? "more than" : "fewer than"}`; };
-      const ya = at(Y.ago), av = at(Y.avg), parts = [`Through the week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[1])} head delivered to packers that report to USDA`];
-      if (ya) parts.push(`${pctv(last[1], ya)} at this point last year (${fmtN(ya)})`);
-      if (av) parts.push(`${pctv(last[1], av)} the ${vbase} average (${fmtN(av)})`);
-      $("#fvol-summary").replaceChildren(...parts.flatMap((p, i) => [i ? " · " : null, el("span", { text: p })]).filter(Boolean));
+      const line = (parts, bold) => el("span", { style: `display:block${bold ? "" : ";font-weight:400"}` },
+        parts.flatMap((p, i) => [i ? " · " : null, el("span", { text: p })]).filter(Boolean));
+      const w = [`Week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[2])} head`], t = [`So far this year: ${fmtN(last[1])} head`];
+      const wya = at(Y.ago, 2), wav = at(Y.avg, 2), ya = at(Y.ago, 1), av = at(Y.avg, 1);
+      if (wya) w.push(`${pctv(last[2], wya)} the same week last year (${fmtN(wya)})`);
+      if (wav) w.push(`${pctv(last[2], wav)} the ${vbase} average (${fmtN(wav)})`);
+      if (ya) t.push(`${pctv(last[1], ya)} at this point last year (${fmtN(ya)})`);
+      if (av) t.push(`${pctv(last[1], av)} the ${vbase} average (${fmtN(av)})`);
+      $("#fvol-summary").replaceChildren(line(w, true), line(t, false));
     } else noChart("fvol", "USDA's purchase-type report for this year isn't in yet.");
     // the days traded since that week (the next weekly report replaces them)
     const dd = r.daily || [];
@@ -1396,14 +1404,12 @@ details.method .card { margin-top: 10px; }
     const chart = el("div", { class: "chart", id: "fsales-chart" }), legend = el("ul", { class: "legend" });
     // the card is national whatever region is picked (11/24/2026): a National chip on the heading and a line saying so
     card.replaceChildren(el("h3", {}, [`About the week of ${weekOf(now.date)} `, el("span", { class: "chip-scope", text: "National" })]),
-      el("p", { class: "gmix nat-line", text: reg().id === "us" ? "Every U.S. feedlot selling to packers that report to USDA."
-        : `Every U.S. feedlot selling to packers that report to USDA, not just ${reg().name}: USDA reports how cattle were bought for the whole country only.` }),
+      el("p", { class: "gmix nat-line", text: reg().id === "us" ? "USDA reports how cattle were bought for the country as a whole."
+        : `National, not ${reg().name}: USDA reports how cattle were bought for the country as a whole, from packers that report to it.` }),
       el("dl", {}, items),
-      el("p", { class: "gmix" }, [document.createTextNode("These figures are the same for every region. " +
-        "Shares count every animal delivered to packers that report to USDA that week, as USDA's own negotiated share does. " +
-        WEEKLY + " "), why]),
+      el("p", { class: "gmix" }, [document.createTextNode("Shares count every animal delivered that week, as USDA's own negotiated share does. "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
-        el("p", { class: "note", text: `Each purchase type's share of fed cattle delivered to packers that report to USDA, ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)} to now. The latest month can be partial; October 2013 is missing (the federal government shutdown).` }),
+        el("p", { class: "note", text: `Each purchase type's share of fed cattle delivered, by month since ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)}. The latest month can be partial; October 2013 is missing (government shutdown).` }),
         legend, chart, shareControl(chart)]));
     const X = m => +m.slice(0, 4) * 12 + +m.slice(5, 7) - 1, pts = i => Sx.monthly.filter(r => r[i] != null).map(r => ({ x: X(r[0]), y: r[i] }));
     // 11/24/2026: formula and forward contract too, so the four shares add up to every animal delivered
@@ -1426,7 +1432,7 @@ details.method .card { margin-top: 10px; }
     seg($("#ftrend-class"), FCLS, () => S.fcls, v => S.fcls = v);
     seg($("#ftrend-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
     const k = `${S.fcls}.${S.fbasis}`, g = r.years[k], base = FED.meta.base_years, cl = clsT(S.fcls).toLowerCase();
-    $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${BASIS_SUB[S.fbasis]}, ${r.name}. Weekly weighted averages. ${WEEKLY}`;
+    $("#ftrend-sub").textContent = `Fed ${cl}, negotiated cash, ${S.fbasis === "live" ? "live (FOB)" : "dressed (delivered)"}, ${r.name}. Weekly weighted averages.`;
     // a report too new for a year-ago line (South Central, from Oct. 26, 2026) says so instead (review, 11/25/2026)
     const since = (gg, unit) => gg && !gg.ago.length && r.since ? `Since the report began (trading on ${day(r.since, true)}), ${unit}.` : null;
     $("#ftrend-psub").textContent = since(g, "$/cwt") || `This year, last year and the ${base} average, $/cwt.`;
@@ -1451,6 +1457,7 @@ details.method .card { margin-top: 10px; }
     // part of the Trends tab (11/24/2026): its switches are the tab's
     const sea = r.season[`${S.fcls}.${S.fbasis}`];
     $("#fseason-off").hidden = !!sea;
+    $("#fseason-yrs").textContent = sea ? `${sea.years[0]}-${sea.years[sea.years.length - 1]}` : "the years shown";
     if (!sea) {
       $("#fseason-off").textContent = r.since ? `The ${r.name} report started ${day(r.since, true)}: too new for a seasonal pattern. Pick 5-Area or National for the pattern across these feedlots.`
         : `Too few years of ${clsT(S.fcls).toLowerCase()} ${basisT(S.fbasis)} trade in ${r.name} for a seasonal pattern.`;
@@ -1476,7 +1483,7 @@ details.method .card { margin-top: 10px; }
     seg($("#fcmp-class"), FCLS, () => S.fcls, v => S.fcls = v);
     seg($("#fcmp-basis"), FBASIS, () => S.fbasis, v => S.fbasis = v);
     const k = `${S.fcls}.${S.fbasis}`, what = `fed ${clsT(S.fcls).toLowerCase().replace(/s$/, "")} ${basisT(S.fbasis)}`;
-    $("#fcmp-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt. ${WEEKLY}`;
+    $("#fcmp-sub").textContent = `Fed ${clsT(S.fcls).toLowerCase()}, negotiated cash, ${BASIS_SUB[S.fbasis]}, $/cwt.`;
     const ids = [...new Set([S.f1, S.f2, S.f3].filter(Boolean))];
     const draw = (by, host, legend, sub) => {
       const weekly = by === "weekly", series = [];
@@ -1502,7 +1509,7 @@ details.method .card { margin-top: 10px; }
       if (!weekly) for (let v = Math.ceil(xmin / 12) * 12; v <= xmax; v += 12) allT.push({ v, t: String(v / 12) });
       const narrow = window.innerWidth < 520;
       legend.replaceChildren(...series.map(s => el("li", {}, [el("span", { class: `key k${s.cls}${s.dash ? " dash" : ""}` }), el("span", { text: s.name })])));
-      sub.textContent = weekly ? "Weekly weighted average, the past 52 weeks." : "Monthly average of the weeks, weighted by head, the past 60 months.";
+      sub.textContent = weekly ? "Weekly weighted average, the past 52 weeks." : "Monthly average, weighted by head, the past 60 months.";
       const thin = lineChart(host, { series, x: { min: xmin, max: xmax, ticks: narrow && weekly ? ticks.filter((_, i) => i % 2 === 0) : ticks, all: allT },
         gap: weekly ? 10 : 1.5, endLabels: true, yfmt: (v, full) => full ? fmt$(v) : "$" + v,
         xlab: x => { if (weekly) { const d = new Date((x - 4) * 864e5); return `Week of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`; }
@@ -1528,10 +1535,10 @@ details.method .card { margin-top: 10px; }
       return `${x.name}: no ${what} trade reported in the past year.`; })).concat(
       ids.some(id => regById(id).ended) ? ["USDA now reports Colorado, Kansas and Texas-Oklahoma-New Mexico together as South Central, which isn't joined to either."] : []
     ).filter(Boolean).join(" ");
-    $("#fcmp-note").textContent = "The regions overlap: 5-Area includes the Nebraska, Iowa-Minnesota and South Central feedlots (South " +
-      "Central covers the Kansas and Texas-Oklahoma-New Mexico feedlots, whose own reports USDA has withheld since summer 2026), and National " +
-      "includes every region. Regions also differ in the cattle they sell (weights, grades and how many sell dressed rather than live), " +
-      "so part of a gap between two lines can come from those differences, not price alone." +
+    $("#fcmp-note").textContent = "The regions overlap: 5-Area is Nebraska, Iowa-Minnesota and South Central (Colorado, Kansas and " +
+      "Texas-Oklahoma-New Mexico) together, and National includes every region. Kansas and Texas-Oklahoma-New Mexico run through the last " +
+      "week USDA published a price for them. Regions also differ in the cattle they sell (weights, grades, and how many sell dressed rather " +
+      "than live), so part of a gap between two lines can come from those differences, not price alone." +
       (ids.some(id => regById(id).beef) ? " The cutout is what a carcass's beef brings sold in boxes (USDA's daily afternoon report, " +
         "averaged by week or month), not what packers paid for cattle. The gap between it and a dressed price is not a packer " +
         "margin: it leaves out the hide and offal value and the packer's costs." : "");
@@ -1541,8 +1548,8 @@ details.method .card { margin-top: 10px; }
   function renderBeef() {
     if (!FED) return;
     const b = FED.beef, d = b.days, L = d.latest;
-    $("#beef-sub").textContent = `Choice and Select cutout, 600-900 lb carcasses, USDA's afternoon report for ${wday(L.date, true)}. $/cwt. ` +
-      `The same for every region. ${DAILY}`;
+    $("#beef-sub").textContent = `Choice and Select cutout, 600-900 lb carcasses, from USDA's afternoon report for ${wday(L.date)}. ` +
+      `$/cwt, national. ${DAILY}`;
     const vs =(g, k, x) => x && x[g] && x[g][k] != null && L[g][k] != null ? L[g][k] - x[g][k] : null;
     const pc = (g, k, x) => x && x[g] && x[g][k] ? (L[g][k] / x[g][k] - 1) * 100 : null;
     const card = (g, t) => el("div", {}, [el("div", { class: "k", text: t }), el("div", { class: "v" + (g === "choice" ? " hero" : ""), text: fmt$(L[g].cutout) }),
@@ -1644,8 +1651,9 @@ details.method .card { margin-top: 10px; }
   // one title rule per chart, keyed by chart id; a new chart needs one (tools/check_fedcattle.py)
   const SHARE_SPECS = {
     "fvol-chart": () => { const Y = FED.sales.ytd, base = FED.meta.base_years;
-      return { title: `Fed cattle delivered to packers so far in ${Y.year}, national: ${Y.year} vs. ${Y.year - 1} and the ${base} average`,
-        sub: "Fed steers and heifers delivered to packers that report to USDA, every purchase type, domestic and imported. Running total by week of the year, head." }; },
+      return { title: `Fed cattle delivered to packers each week, national: ${Y.year} vs. ${Y.year - 1} and the ${base} average`,
+        sub: "Fed steers and heifers delivered to packers that report to USDA, every purchase type, domestic and imported. Head each week, by week of the year.",
+        note: "Holiday weeks run low, and a holiday can fall in a different week of the year from one year to the next." }; },
     "fsales-chart": () => { const M = FED.sales.monthly, a = M[0][0], b = M[M.length - 1][0], mo = s => `${MON_FULL[+s.slice(5) - 1]} ${s.slice(0, 4)}`;
       return { title: "How fed cattle were bought, national: each purchase type's share by month",
         sub: `Share of fed steers and heifers delivered to packers that report to USDA, domestic and imported, ${mo(a)} to ${mo(b)}, %.`,
