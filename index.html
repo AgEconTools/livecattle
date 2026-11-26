@@ -776,10 +776,11 @@ details.method .card { margin-top: 10px; }
           Formula, forward contract and negotiated grid purchases are not included. Live prices are per hundredweight of
           live weight at the feedlot (FOB); dressed prices are per hundredweight of carcass weight, delivered to the
           packing plant.</li>
-        <li>The head count under the region counts every negotiated cash steer and heifer, live and dressed, FOB and
-          delivered. The price table shows the two prices the trade quotes (live FOB and dressed delivered), so its rows
-          add up to a little less. USDA's own "confirmed" count in its report is higher still: it also counts mixed
-          steer-and-heifer lots (and dairy-bred cattle where USDA reports them).</li>
+        <li>The head count under the region counts every negotiated cash steer, heifer and mixed steer-and-heifer pen,
+          live and dressed, FOB and delivered: USDA's own total for these cattle in the report. The price table shows
+          steers and heifers at the two prices the trade quotes (live FOB and dressed delivered), so its rows add up to
+          less. The headline count in USDA's report can be a little higher, mainly because it also counts dairy-bred
+          cattle.</li>
         <li>The regions are USDA's. 5-Area covers feedlots in Texas-Oklahoma-New Mexico, Kansas, Nebraska, Colorado and
           Iowa-Minnesota; National covers every U.S. feedlot selling to packers that report to USDA (domestic cattle); South Central covers Colorado,
           Kansas and Texas-Oklahoma-New Mexico together, starting with trading on Oct. 26, 2026. USDA withholds a
@@ -1414,7 +1415,8 @@ details.method .card { margin-top: 10px; }
       el("p", { class: "gmix nat-line", text: reg().id === "us" ? "USDA reports how cattle were bought for the country as a whole."
         : `National, not ${reg().name}: USDA reports how cattle were bought for the country as a whole, from packers that report to it.` }),
       el("dl", {}, items),
-      el("p", { class: "gmix" }, [document.createTextNode("Shares count every animal delivered that week, as USDA's own negotiated share does. "), why]),
+      el("p", { class: "gmix" }, [document.createTextNode("Shares count every animal delivered that week, domestic and imported. USDA's printed "
+        + "negotiated share counts domestic cattle only, so it can be a little lower, usually by less than a tenth of a point. "), why]),
       el("div", { class: "vol" }, [el("h4", { text: "How fed cattle were bought, by month" }),
         el("p", { class: "note", text: `Each purchase type's share of fed cattle delivered, by month since ${MON_FULL[+Sx.monthly[0][0].slice(5) - 1]} ${Sx.monthly[0][0].slice(0, 4)}. The latest month can be partial; October 2013 is missing (government shutdown).` }),
         legend, chart, shareControl(chart)]));
