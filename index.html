@@ -159,7 +159,10 @@ main { padding-block: 26px 40px; }
 .panel { display: grid; gap: 18px; }
 /* in-page jumps land with their heading below the sticky tab bar, which wraps to two rows on a phone: --tabs-h is the
    bar's measured height, set on load and whenever it changes (iPhone review, 11/23/2026; was a fixed 80 px on the strip) */
-#more-tools, #disclaimer, #week-facts, #foot-how, #curve-card { scroll-margin-top: calc(var(--tabs-h, 80px) + env(safe-area-inset-top, 0px) + 12px); }
+#more-tools, #disclaimer, #about, #foot-fed-how, #week-facts, #foot-how, #curve-card { scroll-margin-top: calc(var(--tabs-h, 80px) + env(safe-area-inset-top, 0px) + 12px); }
+/* the sections an in-page link jumps to take focus (jumpTo) but draw no ring: Safari drew a gold box round the whole tools
+   strip after a tap (11/26/2026). Focus still lands there, and the next Tab goes to the first link or control inside. */
+#more-tools:focus, #disclaimer:focus, #about:focus, #foot-fed-how:focus { outline: none; }
 .panel > * { min-width: 0; }
 h2 { font: 700 clamp(22px, 3.4vw, 28px)/1.2 var(--display); margin: 0; text-wrap: balance; }
 .sub { margin: 4px 0 0; color: var(--ink-2); font-size: 15px; max-width: 68ch; }
@@ -1244,7 +1247,8 @@ details.method .card { margin-top: 10px; }
         writeAddr();
       })
       .catch(e => { console.error(e); FEDERR = true; })
-      .finally(() => { FEDLOAD = null; if (fedOn()) render(); });
+      .finally(() => { FEDLOAD = null; if (fedOn()) render();
+        if (ANCHOR_JUMP) { const t = document.getElementById(ANCHOR_JUMP); ANCHOR_JUMP = ""; if (t) requestAnimationFrame(() => t.scrollIntoView({ block: "start" })); } });
   }
   function renderFed() {
     for (const b of document.querySelectorAll(".tab")) {
@@ -1401,7 +1405,7 @@ details.method .card { margin-top: 10px; }
     }
     add("How the cattle were bought", el("div", { class: "gr gr-wide" }, cells), "", true);
     const why = el("a", { href: "#about", text: "More on these numbers" });
-    why.addEventListener("click", e => { e.preventDefault(); $("#foot-fed-how").open = true; $("#foot-fed-how").scrollIntoView({ behavior: "smooth", block: "start" }); });
+    why.addEventListener("click", e => { e.preventDefault(); $("#foot-fed-how").open = true; jumpTo($("#foot-fed-how")); });
     const chart = el("div", { class: "chart", id: "fsales-chart" }), legend = el("ul", { class: "legend" });
     // the card is national whatever region is picked (11/24/2026): a National chip on the heading and a line saying so
     card.replaceChildren(el("h3", {}, [`About the week of ${weekOf(now.date)} `, el("span", { class: "chip-scope", text: "National" })]),
@@ -1856,7 +1860,17 @@ details.method .card { margin-top: 10px; }
   const ADDR = { fweek: "week", ftrend: "trend", fcmp: "compare", beef: "beef" };
   const FROM_ADDR = { week: "fweek", trend: "ftrend", season: "ftrend", compare: "fcmp", cmp: "fcmp", beef: "beef" };
   let SEASON_JUMP = (location.hash || "").slice(1) === "season";   // scroll to the seasonal chart once it is drawn
+  // an in-page link's jump: scroll the section into view (at once under reduced motion) and focus it without a second scroll,
+  // so keyboard and screen reader users land there too
+  function jumpTo(t) {
+    t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
+    t.focus({ preventScroll: true });
+  }
   const hashTab = h => FROM_ADDR[h] || (VIEWS[h] ? h : null);
+  // a direct address to a section outside the tabs (#more-tools, #disclaimer, #about) lands there again once the data has
+  // drawn: the browser's own jump came first, and the tables filling in pushed #more-tools about 2,000 px down (11/26/2026)
+  let ANCHOR_JUMP = (() => { const h = (location.hash || "").slice(1); return h && !hashTab(h) && /^[A-Za-z][\w-]*$/.test(h) && !$("main").contains(document.getElementById(h)) ? h : ""; })();
   function writeAddr() {
     let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
     q.set("region", S.region);
@@ -1900,7 +1914,16 @@ details.method .card { margin-top: 10px; }
       if (t) t.hidden = true; if (x) x.setAttribute("visibility", "hidden");
     }
   });
-  $("#to-disc").addEventListener("click", e => { e.preventDefault(); $("#disc-full").open = true; $("#disclaimer").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  // the header row's in-page links (Disclaimer, More cattle tools) scroll to their section and move focus there without
+  // touching the address, so Share right after still sends this tab and region (as on the drought page, 11/26/2026). Left
+  // to the browser, More cattle tools put "#more-tools" in the address and a history entry until hashchange put the tab
+  // back. Disclaimer also opens the full disclaimer. A typed or shared #disclaimer or #more-tools address still works.
+  document.querySelectorAll('.tools-line a[href^="#"]').forEach(a => a.addEventListener("click", e => {
+    const t = document.querySelector(a.getAttribute("href")); if (!t) return;
+    e.preventDefault();
+    if (a.id === "to-disc") $("#disc-full").open = true;
+    jumpTo(t);
+  }));
   $("#region").addEventListener("change", e => setRegion(e.target.value));
   $("#beefy-primal").addEventListener("change", e => { S.bprimal = e.target.value; render(); });
   for (const [i, k] of [[1, "f1"], [2, "f2"], [3, "f3"]]) $(`#fcmp-s${i}`).addEventListener("change", e => { S[k] = e.target.value; renderFcmp(); });
