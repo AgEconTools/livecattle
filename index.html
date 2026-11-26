@@ -96,7 +96,6 @@ button, input, select { font: inherit; color: inherit; }
               grid-template-columns: 1fr auto; align-items: end; }
 h1 { font: 700 clamp(28px, 5vw, 40px)/1.08 var(--display); margin: 0; text-wrap: balance; }
 .asof { margin: 6px 0 0; font-size: 14px; opacity: .88; }
-.asof.edu { margin-top: 2px; font-size: 13px; }
 .asof a { color: inherit; }
 .disc { border: 1px solid var(--rule); border-left: 4px solid var(--ink-2); background: var(--surface); border-radius: 8px;
         padding: 14px 16px; max-width: 78ch; display: grid; gap: 6px; }
@@ -493,7 +492,7 @@ details.method .card { margin-top: 10px; }
   .mast .wrap { padding-block: 12px 12px; gap: 10px; }
   h1 { font-size: 24px; }
   .asof { margin-top: 3px; font-size: 13px; }
-  .asof.edu, .asof.tools-line { margin-top: 1px; font-size: 12.5px; }
+  .asof.tools-line { margin-top: 6px; font-size: 12.5px; }   /* set apart from the date lines (the old educational line freed the room) */
   .pickers { gap: 6px 8px; }
   .picker label, .picker .lab { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .picker select { padding-block: 8px; font-size: 15px; }
@@ -545,8 +544,10 @@ details.method .card { margin-top: 10px; }
       <h1>Live Cattle and Boxed Beef</h1>
       <p class="asof" id="asof">Loading the latest USDA reports…</p>
       <p class="asof" id="linknote" hidden></p>
-      <p class="asof edu">For educational use only. <a href="#disclaimer" id="to-disc">Read the disclaimer</a>.</p>
-      <p class="asof tools-line"><a href="#more-tools">More cattle tools</a><button type="button" class="share-btn" id="share-view">Share this view</button><span class="sr-only" role="status" id="share-msg"></span></p>
+      <!-- Disclaimer, Share, More cattle tools in one row, as on Cattle Auction Prices (11/26/2026; the "For educational
+           use only" line folded in here, one line fewer; the full text is in the footer box). "Share" shares this view; its
+           name for screen readers says so -->
+      <p class="asof tools-line"><a href="#disclaimer" id="to-disc">Disclaimer</a><button type="button" class="share-btn" id="share-view" aria-label="Share this view">Share</button><a href="#more-tools">More cattle tools</a><span class="sr-only" role="status" id="share-msg"></span></p>
       <div class="share-box" id="share-box" hidden><label for="share-url">Copy this link:</label><input id="share-url" type="text" readonly spellcheck="false"><button type="button" class="share-btn" id="share-close">Close</button></div>
     </div>
   </div>
@@ -1924,7 +1925,7 @@ details.method .card { margin-top: 10px; }
   const btn = document.getElementById("share-view"), msg = document.getElementById("share-msg");
   if (btn) {
     const say = t => { msg.textContent = t; btn.textContent = t; clearTimeout(btn._t);
-      btn._t = setTimeout(() => { btn.textContent = "Share this view"; msg.textContent = ""; }, 2500); };
+      btn._t = setTimeout(() => { btn.textContent = "Share"; msg.textContent = ""; }, 2500); };
     btn.addEventListener("click", async () => {
       const url = location.href;
       if (navigator.share && matchMedia("(pointer: coarse)").matches) {
