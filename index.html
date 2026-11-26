@@ -556,7 +556,9 @@ details.method .card { margin-top: 10px; }
   </div>
 </header>
 
-<div class="wrap stale-row" id="stale-row" hidden><p class="warn" role="status" id="stale"></p></div>
+<!-- the region row and the two notes outside <main> are named sections (landmarks), like the head-count line, so every part
+     of the page sits in one (axe "region" rule, 11/26/2026) -->
+<section class="wrap stale-row" id="stale-row" aria-label="Data status" hidden><p class="warn" role="status" id="stale"></p></section>
 
 <nav class="tabs" aria-label="Questions">
   <div class="wrap" role="tablist" id="tablist">
@@ -569,16 +571,16 @@ details.method .card { margin-top: 10px; }
 
 <!-- the region (11/24/2026: moved from the masthead to under the tabs), largest first by cash cattle sold: buttons where
      all five fit, a menu on a phone; shown on This week and Trends only (Boxed beef is national, Compare has its own) -->
-<div class="wrap regionbar" id="regionbar">
+<section class="wrap regionbar" id="regionbar" aria-label="Region choice">
   <div class="rb-wide"><span class="rb-lab" id="rb-lab">Region</span><div class="seg" id="region-seg" role="group" aria-labelledby="rb-lab"></div></div>
   <label class="field rb-narrow" for="region"><span>Region</span><select id="region"></select></label>
-</div>
+</section>
 <!-- the head-count line under the region it counts (11/24/2026; it sat above the tabs, before the control that sets it);
      on Boxed beef the day's loads sold; not on Compare, which picks its own regions -->
 <section class="tally" id="tally-sec" aria-label="Cattle traded">
   <div class="wrap" id="tally"></div>
 </section>
-<div class="wrap state-note" id="fed-note" hidden><p id="fed-note-p"></p></div>
+<section class="wrap state-note" id="fed-note" aria-label="About this region" hidden><p id="fed-note-p"></p></section>
 
 <!-- the panels are p-<tab> and the tab ids aren't address names, so a #week address never jumps past the masthead;
      data: data/fed.json (tools/export_fedcattle.py) -->
