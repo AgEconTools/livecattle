@@ -793,8 +793,14 @@ details.method .card { margin-top: 10px; }
           purchase type: negotiated cash, negotiated grid (a price negotiated for the base, then the packer's grid of
           premiums and discounts by carcass), formula (priced from another market, such as a cash average or futures, plus
           the grid) and forward contract (priced before the cattle are ready, often from futures). Shares count every
-          animal delivered to those packers, domestic and imported, as USDA's published negotiated share does. USDA's purchase-type data
+          animal delivered to those packers, domestic and imported; USDA's printed negotiated share counts domestic cattle only,
+          so it can run a little lower. USDA's purchase-type data
           has a gap in October 2013 (the federal government shutdown), so the monthly chart skips that month.</li>
+        <li>Fed cattle delivered each week lines the years up by week of the year. Six holidays cut deliveries 10-25% in
+          their week (New Year's, Memorial Day, July 4, Labor Day, Thanksgiving and Christmas), and a holiday can fall a
+          week earlier or later in the year from one year to the next, so each earlier year's holiday week is moved to this
+          year's holiday week, trading places with the ordinary week there. Each year's total stays the same. The About
+          card's head a year ago uses the same weeks.</li>
         <li>Negotiated cash trade isn't priced by grade, only by the share of a pen expected to grade Choice, so USDA
           reports no cash price for Select cattle.</li>
         <li>Boxed beef is USDA's National Daily Boxed Beef Cutout (afternoon report), Choice and Select, 600-900 lb
@@ -1356,7 +1362,8 @@ details.method .card { margin-top: 10px; }
     // week's head; the summary gives the week and the year so far
     const Y = FED.sales.ytd, vbase = FED.meta.base_years;
     $("#fvol-sub").textContent = `All purchase types. Head each week: this year, last year and the ${vbase} average. Holiday ` +
-      "weeks run low, and a holiday can fall in a different week of the year from one year to the next.";
+      "weeks run low, so each year's holiday weeks (New Year's, Memorial Day, July 4, Labor Day, Thanksgiving and Christmas) are " +
+      "lined up with this year's.";
     if (Y && Y.cur.length) {
       const wk = arr => arr.map(p => [p[0], p[2], p[2]]);
       yearChart("fvol", { year: Y.year, cur: wk(Y.cur), ago: wk(Y.ago), avg: Y.avg.map(p => [p[0], p[2], null]) },
@@ -1366,7 +1373,8 @@ details.method .card { margin-top: 10px; }
       const pctv = (a, b) => { const p = Math.round((a / b - 1) * 100); return p === 0 ? "about the same as" : `${Math.abs(p)}% ${p > 0 ? "more than" : "fewer than"}`; };
       const line = (parts, bold) => el("span", { style: `display:block${bold ? "" : ";font-weight:400"}` },
         parts.flatMap((p, i) => [i ? " · " : null, el("span", { text: p })]).filter(Boolean));
-      const w = [`Week of ${weekOf(`${Y.year}-${last[0]}`)}: ${fmtN(last[2])} head`], t = [`So far this year: ${fmtN(last[1])} head`];
+      const hol = (Y.holidays || {})[last[0]];   // a holiday week says so: it is compared with the same holiday's week
+      const w = [`Week of ${weekOf(`${Y.year}-${last[0]}`)}${hol ? ` (${hol} week)` : ""}: ${fmtN(last[2])} head`], t = [`So far this year: ${fmtN(last[1])} head`];
       const wya = at(Y.ago, 2), wav = at(Y.avg, 2), ya = at(Y.ago, 1), av = at(Y.avg, 1);
       if (wya) w.push(`${pctv(last[2], wya)} the same week last year (${fmtN(wya)})`);
       if (wav) w.push(`${pctv(last[2], wav)} the ${vbase} average (${fmtN(wav)})`);
@@ -1395,7 +1403,7 @@ details.method .card { margin-top: 10px; }
     if (!now) { card.replaceChildren(el("h3", { text: "About this week's trade" }), el("p", { class: "gmix", text: "USDA's purchase-type report for that week isn't in yet." })); return; }
     const items = [], pct = v => v == null ? "–" : `${v.toFixed(1)}%`;
     const add = (k, v, sub, wide) => items.push(el("div", wide ? { class: "wide" } : {}, [el("dt", { text: k }), el("dd", {}, [typeof v === "string" ? document.createTextNode(v) : v, sub ? el("small", { text: sub }) : null])]));
-    add("Fed cattle delivered to packers", `${fmtN(now.total)} head`, `National, every purchase type${ya ? `; ${fmtN(ya.total)} a year ago` : ""}`);
+    add("Fed cattle delivered to packers", `${fmtN(now.total)} head`, `National, every purchase type${now.head_year_ago != null ? `; ${fmtN(now.head_year_ago)} the same week a year ago` : ""}`);
     const cs = w => w && w.types.negotiated[1];
     add("Bought on a negotiated cash basis", pct(cs(now)), [pr ? `${pct(cs(pr))} the week before` : null, ya ? `${pct(cs(ya))} a year ago` : null].filter(Boolean).join("; "));
     // share and head only (11/24/2026): the four types' prices aren't comparable, and the cash price is in the table above
@@ -1651,6 +1659,9 @@ details.method .card { margin-top: 10px; }
     if (regions.length > 1) notes.push("The regions overlap: 5-Area includes Nebraska, Iowa-Minnesota and South Central, and National includes " +
       "every region. They also sell different cattle, so part of a gap can come from those differences, not price alone.");
     if (ended) notes.push("USDA has withheld the Kansas and Texas-Oklahoma-New Mexico reports for confidentiality since summer 2026.");
+    // a region that began inside the window says so, as the page's note does (South Central: two months on a 5-year chart)
+    [...new Set([S.f1, S.f2, S.f3].filter(Boolean))].map(regById).filter(x => x && x.since)
+      .forEach(x => notes.push(`${x.name}: reported only since ${day(x.since, true)}.`));
     if (beef) notes.push("The cutout is what a carcass's beef brings sold in boxes, not what packers paid for cattle; the gap is not a packer margin.");
     return { title: solo ? `${fedWhat()} price, ${names[0] || reg().name}: the past ${weekly ? "year" : "5 years"}`
         : `${fedWhat()} prices${beef ? " and boxed beef" : ""}: ${andList(names)}, the past ${weekly ? "year" : "5 years"}`,
@@ -1662,7 +1673,7 @@ details.method .card { margin-top: 10px; }
     "fvol-chart": () => { const Y = FED.sales.ytd, base = FED.meta.base_years;
       return { title: `Fed cattle delivered to packers each week, national: ${Y.year} vs. ${Y.year - 1} and the ${base} average`,
         sub: "Fed steers and heifers delivered to packers that report to USDA, every purchase type, domestic and imported. Head each week, by week of the year.",
-        note: "Holiday weeks run low, and a holiday can fall in a different week of the year from one year to the next." }; },
+        note: "Holiday weeks run low, so each year's holiday weeks (New Year's, Memorial Day, July 4, Labor Day, Thanksgiving and Christmas) are lined up with this year's." }; },
     "fsales-chart": () => { const M = FED.sales.monthly, a = M[0][0], b = M[M.length - 1][0], mo = s => `${MON_FULL[+s.slice(5) - 1]} ${s.slice(0, 4)}`;
       return { title: "How fed cattle were bought, national: each purchase type's share by month",
         sub: `Share of fed steers and heifers delivered to packers that report to USDA, domestic and imported, ${mo(a)} to ${mo(b)}, %.`,
